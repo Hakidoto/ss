@@ -1,11 +1,13 @@
 import { Navbar, Link, Text, Avatar, Dropdown } from "@nextui-org/react";
 import { useRouter } from "next/router";
 
-export default function NabarNew() {
+export default function NavbarNew() {
+  //Añade en este array el titulo de tu pestaña y el link
   const collapseItems = [
     { title: "Inicio", link: "/" },
     { title: "Perfil", link: "#" },
     { title: "Cuestionarios", link: "/Cuestionarios" },
+    { title: "Manuales", link: "#" },
   ];
 
   const { asPath } = useRouter();
@@ -31,7 +33,7 @@ export default function NabarNew() {
           className="LogoTRC d-inline-block align-text-top"
         ></img>
         <Text b color="inherit" hideIn="xs">
-          Televisión y Radio Campeche
+          Televisión y Radio de Campeche
         </Text>
       </Navbar.Brand>
       <Navbar.Content
