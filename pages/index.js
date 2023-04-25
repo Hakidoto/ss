@@ -1,12 +1,9 @@
-import Image from 'next/image'
-import { Inter } from 'next/font/google'
-import Link from 'next/link';
 
+import { Container, Button, Row, Col, Tooltip } from "@nextui-org/react";
 
-const inter = Inter({ subsets: ['latin'] })
 
 export default function Home() {
   return (
-   <h1>??? </h1>
+   <div className="container">??? </div>
   )
 }
