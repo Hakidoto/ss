@@ -3,6 +3,16 @@ import "bootstrap/dist/css/bootstrap.min.css"; // Import bootstrap CSS
 import "../styles/globals.css";
 import { useEffect } from "react";
 import Layout from ".//Components/Layout";
+import { NextUIProvider , createTheme} from "@nextui-org/react";
+
+const theme = createTheme({
+  type: "light", // it could be "light" or "dark"
+  theme: {
+    colors: {
+      error: '#691c32',
+    },
+  }
+})
 
 export default function App({ Component, pageProps }) {
   useEffect(() => {
@@ -10,8 +20,10 @@ export default function App({ Component, pageProps }) {
   }, []);
 
   return (
-    <Layout>
-      <Component {...pageProps} />
-    </Layout>
+    <NextUIProvider theme={theme}>
+      <Layout >
+        <Component {...pageProps} />
+      </Layout>
+    </NextUIProvider>
   );
 }
