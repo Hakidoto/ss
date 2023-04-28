@@ -4,11 +4,12 @@ import { useRouter } from "next/router";
 import logo from '../../public/trc.png'
 
 export default function NavbarNew() {
-  //Añade en este array el titulo de tu pestaña y el link
+  //Añade en este array el titulo de tu pestaña y el link *Utiliza la propiedad "dropdownItems" para generar un dropdownlist *
   const collapseItems = [
     { title: "Inicio", link: "/" },
     { title: "Cuestionarios", link: "/Cuestionarios" },
     { title: "Manuales", link: "#" },
+    { title: "Administración", link: "/Administracion", dropdownItems: ["Usuarios", "Permisos", "Indicadores"] },
   ];
 
   const router = useRouter();
@@ -44,15 +45,54 @@ export default function NavbarNew() {
         hideIn="xs"
         variant="highlight"
       >
-        {collapseItems.map((item, index) => (
-          <Navbar.Link
-            isActive={router.pathname === item.link}
-            key={index}
-            href={item.link}
-          >
-            {collapseItems[index].title}
-          </Navbar.Link>
-        ))}
+
+        {collapseItems.map((item, index) =>
+          !item.dropdownItems ? (
+            <Navbar.Link
+              isActive={router.pathname === item.link}
+              key={index}
+              href={item.link}
+            >
+              {item.title}
+            </Navbar.Link>
+          ) : (
+            <Dropdown placement="bottom-right" key={index}>
+              <Navbar.Item>
+                <Dropdown.Trigger css={{ display: 'flex', alignItems: 'center' }} >
+                  <Text
+                    b
+                    css={{
+                      display: "flex",
+                      alignItems: "center",
+                    }}
+                  >
+                    {item.title}
+                  </Text>
+                </Dropdown.Trigger>
+              </Navbar.Item>
+              <Dropdown.Menu
+                aria-label="User menu actions"
+                color="error"
+                onAction={(actionKey) => console.log({ actionKey })}
+              >
+                {
+                  item.dropdownItems.map((dropdownItem, dropdownIndex) => (
+                    <Dropdown.Item key={dropdownIndex}>
+                      <Link
+                        color="inherit"
+                        css={{
+                          minWidth: "100%",
+                        }}
+                        href={`${item.link.toLocaleLowerCase()}/${dropdownItem.toLocaleLowerCase()}`}
+                      >
+                        {dropdownItem}
+                      </Link>
+                    </Dropdown.Item>
+                  ))}
+              </Dropdown.Menu>
+            </Dropdown>
+          )
+        )}
       </Navbar.Content>
       <Navbar.Content
         css={{
