@@ -99,8 +99,9 @@ export default function NavbarNew() {
             <Dropdown.Item key="help_and_feedback" withDivider>
               Help & Feedback
             </Dropdown.Item>
-            <Dropdown.Item key="logout" withDivider color="error">
-              Cerrar sesion
+            {/*Quitado de mientras key="logout" */}
+            <Dropdown.Item key="/Login" withDivider onClick={() => router.push('/Login')} color="error"> 
+              Cerrar sesión
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
