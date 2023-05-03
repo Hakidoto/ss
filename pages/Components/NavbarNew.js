@@ -19,6 +19,7 @@ export default function NavbarNew() {
     <Navbar 
       isBordered
       variant="floating"
+      shouldHideOnScroll
     >
       <Navbar.Toggle showIn="xs" />
       <Navbar.Brand
@@ -130,11 +131,11 @@ export default function NavbarNew() {
             <Dropdown.Item key="/FichaUsuario" withDivider onClick={() => router.push('/FichaUsuario')}>
               Perfil
             </Dropdown.Item>
-            <Dropdown.Item key="team_settings">Team Settings</Dropdown.Item>
-            <Dropdown.Item key="analytics" withDivider>
-              Analytics
+            <Dropdown.Item key="/Formacion">Formacion y educacion.</Dropdown.Item>
+            <Dropdown.Item key="/Incidencias" >
+              Incidencias
             </Dropdown.Item>
-            <Dropdown.Item key="system">System</Dropdown.Item>
+            <Dropdown.Item key="system" withDivider>System</Dropdown.Item>
             <Dropdown.Item key="configurations">Configurations</Dropdown.Item>
             <Dropdown.Item key="help_and_feedback" withDivider>
               Help & Feedback
