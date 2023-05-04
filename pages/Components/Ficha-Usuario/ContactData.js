@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text } from '@nextui-org/react'
-import style from '../../styles/contactData.module.css'
+import style from '../../../styles/contactData.module.css'
 const ContactData = () => {
   return (
     <div>

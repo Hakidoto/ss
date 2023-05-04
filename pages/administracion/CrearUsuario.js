@@ -3,6 +3,7 @@ import { Mymodal } from "../Components/Mymodal";
 import { UpdateJobForm } from "../Components/UpdateJobForm";
 import MultiSelect from "../Components/MultiSelect";
 import { Table } from "@nextui-org/react";
+import { AddJobForm } from "../Components/AddJobForm";
 
 export default function Formulario() {
   return (
@@ -85,7 +86,12 @@ export default function Formulario() {
       <hr />
       <h2>Experiencia laboral</h2>
       <div className="container p-2">
-        <button type="button" className="btn btn-success mb-3">
+        <button
+          type="button"
+          data-bs-toggle="modal"
+          data-bs-target="#addJob"
+          className="btn btn-success mb-3"
+        >
           Agregar un empleo
         </button>
         <Table
@@ -112,12 +118,7 @@ export default function Formulario() {
               <Table.Cell>Luis Sanchez</Table.Cell>
               <Table.Cell>9821232343</Table.Cell>
               <Table.Cell>
-                <Buttons
-                  callModalVer={false}
-                  routeVer="/administracion/verUsuario"
-                  callModalEditar={false}
-                  routeEditar="/administracion/updateUsuario"
-                />
+                <Buttons mas={false} idModaltoCallEditar="updateJob" />
               </Table.Cell>
             </Table.Row>
           </Table.Body>
@@ -156,6 +157,9 @@ export default function Formulario() {
       </div>
       <Mymodal id="updateJob">
         <UpdateJobForm />
+      </Mymodal>
+      <Mymodal id="addJob">
+        <AddJobForm />
       </Mymodal>
     </div>
   );
