@@ -1,6 +1,6 @@
 import React from 'react'
 import { Text } from '@nextui-org/react'
-import style from '../../styles/personalData.module.css'
+import style from '../../../styles/personalData.module.css'
 //aca se debe recibir los parametros nombre direccion y edad
 const PersonalData = () => {
   return (
