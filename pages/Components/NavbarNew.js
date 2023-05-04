@@ -19,7 +19,7 @@ export default function NavbarNew() {
     {
       title: "Administración",
       link: "/Administracion",
-      dropdownItems: ["Usuarios", "Roles", "Indicadores"],
+      dropdownItems: ["Usuarios", "Permisos", "Indicadores"],
     },
   ];
 
@@ -27,7 +27,7 @@ export default function NavbarNew() {
   const { theme } = useTheme();
 
   return (
-    <Navbar isBordered variant="floating">
+    <Navbar isBordered variant="floating" shouldHideOnScroll>
       <Navbar.Toggle showIn="xs" />
       <Navbar.Brand
         css={{
@@ -142,17 +142,25 @@ export default function NavbarNew() {
             >
               Perfil
             </Dropdown.Item>
-            <Dropdown.Item key="team_settings">Team Settings</Dropdown.Item>
-            <Dropdown.Item key="analytics" withDivider>
-              Analytics
+            <Dropdown.Item key="/Formacion">
+              Formacion y educacion.
             </Dropdown.Item>
-            <Dropdown.Item key="system">System</Dropdown.Item>
+            <Dropdown.Item key="/Incidencias">Incidencias</Dropdown.Item>
+            <Dropdown.Item key="system" withDivider>
+              System
+            </Dropdown.Item>
             <Dropdown.Item key="configurations">Configurations</Dropdown.Item>
             <Dropdown.Item key="help_and_feedback" withDivider>
               Help & Feedback
             </Dropdown.Item>
-            <Dropdown.Item key="logout" withDivider color="error">
-              Cerrar sesion
+            {/*Quitado de mientras key="logout" */}
+            <Dropdown.Item
+              key="/Login"
+              withDivider
+              onClick={() => router.push("/Login")}
+              color="error"
+            >
+              Cerrar sesión
             </Dropdown.Item>
           </Dropdown.Menu>
         </Dropdown>
