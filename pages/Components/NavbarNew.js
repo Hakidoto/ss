@@ -1,7 +1,14 @@
-import {useTheme, Navbar, Link, Text, Avatar, Dropdown } from "@nextui-org/react";
+import {
+  useTheme,
+  Navbar,
+  Link,
+  Text,
+  Avatar,
+  Dropdown,
+} from "@nextui-org/react";
 import Image from "next/image";
 import { useRouter } from "next/router";
-import logo from '../../public/trc.png'
+import logo from "../../public/trc.png";
 
 export default function NavbarNew() {
   //Añade en este array el titulo de tu pestaña y el link *Utiliza la propiedad "dropdownItems" para generar un dropdownlist *
@@ -9,17 +16,18 @@ export default function NavbarNew() {
     { title: "Inicio", link: "/" },
     { title: "Cuestionarios", link: "/Cuestionarios" },
     { title: "Manuales", link: "#" },
-    { title: "Administración", link: "/Administracion", dropdownItems: ["Usuarios", "Permisos", "Indicadores"] },
+    {
+      title: "Administración",
+      link: "/Administracion",
+      dropdownItems: ["Usuarios", "Roles", "Indicadores"],
+    },
   ];
 
   const router = useRouter();
   const { theme } = useTheme();
 
   return (
-    <Navbar 
-      isBordered
-      variant="floating"
-    >
+    <Navbar isBordered variant="floating">
       <Navbar.Toggle showIn="xs" />
       <Navbar.Brand
         css={{
@@ -28,18 +36,18 @@ export default function NavbarNew() {
           },
         }}
       >
-        <Image 
+        <Image
           src={logo}
           alt="LogoTRC"
           width="60"
           height="48"
-          className="LogoTRC d-inline-block align-text-top me-3"/>
+          className="LogoTRC d-inline-block align-text-top me-3"
+        />
         <Text b color="inherit" hideIn="xs">
           Televisión y Radio de Campeche
         </Text>
       </Navbar.Brand>
       <Navbar.Content
-      
         enableCursorHighlight
         activeColor="error"
         hideIn="xs"
@@ -48,7 +56,7 @@ export default function NavbarNew() {
         {collapseItems.map((item, index) =>
           !item.dropdownItems ? (
             <Navbar.Link
-              isActive={asPath === item.link}
+              isActive={router.pathname === item.link}
               key={index}
               href={item.link}
             >
@@ -57,7 +65,9 @@ export default function NavbarNew() {
           ) : (
             <Dropdown placement="bottom-right" key={index}>
               <Navbar.Item>
-                <Dropdown.Trigger css={{ display: 'flex', alignItems: 'center' }} >
+                <Dropdown.Trigger
+                  css={{ display: "flex", alignItems: "center" }}
+                >
                   <Text
                     b
                     css={{
@@ -74,23 +84,22 @@ export default function NavbarNew() {
                 color="error"
                 onAction={(actionKey) => console.log({ actionKey })}
               >
-                {
-                  item.dropdownItems.map((dropdownItem, dropdownIndex) => (
-                    <Dropdown.Item key={dropdownIndex}>
-                      <Link
-                        color="inherit"
-                        css={{
-                          minWidth: "100%",
-                        }}
-                        href={`${item.link.toLocaleLowerCase()}/${dropdownItem.toLocaleLowerCase()}`}
-                      >
-                        {dropdownItem}
-                      </Link>
-                    </Dropdown.Item>
-                  ))}
+                {item.dropdownItems.map((dropdownItem, dropdownIndex) => (
+                  <Dropdown.Item key={dropdownIndex}>
+                    <Link
+                      color="inherit"
+                      css={{
+                        minWidth: "100%",
+                      }}
+                      href={`${item.link.toLocaleLowerCase()}/${dropdownItem.toLocaleLowerCase()}`}
+                    >
+                      {dropdownItem}
+                    </Link>
+                  </Dropdown.Item>
+                ))}
               </Dropdown.Menu>
             </Dropdown>
-          )
+          ),
         )}
       </Navbar.Content>
       <Navbar.Content
@@ -126,7 +135,11 @@ export default function NavbarNew() {
                 zoey@example.com
               </Text>
             </Dropdown.Item>
-            <Dropdown.Item key="/FichaUsuario" withDivider onClick={() => router.push('/FichaUsuario')}>
+            <Dropdown.Item
+              key="/FichaUsuario"
+              withDivider
+              onClick={() => router.push("/FichaUsuario")}
+            >
               Perfil
             </Dropdown.Item>
             <Dropdown.Item key="team_settings">Team Settings</Dropdown.Item>
