@@ -36,6 +36,7 @@ model surveys {
   title       String      @db.VarChar(255)
   description String?     @db.Text
   created_at  DateTime?   @default(now()) @db.Timestamp(0)
+  estatus     String      @db.VarChar(25)
   answers     answers[]
   questions   questions[]
 }

@@ -1,6 +1,5 @@
 import React, { cache, use } from "react";
-import { useEffect, useState } from 'react';
-
+import { useEffect, useState } from "react";
 
 import {
   Table,
@@ -18,12 +17,12 @@ import {
 import { EditIcon } from "../components/icons/EditIcon";
 import { DeleteIcon } from "../components/icons/DeleteIcon";
 import { EyeIcon } from "../components/icons/EyeIcon";
-import { columns} from "../components/example/data";
+import { columns } from "../components/example/data";
 
 const statusColorMap = {
-  active: "success",
-  paused: "danger",
-  vacation: "warning",
+  activo: "success",
+  inactivo: "danger",
+  finalizado: "warning",
 };
 
 const getSurveys = cache(() =>
@@ -46,7 +45,7 @@ export default function PanelCuestionario() {
   useEffect(() => {
     fetchData();
   }, []); // Fetch data when the component mounts
-  
+
   const renderCell = React.useCallback((survey, columnKey) => {
     const cellValue = survey[columnKey];
 
@@ -57,29 +56,49 @@ export default function PanelCuestionario() {
             <p className="text-bold text-sm">{cellValue}</p>
           </div>
         );
-        case "description":
+      case "description":
         return (
           <div>
             <p className="text-bold text-sm capitalize">{cellValue}</p>
           </div>
         );
+      case "estatus":
+        return (
+          <Chip
+            className="capitalize"
+            color={statusColorMap[survey.estatus]}
+            size="sm"
+            variant="flat"
+          >
+            {cellValue}
+          </Chip>
+        );
       case "actions":
         return (
           <div className="relative flex items-center gap-2">
             <Tooltip content="Details">
-              <Link href="#" className="text-lg text-default-400 cursor-pointer active:opacity-50">
+              <Link
+                href="#"
+                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+              >
                 <EyeIcon />
               </Link>
             </Tooltip>
             <Tooltip content="Edit user">
-              <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+              <Link
+                href="#"
+                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+              >
                 <EditIcon />
-              </span>
+              </Link>
             </Tooltip>
             <Tooltip color="danger" content="Delete user">
-              <span className="text-lg text-danger cursor-pointer active:opacity-50">
+              <Link
+                href="#"
+                className="text-lg text-default-400 cursor-pointer active:opacity-50"
+              >
                 <DeleteIcon />
-              </span>
+              </Link>
             </Tooltip>
           </div>
         );
@@ -111,4 +130,4 @@ export default function PanelCuestionario() {
       </TableBody>
     </Table>
   );
-};
+}

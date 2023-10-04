@@ -28,6 +28,7 @@ CREATE TABLE `surveys` (
     `title` VARCHAR(255) NOT NULL,
     `description` TEXT NULL,
     `created_at` TIMESTAMP(0) NULL DEFAULT CURRENT_TIMESTAMP(0),
+    `estatus` VARCHAR(25) NOT NULL,
 
     PRIMARY KEY (`survey_id`)
 ) DEFAULT CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci;

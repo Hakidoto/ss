@@ -6,6 +6,7 @@ const columns = [
   {name: "TITULO", uid: "title"},
   {name: "DESCRIPCION", uid: "description"},
   {name: "FECHA", uid: "created_at"},
+  {name: "ESTATUS", uid: "estatus"},
   {name: "ACCIONES", uid: "actions"},
 ];
 
