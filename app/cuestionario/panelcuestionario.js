@@ -18,8 +18,7 @@ import {
 import { EditIcon } from "../components/icons/EditIcon";
 import { DeleteIcon } from "../components/icons/DeleteIcon";
 import { EyeIcon } from "../components/icons/EyeIcon";
-import { columns, users } from "../components/example/data";
-import { getAllSurveys } from "../components/example/surveyData";
+import { columns} from "../components/example/data";
 
 const statusColorMap = {
   active: "success",

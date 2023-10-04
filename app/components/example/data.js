@@ -8,3 +8,5 @@ const columns = [
   {name: "FECHA", uid: "created_at"},
   {name: "ACCIONES", uid: "actions"},
 ];
+
+export {columns};
