@@ -1,4 +1,6 @@
-import React from "react";
+import React, { cache, use } from "react";
+import { useEffect, useState } from 'react';
+
 
 import {
   Table,
@@ -17,6 +19,7 @@ import { EditIcon } from "../components/icons/EditIcon";
 import { DeleteIcon } from "../components/icons/DeleteIcon";
 import { EyeIcon } from "../components/icons/EyeIcon";
 import { columns, users } from "../components/example/data";
+import { getAllSurveys } from "../components/example/surveyData";
 
 const statusColorMap = {
   active: "success",
@@ -24,40 +27,42 @@ const statusColorMap = {
   vacation: "warning",
 };
 
+const getSurveys = cache(() =>
+  fetch("http://localhost:3000/api/cuestionario").then((res) => res.json())
+);
+
 export default function PanelCuestionario() {
-  const renderCell = React.useCallback((user, columnKey) => {
-    const cellValue = user[columnKey];
+  const [surveysData, setSurveysData] = useState([]);
+
+  const fetchData = async () => {
+    try {
+      const data = await getSurveys();
+      setSurveysData(data);
+    } catch (error) {
+      // Handle error if needed
+      console.error("Error fetching data:", error);
+    }
+  };
+
+  useEffect(() => {
+    fetchData();
+  }, []); // Fetch data when the component mounts
+  
+  const renderCell = React.useCallback((survey, columnKey) => {
+    const cellValue = survey[columnKey];
 
     switch (columnKey) {
-      case "name":
+      case "title":
         return (
-          <User
-            avatarProps={{ radius: "lg", src: user.avatar }}
-            description={user.email}
-            name={cellValue}
-          >
-            {user.email}
-          </User>
-        );
-      case "role":
-        return (
-          <div className="flex flex-col">
-            <p className="text-bold text-sm capitalize">{cellValue}</p>
-            <p className="text-bold text-sm capitalize text-default-400">
-              {user.team}
-            </p>
+          <div>
+            <p className="text-bold text-sm">{cellValue}</p>
           </div>
         );
-      case "status":
+        case "description":
         return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[user.status]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
+          <div>
+            <p className="text-bold text-sm capitalize">{cellValue}</p>
+          </div>
         );
       case "actions":
         return (
@@ -96,15 +101,15 @@ export default function PanelCuestionario() {
           </TableColumn>
         )}
       </TableHeader>
-      <TableBody items={users}>
-        {(item) => (
-          <TableRow key={item.id}>
+      <TableBody items={surveysData}>
+        {(survey) => (
+          <TableRow key={survey.survey_id}>
             {(columnKey) => (
-              <TableCell>{renderCell(item, columnKey)}</TableCell>
+              <TableCell>{renderCell(survey, columnKey)}</TableCell>
             )}
           </TableRow>
         )}
       </TableBody>
     </Table>
   );
-}
+};
