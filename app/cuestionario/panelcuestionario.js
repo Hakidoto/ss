@@ -44,12 +44,20 @@ const getSurveys = cache(() =>
 );
 
 export default function PanelCuestionario() {
-  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isOpen, setIsOpen] = useState(false);
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [surveysData, setSurveysData] = useState([]);
   const [nombreEncuesta, setNombreEncuesta] = useState('');
   const [descripcion, setDescripcion] = useState('');
   const [estatusEncuesta, setEstatusEncuesta] = useState('');
+
+  const onOpenChange = () => {
+    setIsOpen(!isOpen);
+  };
+
+  const handleClose = () => {
+    setIsOpen(false);
+  };
 
   const toggleLoad = () => {
     setIsLoaded(!isLoaded);
@@ -75,8 +83,13 @@ export default function PanelCuestionario() {
 
       // Check if the request was successful
       if (response.ok) {
-        // Handle success
-        console.log('Cuestionario created successfully');
+       // Assuming the API returns the created survey data
+       const createdSurvey = await response.json();
+
+       // Add the new survey to the state
+       setSurveysData((prevSurveys) => [...prevSurveys, createdSurvey]);
+       console.log('Cuestionario creado exitosamente');
+       handleClose();
       } else {
         // Handle error
         console.error('Error creating cuestionario:', response.statusText);
@@ -202,10 +215,10 @@ export default function PanelCuestionario() {
 
   return (
     <Skeleton isLoaded={isLoaded}>
-      <Button onPress={onOpen} className="mb-4" color="primary">
+      <Button onPress={onOpenChange} className="mb-4" color="primary">
         Crear encuesta
       </Button>
-      <Modal backdrop="blur" isOpen={isOpen}  onOpenChange={onOpenChange} isDismissable={false} placement="top">
+      <Modal backdrop="blur" isOpen={isOpen} isDismissable={false} placement="top">
         <ModalContent>
           {(onClose) => (
             <>
