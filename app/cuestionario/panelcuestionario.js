@@ -26,16 +26,55 @@ const statusColorMap = {
 };
 
 const getSurveys = cache(() =>
-  fetch("http://localhost:3000/api/cuestionario").then((res) => res.json())
+  fetch("/api/cuestionario").then((res) => res.json())
 );
 
 export default function PanelCuestionario() {
   const [surveysData, setSurveysData] = useState([]);
 
+  const handleDeleteClick = React.useCallback((id) => {
+    fetch(`/api/cuestionario/delete/survey/${id}`, {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json",
+      },
+    })
+      .then((response) => {
+        if (response.ok) {
+          // Remove the deleted survey from the state
+          setSurveysData((prevSurveys) => prevSurveys.filter((survey) => survey.survey_id !== id));
+          console.log("Eliminacion exitosa");
+        } else {
+          console.log("Error");
+        }
+      })
+      .catch((error) => {
+        console.error("Error deleting survey:", error);
+      });
+  }, []);
+
   const fetchData = async () => {
     try {
+      // Assuming getSurveys returns an array of survey objects
       const data = await getSurveys();
-      setSurveysData(data);
+
+      // Convert SQL datetime strings to "dd-mm-yyyy" format
+      const formattedData = data.map((survey) => {
+        const sqlDatetime = survey.created_at;
+        const dateObject = new Date(sqlDatetime);
+
+        const day = dateObject.getUTCDate();
+        const month = dateObject.getUTCMonth() + 1;
+        const year = dateObject.getUTCFullYear();
+
+        const formattedDate = `${day < 10 ? "0" : ""}${day}-${
+          month < 10 ? "0" : ""
+        }${month}-${year}`;
+
+        return { ...survey, created_at: formattedDate };
+      });
+
+      setSurveysData(formattedData);
     } catch (error) {
       // Handle error if needed
       console.error("Error fetching data:", error);
@@ -46,66 +85,63 @@ export default function PanelCuestionario() {
     fetchData();
   }, []); // Fetch data when the component mounts
 
-  const renderCell = React.useCallback((survey, columnKey) => {
-    const cellValue = survey[columnKey];
+  const renderCell = React.useCallback(
+    (survey, columnKey) => {
+      const cellValue = survey[columnKey];
 
-    switch (columnKey) {
-      case "title":
-        return (
-          <div>
-            <p className="text-bold text-sm">{cellValue}</p>
-          </div>
-        );
-      case "description":
-        return (
-          <div>
-            <p className="text-bold text-sm capitalize">{cellValue}</p>
-          </div>
-        );
-      case "estatus":
-        return (
-          <Chip
-            className="capitalize"
-            color={statusColorMap[survey.estatus]}
-            size="sm"
-            variant="flat"
-          >
-            {cellValue}
-          </Chip>
-        );
-      case "actions":
-        return (
-          <div className="relative flex items-center gap-2">
-            <Tooltip content="Details">
-              <Link
-                href="#"
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
-              >
-                <EyeIcon />
-              </Link>
-            </Tooltip>
-            <Tooltip content="Edit user">
-              <Link
-                href="#"
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
-              >
-                <EditIcon />
-              </Link>
-            </Tooltip>
-            <Tooltip color="danger" content="Delete user">
-              <Link
-                href="#"
-                className="text-lg text-default-400 cursor-pointer active:opacity-50"
-              >
-                <DeleteIcon />
-              </Link>
-            </Tooltip>
-          </div>
-        );
-      default:
-        return cellValue;
-    }
-  }, []);
+      switch (columnKey) {
+        case "title":
+          return (
+            <div>
+              <p className="text-bold text-sm">{cellValue}</p>
+            </div>
+          );
+        case "description":
+          return (
+            <div>
+              <p className="text-bold text-sm capitalize">{cellValue}</p>
+            </div>
+          );
+        case "estatus":
+          return (
+            <Chip
+              className="capitalize"
+              color={statusColorMap[survey.estatus]}
+              size="sm"
+              variant="flat"
+            >
+              {cellValue}
+            </Chip>
+          );
+          case "actions":
+            return (
+              <div className="relative flex items-center gap-2">
+                <Tooltip content="Detalles">
+                  <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                    <EyeIcon />
+                  </span>
+                </Tooltip>
+                <Tooltip content="Editar cuestionario">
+                  <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                    <EditIcon />
+                  </span>
+                </Tooltip>
+                <Tooltip color="danger" content="Eliminar cuestionario">
+                  <span
+                    onClick={() => handleDeleteClick(survey.survey_id)}
+                    className="text-lg text-danger cursor-pointer active:opacity-50"
+                  >
+                    <DeleteIcon />
+                  </span>
+                </Tooltip>
+              </div>
+            );
+        default:
+          return cellValue;
+      }
+    },
+    [handleDeleteClick]
+  );
 
   return (
     <Table aria-label="Example table with custom cells">

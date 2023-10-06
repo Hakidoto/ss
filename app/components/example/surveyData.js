@@ -1,6 +1,6 @@
-const { PrismaClient } = require('@prisma/client')
+const { PrismaClient } = require("@prisma/client");
 
-const prisma = new PrismaClient()
+const prisma = new PrismaClient();
 
 export const getAllSurveys = async () => {
   try {
@@ -23,6 +23,19 @@ export const createSurvey = async (surveyData) => {
     if (error.code === "P2002") {
       throw new Error("Survey with the same title already exists");
     }
+    throw error;
+  }
+};
+
+export const deleteSurvey = async (id) => {
+  try {
+    const deletedSurvey = await prisma.surveys.delete({
+      where: { survey_id: parseInt(id) }, // Assuming ID is an integer
+    });
+
+    return deletedSurvey;
+  } catch (error) {
+    console.error("Error deleting survey:", error);
     throw error;
   }
 };
