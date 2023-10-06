@@ -13,11 +13,25 @@ import {
   Tooltip,
   getKeyValue,
   Link,
+  Skeleton,
+  Button,
+  useDisclosure,
+  Modal,
+  ModalContent,
+  ModalHeader,
+  ModalBody,
+  ModalFooter,
+  Input,
+  Checkbox,
+  Select,
+  SelectItem,
 } from "@nextui-org/react";
 import { EditIcon } from "../components/icons/EditIcon";
 import { DeleteIcon } from "../components/icons/DeleteIcon";
 import { EyeIcon } from "../components/icons/EyeIcon";
-import { columns } from "../components/example/data";
+import { columns, selectorEstatus } from "../components/example/data";
+import { MailIcon } from "../components/icons/MailIcon";
+import { LockIcon } from "../components/icons/LockIcon";
 
 const statusColorMap = {
   activo: "success",
@@ -30,7 +44,47 @@ const getSurveys = cache(() =>
 );
 
 export default function PanelCuestionario() {
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [isLoaded, setIsLoaded] = React.useState(false);
   const [surveysData, setSurveysData] = useState([]);
+  const [nombreEncuesta, setNombreEncuesta] = useState('');
+  const [descripcion, setDescripcion] = useState('');
+  const [estatusEncuesta, setEstatusEncuesta] = useState('');
+
+  const toggleLoad = () => {
+    setIsLoaded(!isLoaded);
+  };
+
+  const handleCrear = async () => {
+    try {
+      // Prepare the data to be sent in the request body
+      const data = {
+        title: nombreEncuesta,
+        description: descripcion,
+        estatus: estatusEncuesta,
+      };
+
+      // Send a POST request to the API
+      const response = await fetch('/api/cuestionario', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(data),
+      });
+
+      // Check if the request was successful
+      if (response.ok) {
+        // Handle success
+        console.log('Cuestionario created successfully');
+      } else {
+        // Handle error
+        console.error('Error creating cuestionario:', response.statusText);
+      }
+    } catch (error) {
+      console.error('Error:', error.message);
+    }
+  };
 
   const handleDeleteClick = React.useCallback((id) => {
     fetch(`/api/cuestionario/delete/survey/${id}`, {
@@ -42,7 +96,9 @@ export default function PanelCuestionario() {
       .then((response) => {
         if (response.ok) {
           // Remove the deleted survey from the state
-          setSurveysData((prevSurveys) => prevSurveys.filter((survey) => survey.survey_id !== id));
+          setSurveysData((prevSurveys) =>
+            prevSurveys.filter((survey) => survey.survey_id !== id)
+          );
           console.log("Eliminacion exitosa");
         } else {
           console.log("Error");
@@ -83,6 +139,7 @@ export default function PanelCuestionario() {
 
   useEffect(() => {
     fetchData();
+    toggleLoad();
   }, []); // Fetch data when the component mounts
 
   const renderCell = React.useCallback(
@@ -113,29 +170,29 @@ export default function PanelCuestionario() {
               {cellValue}
             </Chip>
           );
-          case "actions":
-            return (
-              <div className="relative flex items-center gap-2">
-                <Tooltip content="Detalles">
-                  <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                    <EyeIcon />
-                  </span>
-                </Tooltip>
-                <Tooltip content="Editar cuestionario">
-                  <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
-                    <EditIcon />
-                  </span>
-                </Tooltip>
-                <Tooltip color="danger" content="Eliminar cuestionario">
-                  <span
-                    onClick={() => handleDeleteClick(survey.survey_id)}
-                    className="text-lg text-danger cursor-pointer active:opacity-50"
-                  >
-                    <DeleteIcon />
-                  </span>
-                </Tooltip>
-              </div>
-            );
+        case "actions":
+          return (
+            <div className="relative flex items-center gap-2">
+              <Tooltip content="Detalles">
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EyeIcon />
+                </span>
+              </Tooltip>
+              <Tooltip content="Editar cuestionario">
+                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                  <EditIcon />
+                </span>
+              </Tooltip>
+              <Tooltip color="danger" content="Eliminar cuestionario">
+                <span
+                  onClick={() => handleDeleteClick(survey.survey_id)}
+                  className="text-lg text-danger cursor-pointer active:opacity-50"
+                >
+                  <DeleteIcon />
+                </span>
+              </Tooltip>
+            </div>
+          );
         default:
           return cellValue;
       }
@@ -144,26 +201,72 @@ export default function PanelCuestionario() {
   );
 
   return (
-    <Table aria-label="Example table with custom cells">
-      <TableHeader columns={columns}>
-        {(column) => (
-          <TableColumn
-            key={column.uid}
-            align={column.uid === "actions" ? "center" : "start"}
-          >
-            {column.name}
-          </TableColumn>
-        )}
-      </TableHeader>
-      <TableBody items={surveysData}>
-        {(survey) => (
-          <TableRow key={survey.survey_id}>
-            {(columnKey) => (
-              <TableCell>{renderCell(survey, columnKey)}</TableCell>
-            )}
-          </TableRow>
-        )}
-      </TableBody>
-    </Table>
+    <Skeleton isLoaded={isLoaded}>
+      <Button onPress={onOpen} className="mb-4" color="primary">
+        Crear encuesta
+      </Button>
+      <Modal backdrop="blur" isOpen={isOpen}  onOpenChange={onOpenChange} isDismissable={false} placement="top">
+        <ModalContent>
+          {(onClose) => (
+            <>
+              <ModalHeader className="flex flex-col gap-1">
+                Crear encuesta
+              </ModalHeader>
+              <ModalBody>
+                <Input
+                  autoFocus
+                  label="Nombre de la encuesta"
+                  placeholder="Ingresa el nombre"
+                  variant="bordered"
+                  onChange={(e) => setNombreEncuesta(e.target.value)}
+                />
+                <Input
+                  label="Descripcion"
+                  placeholder="Ingresa una descripcion"
+                  variant="bordered"
+                  onChange={(e) => setDescripcion(e.target.value)}
+                />
+                <Select label="Estatus de la encuesta" onChange={(e) => setEstatusEncuesta(e.target.value)}>
+                  {selectorEstatus.map((estatus) => (
+                    <SelectItem key={estatus.value} value={estatus.value}>
+                      {estatus.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </ModalBody>
+              <ModalFooter>
+                <Button color="danger" variant="flat" onPress={onClose}>
+                  Cerrar
+                </Button>
+                <Button color="primary" onPress={handleCrear}>
+                  Crear
+                </Button>
+              </ModalFooter>
+            </>
+          )}
+        </ModalContent>
+      </Modal>
+      <Table aria-label="Example table with custom cells">
+        <TableHeader columns={columns}>
+          {(column) => (
+            <TableColumn
+              key={column.uid}
+              align={column.uid === "actions" ? "center" : "start"}
+            >
+              {column.name}
+            </TableColumn>
+          )}
+        </TableHeader>
+        <TableBody items={surveysData}>
+          {(survey) => (
+            <TableRow key={survey.survey_id}>
+              {(columnKey) => (
+                <TableCell>{renderCell(survey, columnKey)}</TableCell>
+              )}
+            </TableRow>
+          )}
+        </TableBody>
+      </Table>
+    </Skeleton>
   );
 }
