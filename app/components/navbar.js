@@ -23,9 +23,9 @@ export default function NavbarTRC() {
   const pathname = usePathname();
   const menuItems = [
     { nombre: "Inicio", link: "/" },
-    { nombre: "Cuestionarios", link: "/cuestionario" },
-    { nombre: "Manuales", link: "/manuales" },
-    { nombre: "Administracion", link: "/administracion" },
+    { nombre: "Cuestionarios", link: "cuestionario" },
+    { nombre: "Manuales", link: "manuales" },
+    { nombre: "Administracion", link: "administracion" },
   ];
 
   return (
@@ -54,7 +54,8 @@ export default function NavbarTRC() {
         </NavbarBrand>
         <NavbarContent className="hidden sm:flex gap-3">
           {menuItems.map((item, index) => {
-            const isActive = pathname === item.link;
+            const pathParts = pathname.split('/');
+            const isActive = pathParts[1] === item.link || (item.link === '/' && pathname === '/');
             return (
               <NavbarItem key={`${item}-${index}`} isActive={isActive}>
                 <Link color={isActive ? "danger" : "foreground"} href={item.link}>
