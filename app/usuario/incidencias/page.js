@@ -2,42 +2,36 @@
 
 import React from 'react'
 import { Table, Card, CardHeader, CardBody, Tabs, Tab } from '@nextui-org/react'
-import style from "./components/style/CardU.module.css"
-import PersonalData from './components/PersonalData'
-import ContactData from './components/ContactData';
-import StatusData from './components/StatusData';
-import WorkExperience from './components/WorkExperience';
+//import style from "../styles/FichaUsuario.module.css"
+import style from "../components/style/CardU.module.css"
+import Faltas from './components/Faltas';
+import Incapacidades from './components/Incapacidades';
+import Procesos from './components/Procesos';
 
 export default function Page() {
   let tabs = [
     {
-      id: "personalData",
-      label: "Datos personales",
+      id: "faltas",
+      label: "Faltas injustificadas",
     },
     {
-      id: "contactData",
-      label: "Datos de contacto",
+      id: "incapacidades",
+      label: "Incapacidades",
     },
     {
-      id: "employmentStatus",
-      label: "Estatus laboral",
-    },
-    {
-      id: "workExperience",
-      label: "Experiencia laboral",
+      id: "procAdministrativos",
+      label: "Procedimientos administrativos",
     },
   ];
 
   const renderTabContent = (item) => {
     switch (item.id) {
-      case "personalData":
-        return <PersonalData />;
-      case "contactData":
-        return <ContactData />;
-      case "employmentStatus":
-        return <StatusData />;
-      case "workExperience":
-        return <WorkExperience />;
+      case "faltas":
+        return <Faltas/> ;
+      case "incapacidades":
+          return <Incapacidades/> ;
+      case "procAdministrativos":
+        return <Procesos/> ;
       default:
         return null;
     }

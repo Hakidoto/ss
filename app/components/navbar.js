@@ -16,10 +16,13 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  DropdownSection,
 } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
-
+import { useRouter } from 'next/navigation';
+import style from "./styles/navbar.module.css"
 export default function NavbarTRC() {
+  const router = useRouter();
   const pathname = usePathname();
   const menuItems = [
     { nombre: "Inicio", link: "/" },
@@ -27,6 +30,7 @@ export default function NavbarTRC() {
     { nombre: "Manuales", link: "manuales" },
     { nombre: "Administracion", link: "administracion" },
   ];
+
 
   return (
     <Navbar
@@ -57,10 +61,13 @@ export default function NavbarTRC() {
             const pathParts = pathname.split('/');
             const isActive = pathParts[1] === item.link || (item.link === '/' && pathname === '/');
             return (
-              <NavbarItem key={`${item}-${index}`} isActive={isActive}>
-                <Link color={isActive ? "danger" : "foreground"} href={item.link}>
+              <NavbarItem key={`${item}-${index}`} isActive={isActive} className={style.hov}>
+                <button
+                  onClick={() => router.push(item.link)} // Utiliza router.push para navegar
+                  className={isActive ? 'text-danger mx-2' : `text-foreground ${style.hov} mx-2 `} // Ajusta las clases según el estado activo
+                >
                   {item.nombre}
-                </Link>
+                </button>
               </NavbarItem>
             );
           })}
@@ -80,8 +87,8 @@ export default function NavbarTRC() {
           size="sm"
           type="search"
         />
-        <Dropdown placement="bottom-end">
-          <DropdownTrigger>
+        <Dropdown placement="bottom-end" >
+          <DropdownTrigger >
             <Avatar
               isBordered
               as="button"
@@ -92,19 +99,33 @@ export default function NavbarTRC() {
               src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
             />
           </DropdownTrigger>
-          <DropdownMenu aria-label="Profile Actions" variant="flat">
+          <DropdownMenu aria-label="Profile Actions" variant="flat" >
             <DropdownItem key="profile" className="h-14 gap-2">
-              <p className="font-semibold">Signed in as</p>
-              <p className="font-semibold">zoey@example.com</p>
+              <p className="font-semibold">Sesion de </p>
+              <p className="font-semibold">prueba@prisma.com</p>
             </DropdownItem>
-            <DropdownItem key="settings">My Settings</DropdownItem>
-            <DropdownItem key="team_settings">Team Settings</DropdownItem>
-            <DropdownItem key="analytics">Analytics</DropdownItem>
-            <DropdownItem key="system">System</DropdownItem>
-            <DropdownItem key="configurations">Configurations</DropdownItem>
-            <DropdownItem key="help_and_feedback">Help & Feedback</DropdownItem>
+            <DropdownItem key="settings" color="secondary"  onClick={()=>router.push('/usuario')}>
+              <Link color="danger" onClick={()=>router.push('/usuario')}>
+                Datos personales
+              </Link>
+            </DropdownItem>
+            <DropdownItem key="team_settings" color="secondary" onClick={()=>router.push('/usuario/certificados')}>
+              <Link color="danger" onClick={()=>router.push('/usuario/certificados')}>
+                Formacion y educacion continua
+              </Link>
+            </DropdownItem>
+            <DropdownItem key="analytics" color="secondary" onClick={()=>router.push('/usuario/incidencias')}>
+              <Link color="danger"  onClick={()=>router.push('/usuario/incidencias')}>
+                Incidencias
+              </Link>
+            </DropdownItem>
+            <DropdownSection />
+            <DropdownItem key="system">Sistema</DropdownItem>
+            <DropdownItem key="configurations">Configuracion</DropdownItem>
+            <DropdownItem key="help_and_feedback">Ayuda & Comentarios</DropdownItem>
+            <DropdownSection />
             <DropdownItem key="logout" color="danger">
-              Log Out
+              Cerrar sesion
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
