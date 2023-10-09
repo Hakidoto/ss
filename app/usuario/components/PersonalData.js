@@ -8,19 +8,19 @@ const PersonalData = () => {
       <div className={`flex justify-between h-full ${style.prueba}`}>
         <div className='w-1/2'>
           <div className=''>
-            <p className="text-red-500 font-bold mb-2">Nombre:</p>
+            <p className={`font-bold mb-2  ${style.rojo}`}>Nombre:</p>
             <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
               Juan Pancracio Apellido Si.
             </p>
           </div>
           <div className=''>
-            <p className="text-red-500 font-bold mb-2">Direccion:</p>
+            <p className={`font-bold mb-2  ${style.rojo}`}>Direccion:</p>
             <p className={`rounded-md mb-3 pl-3 ${style.labelF}`}>
               Calle s/n Colonia ficticia Estado fictisio Mexico
             </p>
           </div>
           <div className=''>
-            <p className="text-red-500 font-bold mb-2">Edad:</p>
+            <p className={`font-bold mb-2  ${style.rojo}`}>Edad:</p>
             <p className={`rounded-md mb-3 pl-3 ${style.labelF}`}>30</p>
           </div>
         </div>

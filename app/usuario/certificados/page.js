@@ -2,42 +2,37 @@
 
 import React from 'react'
 import { Table, Card, CardHeader, CardBody, Tabs, Tab } from '@nextui-org/react'
-import style from "./components/style/CardU.module.css"
-import PersonalData from './components/PersonalData'
-import ContactData from './components/ContactData';
-import StatusData from './components/StatusData';
-import WorkExperience from './components/WorkExperience';
+import CardU from '../components/CardU'
+//import style from "../styles/FichaUsuario.module.css"
+import style from "../components/style/CardU.module.css"
+import Cursos from './components/Cursos';
+import Certificaciones from './components/Certificaciones';
+import Lenguas from './components/Lenguas';
 
 export default function Page() {
   let tabs = [
     {
-      id: "personalData",
-      label: "Datos personales",
+      id: "cursos",
+      label: "Cursos",
     },
     {
-      id: "contactData",
-      label: "Datos de contacto",
+      id: "certificaciones",
+      label: "Certificaciones",
     },
     {
-      id: "employmentStatus",
-      label: "Estatus laboral",
-    },
-    {
-      id: "workExperience",
-      label: "Experiencia laboral",
+      id: "lenguas",
+      label: "Lenguas",
     },
   ];
 
   const renderTabContent = (item) => {
     switch (item.id) {
-      case "personalData":
-        return <PersonalData />;
-      case "contactData":
-        return <ContactData />;
-      case "employmentStatus":
-        return <StatusData />;
-      case "workExperience":
-        return <WorkExperience />;
+      case "cursos":
+        return <Cursos/>;
+      case "certificaciones":
+        return <Certificaciones/>;
+      case "lenguas":
+        return <Lenguas/>;    
       default:
         return null;
     }
