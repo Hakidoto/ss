@@ -16,11 +16,15 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Switch,
   DropdownSection,
 } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
-import { useRouter } from 'next/navigation';
-import style from "./styles/navbar.module.css"
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { SunIcon } from "./icons/SunIcon";
+import { MoonIcon } from "./icons/MoonIcon";
+import style from "./styles/navbar.module.css";
 export default function NavbarTRC() {
   const router = useRouter();
   const pathname = usePathname();
@@ -31,6 +35,12 @@ export default function NavbarTRC() {
     { nombre: "Administracion", link: "administracion" },
   ];
 
+  const { theme, setTheme } = useTheme();
+  const isSelected = theme === "dark";
+
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
 
   return (
     <Navbar
@@ -58,13 +68,23 @@ export default function NavbarTRC() {
         </NavbarBrand>
         <NavbarContent className="hidden sm:flex gap-3">
           {menuItems.map((item, index) => {
-            const pathParts = pathname.split('/');
-            const isActive = pathParts[1] === item.link || (item.link === '/' && pathname === '/');
+            const pathParts = pathname.split("/");
+            const isActive =
+              pathParts[1] === item.link ||
+              (item.link === "/" && pathname === "/");
             return (
-              <NavbarItem key={`${item}-${index}`} isActive={isActive} className={style.hov}>
+              <NavbarItem
+                key={`${item}-${index}`}
+                isActive={isActive}
+                className={style.hov}
+              >
                 <button
                   onClick={() => router.push(item.link)} // Utiliza router.push para navegar
-                  className={isActive ? 'text-danger mx-2' : `text-foreground ${style.hov} mx-2 `} // Ajusta las clases según el estado activo
+                  className={
+                    isActive
+                      ? "text-danger mx-2"
+                      : `text-foreground ${style.hov} mx-2 `
+                  } // Ajusta las clases según el estado activo
                 >
                   {item.nombre}
                 </button>
@@ -87,8 +107,8 @@ export default function NavbarTRC() {
           size="sm"
           type="search"
         />
-        <Dropdown placement="bottom-end" >
-          <DropdownTrigger >
+        <Dropdown placement="bottom-end">
+          <DropdownTrigger>
             <Avatar
               isBordered
               as="button"
@@ -99,30 +119,62 @@ export default function NavbarTRC() {
               src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
             />
           </DropdownTrigger>
-          <DropdownMenu aria-label="Profile Actions" variant="flat" >
+          <DropdownMenu aria-label="Profile Actions" variant="flat">
             <DropdownItem key="profile" className="h-14 gap-2">
               <p className="font-semibold">Sesion de </p>
               <p className="font-semibold">prueba@prisma.com</p>
             </DropdownItem>
-            <DropdownItem key="settings" color="secondary"  onClick={()=>router.push('/usuario')}>
-              <Link color="danger" onClick={()=>router.push('/usuario')}>
-                Datos personales
-              </Link>
+            <DropdownSection showDivider title="Perfil">
+              <DropdownItem
+                key="settings"
+                color="secondary"
+                onClick={() => router.push("/usuario")}
+              >
+                <Link
+                  color="foreground"
+                  onClick={() => router.push("/usuario")}
+                ></Link>
+                <span>Datos personales</span>
+              </DropdownItem>
+              <DropdownItem
+                key="team_settings"
+                color="secondary"
+                onClick={() => router.push("/usuario/certificados")}
+              >
+                <Link
+                  color="foreground"
+                  onClick={() => router.push("/usuario/certificados")}
+                ></Link>
+                <span>Formacion y educacion continua</span>
+              </DropdownItem>
+              <DropdownItem
+                key="analytics"
+                color="secondary"
+                onClick={() => router.push("/usuario/incidencias")}
+              >
+                <Link
+                  color="foreground"
+                  onClick={() => router.push("/usuario/incidencias")}
+                ></Link>
+                <span>Incidencias</span>
+              </DropdownItem>
+            </DropdownSection>
+            <DropdownSection title="Sistema" />
+            <DropdownItem className="flex items-center" key="theme_switch">
+              <Switch
+                startContent={<MoonIcon />}
+                endContent={<SunIcon />}
+                size="sm"
+                isSelected={isSelected}
+                onValueChange={toggleTheme}
+              >
+                <span>{theme === "dark" ? "Modo Oscuro" : "Modo Claro"}</span>
+              </Switch>
             </DropdownItem>
-            <DropdownItem key="team_settings" color="secondary" onClick={()=>router.push('/usuario/certificados')}>
-              <Link color="danger" onClick={()=>router.push('/usuario/certificados')}>
-                Formacion y educacion continua
-              </Link>
-            </DropdownItem>
-            <DropdownItem key="analytics" color="secondary" onClick={()=>router.push('/usuario/incidencias')}>
-              <Link color="danger"  onClick={()=>router.push('/usuario/incidencias')}>
-                Incidencias
-              </Link>
-            </DropdownItem>
-            <DropdownSection />
-            <DropdownItem key="system">Sistema</DropdownItem>
             <DropdownItem key="configurations">Configuracion</DropdownItem>
-            <DropdownItem key="help_and_feedback">Ayuda & Comentarios</DropdownItem>
+            <DropdownItem key="help_and_feedback">
+              Ayuda & Comentarios
+            </DropdownItem>
             <DropdownSection />
             <DropdownItem key="logout" color="danger">
               Cerrar sesion
