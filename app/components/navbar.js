@@ -16,21 +16,32 @@ import {
   DropdownTrigger,
   DropdownMenu,
   DropdownItem,
+  Switch,
   DropdownSection,
 } from "@nextui-org/react";
+import NextLink from "next/link";
 import { usePathname } from "next/navigation";
-import { useRouter } from 'next/navigation';
-import style from "./styles/navbar.module.css"
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { SunIcon } from "./icons/SunIcon";
+import { MoonIcon } from "./icons/MoonIcon";
+import style from "./styles/navbar.module.css";
 export default function NavbarTRC() {
   const router = useRouter();
   const pathname = usePathname();
   const menuItems = [
     { nombre: "Inicio", link: "/" },
-    { nombre: "Cuestionarios", link: "cuestionario" },
-    { nombre: "Manuales", link: "manuales" },
-    { nombre: "Administracion", link: "administracion" },
+    { nombre: "Cuestionarios", link: "/cuestionario" },
+    { nombre: "Manuales", link: "/manuales" },
+    { nombre: "Administracion", link: "/administracion" },
   ];
 
+  const { theme, setTheme } = useTheme();
+  const isSelected = theme === "dark";
+
+  const toggleTheme = () => {
+    setTheme(theme === "light" ? "dark" : "light");
+  };
 
   return (
     <Navbar
@@ -58,16 +69,19 @@ export default function NavbarTRC() {
         </NavbarBrand>
         <NavbarContent className="hidden sm:flex gap-3">
           {menuItems.map((item, index) => {
-            const pathParts = pathname.split('/');
-            const isActive = pathParts[1] === item.link || (item.link === '/' && pathname === '/');
+            const pathParts = pathname.split("/");
+            const isActive =
+              pathParts[1] === item.link ||
+              (item.link === "/" && pathname === "/");
             return (
-              <NavbarItem key={`${item}-${index}`} isActive={isActive} className={style.hov}>
-                <button
-                  onClick={() => router.push(item.link)} // Utiliza router.push para navegar
-                  className={isActive ? 'text-danger mx-2' : `text-foreground ${style.hov} mx-2 `} // Ajusta las clases según el estado activo
+              <NavbarItem key={`${item}-${index}`} isActive={isActive}>
+                <Link
+                  color={isActive ? "danger" : "foreground"}
+                  href={item.link}
+                  as={NextLink}
                 >
                   {item.nombre}
-                </button>
+                </Link>
               </NavbarItem>
             );
           })}
@@ -104,25 +118,50 @@ export default function NavbarTRC() {
               <p className="font-semibold">Sesion de </p>
               <p className="font-semibold">prueba@prisma.com</p>
             </DropdownItem>
-            <DropdownItem key="settings" color="secondary"  onClick={()=>router.push('/usuario')}>
-              <Link color="danger" onClick={()=>router.push('/usuario')}>
+            <DropdownSection showDivider title="Perfil">
+              <DropdownItem
+                key="user_profile"
+                as={NextLink}
+                color="secondary"
+                href="/usuario"
+              >
                 Datos personales
-              </Link>
-            </DropdownItem>
-            <DropdownItem key="team_settings" color="secondary" onClick={()=>router.push('/usuario/certificados')}>
-              <Link color="danger" onClick={()=>router.push('/usuario/certificados')}>
+              </DropdownItem>
+              <DropdownItem
+                key="user_certifications"
+                as={NextLink}
+                color="secondary"
+                href="/usuario/certificados"
+              >
                 Formacion y educacion continua
-              </Link>
-            </DropdownItem>
-            <DropdownItem key="analytics" color="secondary" onClick={()=>router.push('/usuario/incidencias')}>
-              <Link color="danger"  onClick={()=>router.push('/usuario/incidencias')}>
+              </DropdownItem>
+              <DropdownItem
+                key="user_reports"
+                as={NextLink}
+                color="secondary"
+                href="/usuario/incidencias"
+              >
                 Incidencias
-              </Link>
+              </DropdownItem>
+            </DropdownSection>
+            <DropdownSection title="Sistema" />
+            <DropdownItem className="flex items-center" key="theme_switch">
+              <Switch
+                startContent={<MoonIcon />}
+                endContent={<SunIcon />}
+                size="sm"
+                isSelected={isSelected}
+                onValueChange={toggleTheme}
+              >
+                <span>{theme === "dark" ? "Modo Oscuro" : "Modo Claro"}</span>
+              </Switch>
             </DropdownItem>
-            <DropdownSection />
-            <DropdownItem key="system">Sistema</DropdownItem>
-            <DropdownItem key="configurations">Configuracion</DropdownItem>
-            <DropdownItem key="help_and_feedback">Ayuda & Comentarios</DropdownItem>
+            <DropdownItem key="configurations" color="secondary">
+              Configuracion
+            </DropdownItem>
+            <DropdownItem key="help_and_feedback" color="secondary">
+              Ayuda & Comentarios
+            </DropdownItem>
             <DropdownSection />
             <DropdownItem key="logout" color="danger">
               Cerrar sesion
