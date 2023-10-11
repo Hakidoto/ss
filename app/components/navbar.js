@@ -19,6 +19,7 @@ import {
   Switch,
   DropdownSection,
 } from "@nextui-org/react";
+import NextLink from "next/link";
 import { usePathname } from "next/navigation";
 import { useRouter } from "next/navigation";
 import { useTheme } from "next-themes";
@@ -30,9 +31,9 @@ export default function NavbarTRC() {
   const pathname = usePathname();
   const menuItems = [
     { nombre: "Inicio", link: "/" },
-    { nombre: "Cuestionarios", link: "cuestionario" },
-    { nombre: "Manuales", link: "manuales" },
-    { nombre: "Administracion", link: "administracion" },
+    { nombre: "Cuestionarios", link: "/cuestionario" },
+    { nombre: "Manuales", link: "/manuales" },
+    { nombre: "Administracion", link: "/administracion" },
   ];
 
   const { theme, setTheme } = useTheme();
@@ -73,21 +74,14 @@ export default function NavbarTRC() {
               pathParts[1] === item.link ||
               (item.link === "/" && pathname === "/");
             return (
-              <NavbarItem
-                key={`${item}-${index}`}
-                isActive={isActive}
-                className={style.hov}
-              >
-                <button
-                  onClick={() => router.push(item.link)} // Utiliza router.push para navegar
-                  className={
-                    isActive
-                      ? "text-danger mx-2"
-                      : `text-foreground ${style.hov} mx-2 `
-                  } // Ajusta las clases según el estado activo
+              <NavbarItem key={`${item}-${index}`} isActive={isActive}>
+                <Link
+                  color={isActive ? "danger" : "foreground"}
+                  href={item.link}
+                  as={NextLink}
                 >
                   {item.nombre}
-                </button>
+                </Link>
               </NavbarItem>
             );
           })}
@@ -126,37 +120,28 @@ export default function NavbarTRC() {
             </DropdownItem>
             <DropdownSection showDivider title="Perfil">
               <DropdownItem
-                key="settings"
+                key="user_profile"
+                as={NextLink}
                 color="secondary"
-                onClick={() => router.push("/usuario")}
+                href="/usuario"
               >
-                <Link
-                  color="foreground"
-                  onClick={() => router.push("/usuario")}
-                ></Link>
-                <span>Datos personales</span>
+                Datos personales
               </DropdownItem>
               <DropdownItem
-                key="team_settings"
+                key="user_certifications"
+                as={NextLink}
                 color="secondary"
-                onClick={() => router.push("/usuario/certificados")}
+                href="/usuario/certificados"
               >
-                <Link
-                  color="foreground"
-                  onClick={() => router.push("/usuario/certificados")}
-                ></Link>
-                <span>Formacion y educacion continua</span>
+                Formacion y educacion continua
               </DropdownItem>
               <DropdownItem
-                key="analytics"
+                key="user_reports"
+                as={NextLink}
                 color="secondary"
-                onClick={() => router.push("/usuario/incidencias")}
+                href="/usuario/incidencias"
               >
-                <Link
-                  color="foreground"
-                  onClick={() => router.push("/usuario/incidencias")}
-                ></Link>
-                <span>Incidencias</span>
+                Incidencias
               </DropdownItem>
             </DropdownSection>
             <DropdownSection title="Sistema" />
@@ -171,8 +156,10 @@ export default function NavbarTRC() {
                 <span>{theme === "dark" ? "Modo Oscuro" : "Modo Claro"}</span>
               </Switch>
             </DropdownItem>
-            <DropdownItem key="configurations">Configuracion</DropdownItem>
-            <DropdownItem key="help_and_feedback">
+            <DropdownItem key="configurations" color="secondary">
+              Configuracion
+            </DropdownItem>
+            <DropdownItem key="help_and_feedback" color="secondary">
               Ayuda & Comentarios
             </DropdownItem>
             <DropdownSection />
