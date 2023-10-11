@@ -44,20 +44,15 @@ const getSurveys = cache(() =>
 );
 
 export default function PanelCuestionario() {
-  const [isOpen, setIsOpen] = useState(false);
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [surveysData, setSurveysData] = useState([]);
-  const [nombreEncuesta, setNombreEncuesta] = useState('');
-  const [descripcion, setDescripcion] = useState('');
-  const [estatusEncuesta, setEstatusEncuesta] = useState('');
+  const [nombreEncuesta, setNombreEncuesta] = useState("");
+  const [descripcion, setDescripcion] = useState("");
+  const [estatusEncuesta, setEstatusEncuesta] = useState("");
+  const {isOpen, onOpen, onOpenChange} = useDisclosure();
 
-  const onOpenChange = () => {
-    setIsOpen(!isOpen);
-  };
+  
 
-  const handleClose = () => {
-    setIsOpen(false);
-  };
 
   const toggleLoad = () => {
     setIsLoaded(!isLoaded);
@@ -73,29 +68,29 @@ export default function PanelCuestionario() {
       };
 
       // Send a POST request to the API
-      const response = await fetch('/api/cuestionario', {
-        method: 'POST',
+      const response = await fetch("/api/cuestionario", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
+          "Content-Type": "application/json",
         },
         body: JSON.stringify(data),
       });
 
       // Check if the request was successful
       if (response.ok) {
-       // Assuming the API returns the created survey data
-       const createdSurvey = await response.json();
+        // Assuming the API returns the created survey data
+        const createdSurvey = await response.json();
 
-       // Add the new survey to the state
-       setSurveysData((prevSurveys) => [...prevSurveys, createdSurvey]);
-       console.log('Cuestionario creado exitosamente');
-       handleClose();
+        // Add the new survey to the state
+        setSurveysData((prevSurveys) => [...prevSurveys, createdSurvey]);
+        console.log("Cuestionario creado exitosamente");
+        onOpenChange();
       } else {
         // Handle error
-        console.error('Error creating cuestionario:', response.statusText);
+        console.error("Error creating cuestionario:", response.statusText);
       }
     } catch (error) {
-      console.error('Error:', error.message);
+      console.error("Error:", error.message);
     }
   };
 
@@ -214,11 +209,14 @@ export default function PanelCuestionario() {
   );
 
   return (
-    <Skeleton isLoaded={isLoaded}>
-      <Button onPress={onOpenChange} className="mb-4" color="primary">
-        Crear encuesta
-      </Button>
-      <Modal backdrop="blur" isOpen={isOpen} isDismissable={false} placement="top">
+    <div>
+      <Modal
+        backdrop="blur"
+        isOpen={isOpen} 
+        onOpenChange={onOpenChange}
+        isDismissable={false}
+        placement="top"
+      >
         <ModalContent>
           {(onClose) => (
             <>
@@ -239,7 +237,10 @@ export default function PanelCuestionario() {
                   variant="bordered"
                   onChange={(e) => setDescripcion(e.target.value)}
                 />
-                <Select label="Estatus de la encuesta" onChange={(e) => setEstatusEncuesta(e.target.value)}>
+                <Select
+                  label="Estatus de la encuesta"
+                  onChange={(e) => setEstatusEncuesta(e.target.value)}
+                >
                   {selectorEstatus.map((estatus) => (
                     <SelectItem key={estatus.value} value={estatus.value}>
                       {estatus.label}
@@ -259,27 +260,37 @@ export default function PanelCuestionario() {
           )}
         </ModalContent>
       </Modal>
-      <Table aria-label="Example table with custom cells">
-        <TableHeader columns={columns}>
-          {(column) => (
-            <TableColumn
-              key={column.uid}
-              align={column.uid === "actions" ? "center" : "start"}
-            >
-              {column.name}
-            </TableColumn>
-          )}
-        </TableHeader>
-        <TableBody items={surveysData}>
-          {(survey) => (
-            <TableRow key={survey.survey_id}>
-              {(columnKey) => (
-                <TableCell>{renderCell(survey, columnKey)}</TableCell>
-              )}
-            </TableRow>
-          )}
-        </TableBody>
-      </Table>
-    </Skeleton>
+      <Button
+        onPress={onOpenChange}
+        isDisabled={!isLoaded}
+        className="mb-4 ml-4"
+        color="primary"
+      >
+        Crear encuesta
+      </Button>
+      <Skeleton isLoaded={isLoaded} className="rounded-2xl">
+        <Table aria-label="Example table with custom cells">
+          <TableHeader columns={columns}>
+            {(column) => (
+              <TableColumn
+                key={column.uid}
+                align={column.uid === "actions" ? "center" : "start"}
+              >
+                {column.name}
+              </TableColumn>
+            )}
+          </TableHeader>
+          <TableBody items={surveysData}>
+            {(survey) => (
+              <TableRow key={survey.survey_id}>
+                {(columnKey) => (
+                  <TableCell>{renderCell(survey, columnKey)}</TableCell>
+                )}
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </Skeleton>
+    </div>
   );
 }
