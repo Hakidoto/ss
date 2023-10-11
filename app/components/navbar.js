@@ -70,13 +70,18 @@ export default function NavbarTRC() {
         <NavbarContent className="hidden sm:flex gap-3">
           {menuItems.map((item, index) => {
             const pathParts = pathname.split("/");
+            const pathLink = "/" + pathParts[1];
             const isActive =
-              pathParts[1] === item.link ||
+            pathLink === item.link ||
               (item.link === "/" && pathname === "/");
             return (
               <NavbarItem key={`${item}-${index}`} isActive={isActive}>
                 <Link
-                  color={isActive ? "danger" : "foreground"}
+                  className={
+                    isActive
+                      ? "text-danger mx-2"
+                      : `text-foreground ${style.hov} mx-2 `
+                  } // Ajusta las clases según el estado activo
                   href={item.link}
                   as={NextLink}
                 >
