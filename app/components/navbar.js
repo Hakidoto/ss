@@ -72,21 +72,20 @@ export default function NavbarTRC() {
             const pathParts = pathname.split("/");
             const pathLink = "/" + pathParts[1];
             const isActive =
-            pathLink === item.link ||
-              (item.link === "/" && pathname === "/");
+              pathLink === item.link || (item.link === "/" && pathname === "/");
             return (
-              <NavbarItem key={`${item}-${index}`} isActive={isActive}>
-                <Link
-                  className={
-                    isActive
-                      ? "text-danger mx-2"
-                      : `text-foreground ${style.hov} mx-2 `
-                  } // Ajusta las clases según el estado activo
-                  href={item.link}
-                  as={NextLink}
-                >
-                  {item.nombre}
-                </Link>
+              <NavbarItem
+                as={NextLink}
+                href={item.link}
+                key={`${item}-${index}`}
+                isActive={isActive}
+                className={
+                  isActive
+                    ? "text-danger mx-2"
+                    : `text-foreground ${style.hov} mx-2 `
+                } // Ajusta las clases según el estado activo
+              >
+                <span>{item.nombre}</span>
               </NavbarItem>
             );
           })}
