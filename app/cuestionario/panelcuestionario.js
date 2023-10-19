@@ -95,7 +95,7 @@ export default function PanelCuestionario() {
   };
 
   const handleDeleteClick = React.useCallback((id) => {
-    fetch(`/api/cuestionario/delete/survey/${id}`, {
+    fetch(`/api/cuestionario/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -187,9 +187,9 @@ export default function PanelCuestionario() {
                 </span>
               </Tooltip>
               <Tooltip content="Editar cuestionario">
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                <Link href={`/cuestionario/${survey.survey_id}/edit`} className="text-lg text-default-400 cursor-pointer active:opacity-50">
                   <EditIcon />
-                </span>
+                </Link>
               </Tooltip>
               <Tooltip color="danger" content="Eliminar cuestionario">
                 <span

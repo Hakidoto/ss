@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { deleteSurvey } from "@/app/components/example/surveyData";
+const { PrismaClient } = require("@prisma/client");
+
+const prisma = new PrismaClient();
+
 
 export async function DELETE(request, { params }) {
   if (request.method !== "DELETE") {
@@ -8,8 +11,9 @@ export async function DELETE(request, { params }) {
   try {
     const survey_id = params.id;
 
-    const deletedSurvey = await deleteSurvey(survey_id);
-
+    const deletedSurvey = await prisma.surveys.delete({
+      where: { survey_id: parseInt(survey_id) }, // Assuming ID is an integer
+    });
     return new NextResponse(JSON.stringify(deletedSurvey), {
       status: 200,
       headers: { "Content-Type": "application/json" },
