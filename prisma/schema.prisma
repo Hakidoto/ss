@@ -40,3 +40,20 @@ model surveys {
   answers     answers[]
   questions   questions[]
 }
+
+model usrs {
+  id           Int     @id @default(autoincrement())
+  RFC          String? @db.VarChar(13)
+  nombre       String? @db.VarChar(50)
+  edad         String? @db.VarChar(3)
+  direccion    String? @db.VarChar(50)
+  celular      String? @db.VarChar(50)
+  telefono     String? @db.VarChar(50)
+  correo       String? @db.VarChar(50)
+  redSocial    String? @db.VarChar(50)
+  tipoEmpleado String? @db.VarChar(50)
+  contrato     String? @db.VarChar(50)
+  horario      String? @db.VarChar(50)
+  estado       String? @db.VarChar(50)
+  antiguedad   String? @db.VarChar(50)
+}

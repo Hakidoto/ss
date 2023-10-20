@@ -1,14 +1,33 @@
 "use client";
 
-import React from 'react'
-import { Table, Card, CardHeader, CardBody, Tabs, Tab } from '@nextui-org/react'
-import style from "./components/style/CardU.module.css"
-import PersonalData from './components/PersonalData'
+import React, { useEffect, useState } from 'react';
+import { Table, Card, CardHeader, CardBody, Tabs, Tab } from '@nextui-org/react';
+import style from "./components/style/CardU.module.css";
+import PersonalData from './components/PersonalData';
 import ContactData from './components/ContactData';
 import StatusData from './components/StatusData';
 import WorkExperience from './components/WorkExperience';
 
 export default function Page() {
+  const [user, setUser] = useState(null);
+  const [loading, setLoading] = useState(true);
+  
+  async function fetchUserData() {
+    try {
+      const userId = 2; // Reemplaza con el ID del usuario que deseas obtener
+      const response = await fetch(`/api/usuario/${userId}`);
+      if (response.ok) {
+        const data = await response.json();
+        setUser(data);
+        setLoading(false);
+      } else {
+        console.error('Error al obtener datos de la API');
+      }
+    } catch (error) {
+      console.error('Error al conectarse a la API', error);
+    }
+  }
+
   let tabs = [
     {
       id: "personalData",
@@ -28,20 +47,27 @@ export default function Page() {
     },
   ];
 
+  
+
+  useEffect(() => {
+    fetchUserData();
+  }, []);
+
   const renderTabContent = (item) => {
     switch (item.id) {
       case "personalData":
-        return <PersonalData />;
+        return <PersonalData user = {user}/>;
       case "contactData":
-        return <ContactData />;
+        return <ContactData user = {user}/>;
       case "employmentStatus":
-        return <StatusData />;
+        return <StatusData user = {user}/>;
       case "workExperience":
-        return <WorkExperience />;
+        return <WorkExperience user = {user}/>;
       default:
         return null;
     }
   };
+
 
   return (
     <Card className={`mx-auto my-auto ${style.main_card}`}>
