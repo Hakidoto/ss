@@ -22,25 +22,45 @@ const getQuestions = (id) => {
     headers: {
       "Content-Type": "application/json",
     },
-  })
-    .then((res) => {
-      // Check for a successful response (status code 200)
-      if (!res.ok) {
-        throw new Error(`Request failed with status: ${res.status}`);
-      }
-      // Parse the response as JSON
-      return res.json();
-    });
+  }).then((res) => {
+    // Check for a successful response (status code 200)
+    if (!res.ok) {
+      throw new Error(`Request failed with status: ${res.status}`);
+    }
+    // Parse the response as JSON
+    return res.json();
+  });
 };
-
 
 export default function CardPregunta({ pregunta }) {
   const [answerData, setAnswerData] = useState([]);
 
+  const tipoPregunta = [
+    {
+      label: "Opcion Multiple",
+      value: "multiple_choice",
+      description: "La encuesta se activara en el momento que se termine la creación.",
+    },
+    {
+      label: "Abierta",
+      value: "open_text",
+      description: "La encuesta se mantendrá inactiva cuando se termine la creación.",
+    },
+    {
+      label: "Marcas de verificacion",
+      value: "checkbox",
+      description: "La encuesta se encuentra programada para una fecha futura",
+    },
+  ];
+
+  const matchingType = tipoPregunta.find((type) => type.value === pregunta.question_type);
+
+  const spanishName = matchingType.label;
+
   const fetchData = async () => {
     try {
       // Assuming getSurveys returns an array of questions objects
-      const data = await getQuestions(pregunta.survey_id);
+      const data = await getQuestions(pregunta.question_id);
 
       setAnswerData(data);
     } catch (error) {
@@ -52,7 +72,7 @@ export default function CardPregunta({ pregunta }) {
   useEffect(() => {
     fetchData();
   }, []); // Fetch data when the component mounts
-  
+
   return (
     <>
       <div class="flex items-center justify-center mb-5">
@@ -60,8 +80,8 @@ export default function CardPregunta({ pregunta }) {
           isBlurred
           className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
         >
-          <CardHeader className="ml-3 flex items-center justify-between">
-            <div className="w-2/3">
+          <CardHeader className=" flex items-center justify-between">
+            <div className=" ml-3 w-2/3">
               <Input
                 className="w-full"
                 label="Pregunta"
@@ -72,9 +92,10 @@ export default function CardPregunta({ pregunta }) {
             <div className="w-1/3 ml-4 mr-3">
               <Select
                 label="Tipo de pregunta"
+                selectedKeys={[pregunta.question_type]}
                 placeholder="Selecciona un tipo de pregunta"
               >
-                {selectorEstatus.map((estatus) => (
+                {tipoPregunta.map((estatus) => (
                   <SelectItem key={estatus.value} value={estatus.value}>
                     {estatus.label}
                   </SelectItem>
@@ -84,19 +105,17 @@ export default function CardPregunta({ pregunta }) {
           </CardHeader>
 
           <CardBody>
-            <Input
-              autoFocus
-              label="Respuesta 1"
-              placeholder="Ingresa respuesta 1"
-              variant="bordered"
-              className=" mb-3"
-            />
-            <Input
-              label="Respuesta 2"
-              placeholder="Ingresa respuesta"
-              variant="bordered"
-              className=" mb-3"
-            />
+            {answerData.map((answer, index) => (
+              <Input
+                key={index}
+                autoFocus
+                label={`Respuesta ${index+1}`}
+                value={answer.answer_text}
+                placeholder="Ingresa respuesta 1"
+                variant="bordered"
+                className=" mb-3"
+              />
+            ))}
           </CardBody>
         </Card>
       </div>

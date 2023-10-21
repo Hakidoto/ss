@@ -8,10 +8,10 @@ export async function GET(request, { params }) {
   try {
     const question_id = params.id;
 
-    const getAnswer = await prisma.answers.findMany({
-      where: { question_id: parseInt(question_id) }, // Assuming ID is an integer
+    const getQuestion = await prisma.questions.findMany({
+      where: { survey_id: parseInt(question_id) }, // Assuming ID is an integer
     });
-    return new NextResponse(JSON.stringify(getAnswer), {
+    return new NextResponse(JSON.stringify(getQuestion), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
