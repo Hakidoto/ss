@@ -1,7 +1,10 @@
 import { selectorEstatus } from "@/app/components/example/data";
+import { DeleteIcon } from "@/app/components/icons/DeleteIcon";
 import { LockIcon } from "@/app/components/icons/LockIcon";
 import { MailIcon } from "@/app/components/icons/MailIcon";
+import { PlusIcon } from "@/app/components/icons/PlusIcon";
 import {
+  Button,
   Card,
   CardBody,
   CardHeader,
@@ -39,12 +42,14 @@ export default function CardPregunta({ pregunta }) {
     {
       label: "Opcion Multiple",
       value: "multiple_choice",
-      description: "La encuesta se activara en el momento que se termine la creación.",
+      description:
+        "La encuesta se activara en el momento que se termine la creación.",
     },
     {
       label: "Abierta",
       value: "open_text",
-      description: "La encuesta se mantendrá inactiva cuando se termine la creación.",
+      description:
+        "La encuesta se mantendrá inactiva cuando se termine la creación.",
     },
     {
       label: "Marcas de verificacion",
@@ -53,7 +58,9 @@ export default function CardPregunta({ pregunta }) {
     },
   ];
 
-  const matchingType = tipoPregunta.find((type) => type.value === pregunta.question_type);
+  const matchingType = tipoPregunta.find(
+    (type) => type.value === pregunta.question_type
+  );
 
   const spanishName = matchingType.label;
 
@@ -76,48 +83,66 @@ export default function CardPregunta({ pregunta }) {
   return (
     <>
       <div class="flex items-center justify-center mb-5">
-        <Card
-          isBlurred
-          className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
-        >
-          <CardHeader className=" flex items-center justify-between">
-            <div className=" ml-3 w-2/3">
-              <Input
-                className="w-full"
-                label="Pregunta"
-                placeholder="Ingresa el nombre de la pregunta"
-                value={pregunta.question_text}
-              />
-            </div>
-            <div className="w-1/3 ml-4 mr-3">
-              <Select
-                label="Tipo de pregunta"
-                selectedKeys={[pregunta.question_type]}
-                placeholder="Selecciona un tipo de pregunta"
-              >
-                {tipoPregunta.map((estatus) => (
-                  <SelectItem key={estatus.value} value={estatus.value}>
-                    {estatus.label}
-                  </SelectItem>
-                ))}
-              </Select>
-            </div>
-          </CardHeader>
+        {answerData.length > 0 ? (
+          <Card
+            isBlurred
+            className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
+          >
+            <CardHeader className=" flex items-center justify-between">
+              <div className=" ml-3 w-2/3">
+                <Input
+                  className="w-full"
+                  label="Pregunta"
+                  placeholder="Ingresa el nombre de la pregunta"
+                  value={pregunta.question_text}
+                />
+              </div>
+              <div className="w-1/3 ml-4 mr-3">
+                <Select
+                  label="Tipo de pregunta"
+                  selectedKeys={[pregunta.question_type]}
+                  placeholder="Selecciona un tipo de pregunta"
+                >
+                  {tipoPregunta.map((estatus) => (
+                    <SelectItem key={estatus.value} value={estatus.value}>
+                      {estatus.label}
+                    </SelectItem>
+                  ))}
+                </Select>
+              </div>
+            </CardHeader>
 
-          <CardBody>
-            {answerData.map((answer, index) => (
-              <Input
-                key={index}
-                autoFocus
-                label={`Respuesta ${index+1}`}
-                value={answer.answer_text}
-                placeholder="Ingresa respuesta 1"
-                variant="bordered"
-                className=" mb-3"
-              />
-            ))}
-          </CardBody>
-        </Card>
+            <CardBody>
+              {answerData.map((answer, index) => (
+                <>
+                  <div className=" flex items-center justify-between">
+                    <div className="mb-3 w-1/12">
+                      <Button isIconOnly color="danger" aria-label="Like">
+                        <DeleteIcon />
+                      </Button>
+                    </div>
+                    <div className=" w-11/12">
+                      <Input
+                        key={index}
+                        autoFocus
+                        label={`Respuesta ${index + 1}`}
+                        defaultValue={answer.answer_text}
+                        placeholder="Ingresa respuesta 1"
+                        variant="bordered"
+                        className=" mb-3"
+                      />
+                    </div>
+                  </div>
+                </>
+              ))}
+              <Button color="primary" endContent={<PlusIcon/>}>
+                Añadir pregunta  
+              </Button>
+            </CardBody>
+          </Card>
+        ) : (
+          <p>No hay respuestas</p>
+        )}
       </div>
     </>
   );
