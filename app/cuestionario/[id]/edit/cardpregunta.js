@@ -76,6 +76,14 @@ export default function CardPregunta({ pregunta }) {
     }
   };
 
+  const handleDelete = (indexToDelete) => {
+    const updatedAnswerData = [...answerData];
+    updatedAnswerData.splice(indexToDelete, 1);
+    setAnswerData(updatedAnswerData);
+  };
+  
+  
+
   useEffect(() => {
     fetchData();
   }, []); // Fetch data when the component mounts
@@ -94,7 +102,7 @@ export default function CardPregunta({ pregunta }) {
                   className="w-full"
                   label="Pregunta"
                   placeholder="Ingresa el nombre de la pregunta"
-                  value={pregunta.question_text}
+                  defaultValue={pregunta.question_text}
                 />
               </div>
               <div className="w-1/3 ml-4 mr-3">
@@ -113,18 +121,19 @@ export default function CardPregunta({ pregunta }) {
             </CardHeader>
 
             <CardBody>
-              {answerData.map((answer, index) => (
+              {answerData. map((answer, index) => (
                 <>
                   <div className=" flex items-center justify-between">
                     <div className="mb-3 w-1/12">
-                      <Button isIconOnly color="danger" aria-label="Like">
+                      <Button isIconOnly color="danger" aria-label="Like" onClick={() => handleDelete(index)}>
                         <DeleteIcon />
                       </Button>
                     </div>
                     <div className=" w-11/12">
                       <Input
-                        key={index}
+                        key={answer.answer_id}
                         autoFocus
+                        index={index}
                         label={`Respuesta ${index + 1}`}
                         defaultValue={answer.answer_text}
                         placeholder="Ingresa respuesta 1"
