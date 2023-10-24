@@ -13,6 +13,7 @@ import {
   Link,
   Select,
   SelectItem,
+  Textarea,
 } from "@nextui-org/react";
 
 import React, { cache, use } from "react";
@@ -35,8 +36,9 @@ const getQuestions = (id) => {
   });
 };
 
-export default function CardPregunta({ pregunta }) {
+export default function CardPregunta({ pregunta, onRemove}) {
   const [answerData, setAnswerData] = useState([]);
+  const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
 
   const tipoPregunta = [
     {
@@ -62,8 +64,6 @@ export default function CardPregunta({ pregunta }) {
     (type) => type.value === pregunta.question_type
   );
 
-  const spanishName = matchingType.label;
-
   const fetchData = async () => {
     try {
       // Assuming getSurveys returns an array of questions objects
@@ -76,13 +76,66 @@ export default function CardPregunta({ pregunta }) {
     }
   };
 
+  const renderAnswerInput = (answer, index) => {
+    if (selectedType === "checkbox") {
+      return (
+        <Input
+        key={answer.answer_id}
+        autoFocus
+        label={`Respuesta ${index + 1}`}
+        defaultValue={answer.answer_text}
+        placeholder={`Ingresa respuesta ${index + 1}`}
+        variant="bordered"
+        className=" mb-3"
+      />
+      );
+    } else if (selectedType === "multiple_choice") {
+      return (
+        <Input
+          key={answer.answer_id}
+          autoFocus
+          label={`Respuesta ${index + 1}`}
+          defaultValue={answer.answer_text}
+          placeholder={`Ingresa respuesta ${index + 1}`}
+          variant="bordered"
+          className=" mb-3"
+        />
+      );
+    } else if (selectedType === "open_text") {
+      return (
+        <Textarea
+          key={answer.answer_id}
+          label={`Respuesta ${index + 1}`}
+          defaultValue={answer.answer_text}
+          placeholder={`Ingresa respuesta abierta ${index + 1}`}
+          variant="bordered"
+          className=" mb-3"
+        />
+      );
+    }
+  };
+
+  const handleSelectorChange = (event) => {
+    const selectedValue = event.target.value;
+    setSelectedType(selectedValue);
+  };
+
+  const handleAddResponse = () => {
+    // Create a new item to add to the answerData array.
+    const newResponse = {
+      answer_text: "Añade una respuesta...", // You can set the default values as needed
+    };
+
+    // Create a copy of the answerData array, add the new item, and update the state.
+    const updatedAnswerData = [...answerData, newResponse];
+    setAnswerData(updatedAnswerData);
+  };
+
   const handleDelete = (indexToDelete) => {
     const updatedAnswerData = [...answerData];
     updatedAnswerData.splice(indexToDelete, 1);
     setAnswerData(updatedAnswerData);
   };
-  
-  
 
   useEffect(() => {
     fetchData();
@@ -90,68 +143,95 @@ export default function CardPregunta({ pregunta }) {
 
   return (
     <>
-      <div class="flex items-center justify-center mb-5">
-        {answerData.length > 0 ? (
-          <Card
-            isBlurred
-            className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
-          >
-            <CardHeader className=" flex items-center justify-between">
-              <div className=" ml-3 w-2/3">
-                <Input
-                  className="w-full"
-                  label="Pregunta"
-                  placeholder="Ingresa el nombre de la pregunta"
-                  defaultValue={pregunta.question_text}
-                />
-              </div>
-              <div className="w-1/3 ml-4 mr-3">
-                <Select
-                  label="Tipo de pregunta"
-                  selectedKeys={[pregunta.question_type]}
-                  placeholder="Selecciona un tipo de pregunta"
-                >
-                  {tipoPregunta.map((estatus) => (
-                    <SelectItem key={estatus.value} value={estatus.value}>
-                      {estatus.label}
-                    </SelectItem>
-                  ))}
-                </Select>
-              </div>
-            </CardHeader>
-
+      <div className="flex items-center justify-center mb-5">
+        <Card
+          isBlurred
+          className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
+        >
+          <CardHeader className=" flex items-center justify-between">
+            <div className=" ml-3 w-2/3">
+              <Input
+                className="w-full"
+                label="Pregunta"
+                placeholder="Ingresa el nombre de la pregunta"
+                defaultValue={pregunta.question_text}
+              />
+            </div>
+            <div className="w-1/3 ml-4 mr-3">
+              <Select
+                label="Tipo de pregunta"
+                defaultSelectedKeys={[selectedType]}
+                placeholder="Selecciona un tipo de pregunta"
+                onChange={(selectedValue) =>
+                  handleSelectorChange(selectedValue)
+                }
+              >
+                {tipoPregunta.map((estatus) => (
+                  <SelectItem key={estatus.value} value={estatus.value}>
+                    {estatus.label}
+                  </SelectItem>
+                ))}
+              </Select>
+            </div>
+          </CardHeader>
+          {answerData.length > 0 ? (
             <CardBody>
-              {answerData. map((answer, index) => (
+              {answerData.map((answer, index) => (
                 <>
                   <div className=" flex items-center justify-between">
                     <div className="mb-3 w-1/12">
-                      <Button isIconOnly color="danger" aria-label="Like" onClick={() => handleDelete(index)}>
+                      <Button
+                        isIconOnly
+                        color="danger"
+                        aria-label="Like"
+                        onClick={() => handleDelete(index)}
+                      >
                         <DeleteIcon />
                       </Button>
                     </div>
                     <div className=" w-11/12">
-                      <Input
-                        key={answer.answer_id}
-                        autoFocus
-                        index={index}
-                        label={`Respuesta ${index + 1}`}
-                        defaultValue={answer.answer_text}
-                        placeholder="Ingresa respuesta 1"
-                        variant="bordered"
-                        className=" mb-3"
-                      />
+                      {renderAnswerInput(answer, index)}
                     </div>
                   </div>
                 </>
               ))}
-              <Button color="primary" endContent={<PlusIcon/>}>
-                Añadir pregunta  
+              <div className="flex justify-between">
+                <div className="w-1/5">
+                  <Button
+                    onClick={handleAddResponse}
+                    className="w-full"
+                    color="primary"
+                    endContent={<PlusIcon />}
+                  >
+                    Añadir respuesta
+                  </Button>
+                </div>
+                <div className="w-1/5">
+                  <Button
+                    color="danger"
+                    className="w-full"
+                    onClick={onRemove}
+                    endContent={<DeleteIcon />}
+                  >
+                    Eliminar pregunta
+                  </Button>
+                </div>
+              </div>
+            </CardBody>
+          ) : (
+            <CardBody className="flex items-center justify-center">
+              <p className="text-md mb-3">No hay ninguna respuesta...</p>
+              <Button
+                onClick={handleAddResponse}
+                className="w-1/3"
+                color="primary"
+                endContent={<PlusIcon />}
+              >
+                Añadir respuesta
               </Button>
             </CardBody>
-          </Card>
-        ) : (
-          <p>No hay respuestas</p>
-        )}
+          )}
+        </Card>
       </div>
     </>
   );
