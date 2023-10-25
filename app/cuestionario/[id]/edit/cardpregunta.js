@@ -36,7 +36,7 @@ const getQuestions = (id) => {
   });
 };
 
-export default function CardPregunta({ pregunta, onRemove}) {
+export default function CardPregunta({ pregunta, onRemove, newQuestionAdded}) {
   const [answerData, setAnswerData] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
 
@@ -60,16 +60,14 @@ export default function CardPregunta({ pregunta, onRemove}) {
     },
   ];
 
-  const matchingType = tipoPregunta.find(
-    (type) => type.value === pregunta.question_type
-  );
-
   const fetchData = async () => {
     try {
-      // Assuming getSurveys returns an array of questions objects
-      const data = await getQuestions(pregunta.question_id);
-
-      setAnswerData(data);
+      // Only fetch data if the newQuestionAdded flag is false
+      if (!newQuestionAdded) {
+        // Assuming getSurveys returns an array of questions objects
+        const data = await getQuestions(pregunta.question_id);
+        setAnswerData(data);
+      }
     } catch (error) {
       // Handle error if needed
       console.error("Error fetching data:", error);
@@ -122,7 +120,15 @@ export default function CardPregunta({ pregunta, onRemove}) {
 
   const handleAddResponse = () => {
     // Create a new item to add to the answerData array.
+
+    const highestAnswerId =
+    answerData.length > 0
+      ? Math.max(...answerData.map((answer) => answer.answer_id))
+      : 0;
+
     const newResponse = {
+      answer_id: highestAnswerId + 1,
+      question_id: pregunta.question_id,
       answer_text: "Añade una respuesta...", // You can set the default values as needed
     };
 
@@ -136,6 +142,13 @@ export default function CardPregunta({ pregunta, onRemove}) {
     updatedAnswerData.splice(indexToDelete, 1);
     setAnswerData(updatedAnswerData);
   };
+
+  const removeAllAnswers = () => {
+    // Filter out answers with the specified question_id
+    const updatedAnswers = answerData.filter((answer) => answer.question_id !== pregunta.question_id);
+    setAnswerData(updatedAnswers);
+  };
+
 
   useEffect(() => {
     fetchData();
@@ -210,7 +223,10 @@ export default function CardPregunta({ pregunta, onRemove}) {
                   <Button
                     color="danger"
                     className="w-full"
-                    onClick={onRemove}
+                    onClick={() => {
+                      removeAllAnswers();
+                      onRemove(); // Remove the question
+                    }}
                     endContent={<DeleteIcon />}
                   >
                     Eliminar pregunta

@@ -29,6 +29,8 @@ const getQuestions = (id) => {
 export default function Page() {
   const [questionData, setQuestionData] = useState([]);
   const [newQuestion, setNewQuestion] = useState("");
+  const [newQuestionAdded, setNewQuestionAdded] = useState(false); // Flag to track new question
+
   const pathname = usePathname();
   const parts = pathname.split("/");
   const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
@@ -83,10 +85,12 @@ export default function Page() {
 
     // Update the state with the new array
     setQuestionData(updatedQuestions);
+    setNewQuestionAdded(true);
   };
 
   useEffect(() => {
     fetchData();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Fetch data when the component mounts
 
   return (
@@ -102,6 +106,8 @@ export default function Page() {
               index={index}
               pregunta={question}
               onRemove={() => removeQuestion(index)}
+              removeAnswers={() => removeAnswers(index)} // Pass this function
+              newQuestionAdded={newQuestionAdded}
             />
           ))}
           <div className="flex justify-around">
