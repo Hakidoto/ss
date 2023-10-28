@@ -16,6 +16,21 @@ model answers {
   @@index([question_id], map: "question_id")
 }
 
+model experiencialaboral {
+  id                Int     @id @default(autoincrement())
+  RFC               String? @db.VarChar(13)
+  nombreEmpleo      String? @db.VarChar(50)
+  nombreCompania    String? @db.VarChar(50)
+  direccion         String? @db.VarChar(50)
+  telefonoEmpleo    String? @db.VarChar(50)
+  puestoDesempenado String? @db.VarChar(50)
+  sueldoPromedio    String? @db.VarChar(50)
+  motivoSeparacion  String? @db.VarChar(50)
+  usrs              usrs?   @relation(fields: [RFC], references: [RFC], onDelete: NoAction, onUpdate: NoAction, map: "experiencialaboral_ibfk_1")
+
+  @@index([RFC], map: "RFC")
+}
+
 model questions {
   question_id   Int                     @id @default(autoincrement())
   survey_id     Int
@@ -38,40 +53,95 @@ model surveys {
 }
 
 model usrs {
-  id                 Int                  @id @default(autoincrement())
-  RFC                String?              @unique(map: "unique_rfc") @db.VarChar(13)
-  nombre             String?              @db.VarChar(50)
-  edad               String?              @db.VarChar(3)
-  direccion          String?              @db.VarChar(50)
-  celular            String?              @db.VarChar(50)
-  telefono           String?              @db.VarChar(50)
-  correo             String?              @db.VarChar(50)
-  redSocial          String?              @db.VarChar(50)
-  tipoEmpleado       String?              @db.VarChar(50)
-  contrato           String?              @db.VarChar(50)
-  horario            String?              @db.VarChar(50)
-  estado             String?              @db.VarChar(50)
-  antiguedad         String?              @db.VarChar(50)
-  experiencialaboral experiencialaboral[]
-  user_answers       user_answers[]
+  id                            Int                             @id @default(autoincrement())
+  RFC                           String?                         @unique(map: "unique_rfc") @db.VarChar(13)
+  nombre                        String?                         @db.VarChar(50)
+  edad                          String?                         @db.VarChar(3)
+  direccion                     String?                         @db.VarChar(50)
+  celular                       String?                         @db.VarChar(50)
+  telefono                      String?                         @db.VarChar(50)
+  correo                        String?                         @db.VarChar(50)
+  redSocial                     String?                         @db.VarChar(50)
+  tipoEmpleado                  String?                         @db.VarChar(50)
+  contrato                      String?                         @db.VarChar(50)
+  horario                       String?                         @db.VarChar(50)
+  estado                        String?                         @db.VarChar(50)
+  antiguedad                    String?                         @db.VarChar(50)
+  certificaciones               certificaciones[]
+  cursos                        cursos[]
+  experiencialaboral            experiencialaboral[]
+  faltas                        faltas[]
+  incapacidades                 incapacidades[]
+  lenguas                       lenguas[]
+  procedimientosadministrativos procedimientosadministrativos[]
 
   @@index([RFC], map: "idx_RFC")
 }
 
-model experiencialaboral {
+model certificaciones {
   id                Int     @id @default(autoincrement())
   RFC               String? @db.VarChar(13)
-  nombreEmpleo      String? @db.VarChar(50)
-  nombreCompa_ia    String? @map("nombreCompañia") @db.VarChar(50)
-  direccion         String? @db.VarChar(50)
-  telefonoEmpleo    String? @db.VarChar(50)
-  puestoDesempe_ado String? @map("puestoDesempeñado") @db.VarChar(50)
-  sueldoPromedio    String? @db.VarChar(50)
-  motivoSeparacion  String? @db.VarChar(50)
-  usrs              usrs?   @relation(fields: [RFC], references: [RFC], onDelete: NoAction, onUpdate: NoAction, map: "experiencialaboral_ibfk_1")
+  nombreCertificado String? @db.VarChar(50)
+  tipoCertificado   String? @db.VarChar(50)
+  certificado       Bytes?  @db.MediumBlob
+  usrs              usrs?   @relation(fields: [RFC], references: [RFC], onDelete: NoAction, onUpdate: NoAction, map: "certificaciones_ibfk_1")
 
   @@index([RFC], map: "RFC")
 }
+
+model cursos {
+  id          Int     @id @default(autoincrement())
+  RFC         String? @db.VarChar(13)
+  nombreCurso String? @db.VarChar(50)
+  tipoCurso   String? @db.VarChar(50)
+  certificado Bytes?  @db.MediumBlob
+  usrs        usrs?   @relation(fields: [RFC], references: [RFC], onDelete: NoAction, onUpdate: NoAction, map: "cursos_ibfk_1")
+
+  @@index([RFC], map: "RFC")
+}
+
+model lenguas {
+  id          Int     @id @default(autoincrement())
+  RFC         String? @db.VarChar(13)
+  lengua      String? @db.VarChar(50)
+  nivel       String? @db.VarChar(50)
+  certificado Bytes?  @db.MediumBlob
+  usrs        usrs?   @relation(fields: [RFC], references: [RFC], onDelete: NoAction, onUpdate: NoAction, map: "lenguas_ibfk_1")
+
+  @@index([RFC], map: "RFC")
+}
+
+model faltas {
+  id    Int     @id @default(autoincrement())
+  RFC   String? @db.VarChar(13)
+  fecha String? @db.VarChar(50)
+  usrs  usrs?   @relation(fields: [RFC], references: [RFC], onDelete: NoAction, onUpdate: NoAction, map: "faltas_ibfk_1")
+
+  @@index([RFC], map: "RFC")
+}
+
+model incapacidades {
+  id           Int     @id @default(autoincrement())
+  RFC          String? @db.VarChar(13)
+  fechaInicio  String? @db.VarChar(50)
+  fechaFin     String? @db.VarChar(50)
+  tipoFalta    String? @db.VarChar(50)
+  justificante String? @db.VarChar(50)
+  usrs         usrs?   @relation(fields: [RFC], references: [RFC], onDelete: NoAction, onUpdate: NoAction, map: "incapacidades_ibfk_1")
+
+  @@index([RFC], map: "RFC")
+}
+
+model procedimientosadministrativos {
+  id                Int     @id @default(autoincrement())
+  RFC               String? @db.VarChar(13)
+  fechaInicio       String? @db.VarChar(50)
+  fechaFin          String? @db.VarChar(50)
+  tipoProcedimiento String? @db.VarChar(50)
+  Estado            String? @db.VarChar(50)
+  usrs              usrs?   @relation(fields: [RFC], references: [RFC], onDelete: NoAction, onUpdate: NoAction, map: "procedimientosadministrativos_ibfk_1")
+
+  @@index([RFC], map: "RFC")
 
 model user_answers {
   user_answer_id    Int        @id @default(autoincrement())

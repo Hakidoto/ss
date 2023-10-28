@@ -10,15 +10,38 @@ import WorkExperience from './components/WorkExperience';
 
 export default function Page() {
   const [user, setUser] = useState(null);
+  const [userExp, setUserExp] = useState([]);
   const [loading, setLoading] = useState(true);
-  
-  async function fetchUserData() {
+
+
+  async function fetchData() {
     try {
       const userId = 2; // Reemplaza con el ID del usuario que deseas obtener
       const response = await fetch(`/api/usuario/${userId}`);
+  
+      if (response.ok) {
+        const user = await response.json();
+        setUser(user);
+        setLoading(false);
+  
+        // Luego de obtener los datos del usuario, puedes llamar a fetchUserExpData
+        await fetchUserExpData(user);
+      } else {
+        console.error('Error al obtener datos de la API');
+      }
+    } catch (error) {
+      console.error('Error al conectarse a la API', error);
+    }
+  }
+
+  async function fetchUserExpData(user) {
+    try {
+      const rfc = user.RFC;
+      const response = await fetch(`/api/usuario/experienciaLaboral?rfc=${rfc}`);
+  
       if (response.ok) {
         const data = await response.json();
-        setUser(data);
+        setUserExp(data);
         setLoading(false);
       } else {
         console.error('Error al obtener datos de la API');
@@ -50,9 +73,11 @@ export default function Page() {
   
 
   useEffect(() => {
-    fetchUserData();
+    fetchData()
   }, []);
 
+  
+  
   const renderTabContent = (item) => {
     switch (item.id) {
       case "personalData":
@@ -62,7 +87,7 @@ export default function Page() {
       case "employmentStatus":
         return <StatusData user = {user}/>;
       case "workExperience":
-        return <WorkExperience user = {user}/>;
+        return <WorkExperience userExp = {userExp} loading = {loading}/>;
       default:
         return null;
     }

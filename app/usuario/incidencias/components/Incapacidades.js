@@ -1,48 +1,22 @@
 import React, {useState} from 'react'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spacer } from '@nextui-org/react';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spacer, Skeleton } from '@nextui-org/react';
 import style from '../../components/style/statusData.module.css'
 import CardU from '../../components/CardU';
 
-const Incapacidades = () => {
+const Incapacidades = ({incapacidades, loading}) => {
     const itemsPerPage = 5;
-    const data = [
-        {
-          no: 1,
-          fechaInicio: "2023-02-23",
-          fechaFin: "2023-02-26",
-          tipo: "Enfermedad",
-          justificante: "5246985"
-        },
-        {
-          no: 2,
-          fechaInicio: "2023-02-23",
-          fechaFin: "2023-02-26",
-          tipo: "Enfermedad",
-          justificante: "5246985"
-        },
-        {
-          no: 3,
-          fechaInicio: "2023-02-23",
-          fechaFin: "2023-02-26",
-          tipo: "Enfermedad",
-          justificante: "5246985"
-        },
-        // Agrega más objetos para representar tus datos aquí
-      ];
-      
-
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(data.length / itemsPerPage);
+    const totalPages = Math.ceil(incapacidades.length / itemsPerPage);
 
     const renderTableRows = () => {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        return data.slice(startIndex, endIndex).map((row, index) => (
+        return incapacidades.slice(startIndex, endIndex).map((row, index) => (
             <TableRow key={index}>
-                <TableCell>{row.no}</TableCell>
+                <TableCell>{row.id}</TableCell>
                 <TableCell>{row.fechaInicio}</TableCell>
                 <TableCell>{row.fechaFin}</TableCell>
-                <TableCell>{row.tipo}</TableCell>
+                <TableCell>{row.tipoFalta}</TableCell>
                 <TableCell>{row.justificante}</TableCell>
             </TableRow>
         ));
@@ -69,9 +43,34 @@ const Incapacidades = () => {
                                 <TableColumn>Tipo</TableColumn>
                                 <TableColumn>justificante</TableColumn>
                             </TableHeader>
-                            <TableBody>
-                                {renderTableRows()}
-                            </TableBody>
+                            {loading?(
+                              <TableBody>
+                                {Array(5).fill().map((_, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                              ) : (
+                                <TableBody>
+                                  {renderTableRows()}
+                                </TableBody>
+                              )
+                            }
                         </Table>
                         <Spacer y={3}/>
                         <Pagination
