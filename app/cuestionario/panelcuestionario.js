@@ -25,6 +25,9 @@ import {
   Checkbox,
   Select,
   SelectItem,
+  Card,
+  CardBody,
+  CardHeader,
 } from "@nextui-org/react";
 import { EditIcon } from "../components/icons/EditIcon";
 import { DeleteIcon } from "../components/icons/DeleteIcon";
@@ -49,14 +52,9 @@ export default function PanelCuestionario() {
   const [nombreEncuesta, setNombreEncuesta] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [estatusEncuesta, setEstatusEncuesta] = useState("");
-  const {isOpen, onOpen, onOpenChange} = useDisclosure();
+  const { isOpen, onOpen, onOpenChange } = useDisclosure();
+  const [loading, setLoading] = useState(true);
 
-  
-
-
-  const toggleLoad = () => {
-    setIsLoaded(!isLoaded);
-  };
 
   const handleCrear = async () => {
     try {
@@ -95,7 +93,7 @@ export default function PanelCuestionario() {
   };
 
   const handleDeleteClick = React.useCallback((id) => {
-    fetch(`/api/cuestionario/delete/survey/${id}`, {
+    fetch(`/api/cuestionario/${id}`, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json",
@@ -146,8 +144,14 @@ export default function PanelCuestionario() {
   };
 
   useEffect(() => {
-    fetchData();
-    toggleLoad();
+    fetchData().then(() => {
+      setIsLoaded(true);
+      setLoading(false);
+    })
+    .catch((error) => {
+      console.error('Error fetching data:', error);
+      setLoading(false);
+    });
   }, []); // Fetch data when the component mounts
 
   const renderCell = React.useCallback(
@@ -187,9 +191,12 @@ export default function PanelCuestionario() {
                 </span>
               </Tooltip>
               <Tooltip content="Editar cuestionario">
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+                <Link
+                  href={`/cuestionario/${survey.survey_id}/edit`}
+                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                >
                   <EditIcon />
-                </span>
+                </Link>
               </Tooltip>
               <Tooltip color="danger" content="Eliminar cuestionario">
                 <span
@@ -212,7 +219,7 @@ export default function PanelCuestionario() {
     <div>
       <Modal
         backdrop="blur"
-        isOpen={isOpen} 
+        isOpen={isOpen}
         onOpenChange={onOpenChange}
         isDismissable={false}
         placement="top"
@@ -260,37 +267,43 @@ export default function PanelCuestionario() {
           )}
         </ModalContent>
       </Modal>
-      <Button
-        onPress={onOpenChange}
-        isDisabled={!isLoaded}
-        className="mb-4 ml-4"
-        color="primary"
-      >
-        Crear encuesta
-      </Button>
-      <Skeleton isLoaded={isLoaded} className="rounded-2xl">
-        <Table aria-label="Example table with custom cells">
-          <TableHeader columns={columns}>
-            {(column) => (
-              <TableColumn
-                key={column.uid}
-                align={column.uid === "actions" ? "center" : "start"}
-              >
-                {column.name}
-              </TableColumn>
-            )}
-          </TableHeader>
-          <TableBody items={surveysData}>
-            {(survey) => (
-              <TableRow key={survey.survey_id}>
-                {(columnKey) => (
-                  <TableCell>{renderCell(survey, columnKey)}</TableCell>
+      <Card className="bg-background/60 dark:bg-default-100/50">
+        <CardHeader>
+          <Button
+            onPress={onOpenChange}
+            isDisabled={!isLoaded}
+            className="ml-4 mt-4"
+            color="primary"
+          >
+            Crear encuesta
+          </Button>
+        </CardHeader>
+        <CardBody>
+          <Skeleton isLoaded={isLoaded} className="rounded-2xl">
+            <Table aria-label="Example table with custom cells">
+              <TableHeader columns={columns}>
+                {(column) => (
+                  <TableColumn
+                    key={column.uid}
+                    align={column.uid === "actions" ? "center" : "start"}
+                  >
+                    {column.name}
+                  </TableColumn>
                 )}
-              </TableRow>
-            )}
-          </TableBody>
-        </Table>
-      </Skeleton>
+              </TableHeader>
+              <TableBody items={surveysData}>
+                {(survey) => (
+                  <TableRow key={survey.survey_id}>
+                    {(columnKey) => (
+                      <TableCell>{renderCell(survey, columnKey)}</TableCell>
+                    )}
+                  </TableRow>
+                )}
+              </TableBody>
+            </Table>
+          </Skeleton>
+        </CardBody>
+      </Card>
     </div>
   );
 }

@@ -72,8 +72,7 @@ export default function NavbarTRC() {
             const pathParts = pathname.split("/");
             const pathLink = "/" + pathParts[1];
             const isActive =
-            pathLink === item.link ||
-              (item.link === "/" && pathname === "/");
+              pathLink === item.link || (item.link === "/" && pathname === "/");
             return (
               <NavbarItem
                 as={NextLink}

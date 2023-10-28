@@ -50,7 +50,6 @@ export default function Page() {
       console.error('Error al conectarse a la API', error);
     }
   }
-  
 
   let tabs = [
     {

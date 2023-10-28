@@ -1,3 +1,4 @@
+// /.vscode/launch.json
 {
     "version": "0.2.0",
     "configurations": [
@@ -17,7 +18,7 @@
         "name": "Next.js: debug full stack",
         "type": "node-terminal",
         "request": "launch",
-        "command": "npm run dev",
+        "command": "npx next dev --turbo",
         "serverReadyAction": {
           "pattern": "- Local:.+(https?://.+)",
           "uriFormat": "%s",

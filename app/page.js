@@ -1,6 +1,10 @@
 import * as React from "react";
-import { Button } from "@nextui-org/button";
+import { Card } from "@nextui-org/card";
 
 export default function Page() {
-  return <h1>Hello, Next.js!</h1>
+  return (
+    <div>
+      <Card>Click me</Card>
+    </div>
+  );
 }
