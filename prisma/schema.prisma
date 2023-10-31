@@ -142,17 +142,15 @@ model procedimientosadministrativos {
   usrs              usrs?   @relation(fields: [RFC], references: [RFC], onDelete: NoAction, onUpdate: NoAction, map: "procedimientosadministrativos_ibfk_1")
 
   @@index([RFC], map: "RFC")
+}
 
 model user_answers {
   user_answer_id    Int        @id @default(autoincrement())
-  user_id           Int?
   question_id       Int?
   chosen_answer_ids String?    @db.Text
-  usrs              usrs?      @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "user_answers_ibfk_1")
   questions         questions? @relation(fields: [question_id], references: [question_id], onDelete: NoAction, onUpdate: NoAction, map: "user_answers_ibfk_2")
 
   @@index([question_id], map: "question_id")
-  @@index([user_id], map: "user_id")
 }
 
 enum questions_question_type {
