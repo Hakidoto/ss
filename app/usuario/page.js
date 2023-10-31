@@ -38,7 +38,7 @@ export default function Page() {
     try {
       const rfc = user.RFC;
       const response = await fetch(`/api/usuario/experienciaLaboral?rfc=${rfc}`);
-  
+      console.log("ss")
       if (response.ok) {
         const data = await response.json();
         setUserExp(data);
