@@ -118,8 +118,7 @@ export default function PanelCuestionario() {
   const fetchData = async () => {
     try {
       // Assuming getSurveys returns an array of survey objects
-      const data = await getSurveys();
-      console.log('oadav0');
+      const data = await getSurveys()
 
       // Convert SQL datetime strings to "dd-mm-yyyy" format
       const formattedData = data.map((survey) => {
