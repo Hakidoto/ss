@@ -120,23 +120,7 @@ export default function PanelCuestionario() {
       // Assuming getSurveys returns an array of survey objects
       const data = await getSurveys()
 
-      // Convert SQL datetime strings to "dd-mm-yyyy" format
-      const formattedData = data.map((survey) => {
-        const sqlDatetime = survey.created_at;
-        const dateObject = new Date(sqlDatetime);
-
-        const day = dateObject.getUTCDate();
-        const month = dateObject.getUTCMonth() + 1;
-        const year = dateObject.getUTCFullYear();
-
-        const formattedDate = `${day < 10 ? "0" : ""}${day}-${
-          month < 10 ? "0" : ""
-        }${month}-${year}`;
-
-        return { ...survey, created_at: formattedDate };
-      });
-
-      setSurveysData(formattedData);
+      setSurveysData(data);
     } catch (error) {
       // Handle error if needed
       console.error("Error fetching data:", error);
@@ -181,6 +165,20 @@ export default function PanelCuestionario() {
             >
               {cellValue}
             </Chip>
+          );
+        case 'created_at':
+          const originalDate = new Date(cellValue);
+          const day = originalDate.getDate().toString().padStart(2, '0');
+          const month = (originalDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so we add 1.
+          const year = originalDate.getFullYear();
+        
+          const formattedDate = `${day}-${month}-${year}`;
+          console.log(formattedDate);
+        
+          return (
+            <div>
+              <p className="text-bold text-sm">{formattedDate}</p>
+            </div>
           );
         case "actions":
           return (
