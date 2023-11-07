@@ -30,6 +30,8 @@ export default function Page() {
   const [questionData, setQuestionData] = useState([]);
   const [newQuestion, setNewQuestion] = useState("");
   const [newQuestionAdded, setNewQuestionAdded] = useState(false); // Flag to track new question
+  const [questionAnswers, setQuestionAnswers] = useState({});
+
 
   const pathname = usePathname();
   const parts = pathname.split("/");
@@ -46,6 +48,14 @@ export default function Page() {
       // Handle error if needed
       console.error("Error fetching data:", error);
     }
+  };
+
+  const getAllQuestionsAndAnswers = (questionId, answers) => {
+    setQuestionAnswers((prevQuestionAnswers) => ({
+      ...prevQuestionAnswers,
+      [questionId]: answers,
+    }));
+    console.log(questionAnswers);
   };
 
   // Function to remove a question by index
@@ -108,6 +118,7 @@ export default function Page() {
               onRemove={() => removeQuestion(index)}
               removeAnswers={() => removeAnswers(index)} // Pass this function
               newQuestionAdded={newQuestionAdded}
+              getAllQuestionsAndAnswers={(answers) => getAllQuestionsAndAnswers(question.question_id, answers)}
             />
           ))}
           <div className="flex justify-around">

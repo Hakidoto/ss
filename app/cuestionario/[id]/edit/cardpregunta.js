@@ -36,7 +36,7 @@ const getQuestions = (id) => {
   });
 };
 
-export default function CardPregunta({ pregunta, onRemove, newQuestionAdded}) {
+export default function CardPregunta({ pregunta, onRemove, newQuestionAdded, getAllQuestionsAndAnswers }) {
   const [answerData, setAnswerData] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
 
@@ -135,18 +135,21 @@ export default function CardPregunta({ pregunta, onRemove, newQuestionAdded}) {
     // Create a copy of the answerData array, add the new item, and update the state.
     const updatedAnswerData = [...answerData, newResponse];
     setAnswerData(updatedAnswerData);
+    getAllQuestionsAndAnswers(updatedAnswerData);
   };
 
   const handleDelete = (indexToDelete) => {
     const updatedAnswerData = [...answerData];
     updatedAnswerData.splice(indexToDelete, 1);
     setAnswerData(updatedAnswerData);
+    getAllQuestionsAndAnswers(updatedAnswerData)
   };
 
   const removeAllAnswers = () => {
     // Filter out answers with the specified question_id
     const updatedAnswers = answerData.filter((answer) => answer.question_id !== pregunta.question_id);
     setAnswerData(updatedAnswers);
+    getAllQuestionsAndAnswers(updatedAnswers);
   };
 
 
