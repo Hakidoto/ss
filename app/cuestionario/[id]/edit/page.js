@@ -59,7 +59,6 @@ export default function Page() {
 
       setAnswerData(answers);
       setQuestionData(questions);
-      console.log(filteredAnswers);
     } catch (error) {
       // Handle error if needed
       console.error("Error fetching data:", error);
@@ -71,7 +70,6 @@ export default function Page() {
       ...prevQuestionAnswers,
       [questionId]: answers,
     }));
-    console.log(questionAnswers);
   };
 
   // Function to remove a question by index
@@ -118,6 +116,10 @@ export default function Page() {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Fetch data when the component mounts
+
+  useEffect(() => {
+    console.log(questionAnswers);
+  }, [questionAnswers]);
 
   return (
     <>
