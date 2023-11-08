@@ -1,49 +1,23 @@
 import React, {useState} from 'react'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spacer } from '@nextui-org/react';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spacer , Skeleton} from '@nextui-org/react';
 import style from '../../components/style/statusData.module.css'
 import CardU from '../../components/CardU';
 
-const Procesos = () => {
+const Procesos = ({procedimientos, loading}) => {
     const itemsPerPage = 5;
-    const data = [
-        {
-          no: 1,
-          fechaInicio: "2023-02-23",
-          fechaFin: "2023-02-26",
-          tipo: "Proceso administrativo",
-          estado: "Activo"
-        },
-        {
-          no: 2,
-          fechaInicio: "2023-02-23",
-          fechaFin: "2023-02-26",
-          tipo: "Investigacion",
-          estado: "En proceso"
-        },
-        {
-          no: 3,
-          fechaInicio: "2023-02-23",
-          fechaFin: "2023-02-26",
-          tipo: "Medida cautelar",
-          estado: "Finalizado"
-        },
-        // Agrega más objetos para representar tus datos aquí
-      ];
-      
-
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(data.length / itemsPerPage);
+    const totalPages = Math.ceil(procedimientos.length / itemsPerPage);
 
     const renderTableRows = () => {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        return data.slice(startIndex, endIndex).map((row, index) => (
+        return procedimientos.slice(startIndex, endIndex).map((row, index) => (
             <TableRow key={index}>
-                <TableCell>{row.no}</TableCell>
+                <TableCell>{row.id}</TableCell>
                 <TableCell>{row.fechaInicio}</TableCell>
                 <TableCell>{row.fechaFin}</TableCell>
-                <TableCell>{row.tipo}</TableCell>
-                <TableCell>{row.estado}</TableCell>
+                <TableCell>{row.tipoProcedimiento}</TableCell>
+                <TableCell>{row.Estado}</TableCell>
             </TableRow>
         ));
     };
@@ -69,9 +43,34 @@ const Procesos = () => {
                                 <TableColumn>Tipo</TableColumn>
                                 <TableColumn>Estado</TableColumn>
                             </TableHeader>
-                            <TableBody>
-                                {renderTableRows()}
-                            </TableBody>
+                            {loading?(
+                              <TableBody>
+                                {Array(5).fill().map((_, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                              ) : (
+                                <TableBody>
+                                  {renderTableRows()}
+                                </TableBody>
+                              )
+                            }
                         </Table>
                         <Spacer y={3}/>
                         <Pagination

@@ -70,18 +70,22 @@ export default function NavbarTRC() {
         <NavbarContent className="hidden sm:flex gap-3">
           {menuItems.map((item, index) => {
             const pathParts = pathname.split("/");
+            const pathLink = "/" + pathParts[1];
             const isActive =
-              pathParts[1] === item.link ||
-              (item.link === "/" && pathname === "/");
+              pathLink === item.link || (item.link === "/" && pathname === "/");
             return (
-              <NavbarItem key={`${item}-${index}`} isActive={isActive}>
-                <Link
-                  color={isActive ? "danger" : "foreground"}
-                  href={item.link}
-                  as={NextLink}
-                >
-                  {item.nombre}
-                </Link>
+              <NavbarItem
+                as={NextLink}
+                href={item.link}
+                key={`${item}-${index}`}
+                isActive={isActive}
+                className={
+                  isActive
+                    ? "text-danger mx-2"
+                    : `text-foreground ${style.hov} mx-2 `
+                } // Ajusta las clases según el estado activo
+              >
+                <span>{item.nombre}</span>
               </NavbarItem>
             );
           })}
@@ -101,8 +105,8 @@ export default function NavbarTRC() {
           size="sm"
           type="search"
         />
-        <Dropdown placement="bottom-end">
-          <DropdownTrigger>
+        <Dropdown placement="bottom-end" >
+          <DropdownTrigger >
             <Avatar
               isBordered
               as="button"
@@ -113,7 +117,7 @@ export default function NavbarTRC() {
               src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
             />
           </DropdownTrigger>
-          <DropdownMenu aria-label="Profile Actions" variant="flat">
+          <DropdownMenu aria-label="Profile Actions" variant="flat" >
             <DropdownItem key="profile" className="h-14 gap-2">
               <p className="font-semibold">Sesion de </p>
               <p className="font-semibold">prueba@prisma.com</p>

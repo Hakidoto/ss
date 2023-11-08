@@ -1,14 +1,56 @@
 "use client";
 
-import React from 'react'
-import { Table, Card, CardHeader, CardBody, Tabs, Tab } from '@nextui-org/react'
-import style from "./components/style/CardU.module.css"
-import PersonalData from './components/PersonalData'
+import React, { useEffect, useState } from 'react';
+import { Table, Card, CardHeader, CardBody, Tabs, Tab } from '@nextui-org/react';
+import style from "./components/style/CardU.module.css";
+import PersonalData from './components/PersonalData';
 import ContactData from './components/ContactData';
 import StatusData from './components/StatusData';
 import WorkExperience from './components/WorkExperience';
 
 export default function Page() {
+  const [user, setUser] = useState(null);
+  const [userExp, setUserExp] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+
+  async function fetchData() {
+    try {
+      const userId = 2; // Reemplaza con el ID del usuario que deseas obtener
+      const response = await fetch(`/api/usuario/${userId}`);
+  
+      if (response.ok) {
+        const user = await response.json();
+        setUser(user);
+        setLoading(false);
+  
+        // Luego de obtener los datos del usuario, puedes llamar a fetchUserExpData
+        await fetchUserExpData(user);
+      } else {
+        console.error('Error al obtener datos de la API');
+      }
+    } catch (error) {
+      console.error('Error al conectarse a la API', error);
+    }
+  }
+
+  async function fetchUserExpData(user) {
+    try {
+      const rfc = user.RFC;
+      const response = await fetch(`/api/usuario/experienciaLaboral?rfc=${rfc}`);
+      console.log("ss")
+      if (response.ok) {
+        const data = await response.json();
+        setUserExp(data);
+        setLoading(false);
+      } else {
+        console.error('Error al obtener datos de la API');
+      }
+    } catch (error) {
+      console.error('Error al conectarse a la API', error);
+    }
+  }
+
   let tabs = [
     {
       id: "personalData",
@@ -28,20 +70,29 @@ export default function Page() {
     },
   ];
 
+  
+
+  useEffect(() => {
+    fetchData()
+  }, []);
+
+  
+  
   const renderTabContent = (item) => {
     switch (item.id) {
       case "personalData":
-        return <PersonalData />;
+        return <PersonalData user = {user}/>;
       case "contactData":
-        return <ContactData />;
+        return <ContactData user = {user}/>;
       case "employmentStatus":
-        return <StatusData />;
+        return <StatusData user = {user}/>;
       case "workExperience":
-        return <WorkExperience />;
+        return <WorkExperience userExp = {userExp} loading = {loading}/>;
       default:
         return null;
     }
   };
+
 
   return (
     <Card className={`mx-auto my-auto ${style.main_card}`}>

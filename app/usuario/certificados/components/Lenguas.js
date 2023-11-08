@@ -1,45 +1,22 @@
 import React, {useState} from 'react'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spacer } from '@nextui-org/react';
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spacer , Skeleton} from '@nextui-org/react';
 import style from '../../components/style/statusData.module.css'
 import CardU from '../../components/CardU';
 
-const Lenguas = () => {
+const Lenguas = ({lenguas, isLoaded}) => {
     const itemsPerPage = 5;
-    const data = [
-        {
-          no: 1,
-          lengua: "Ingles",
-          nivel: "C2",
-          certificado: "8150252",
-        },
-        {
-          no: 2,
-          lengua: "Frances",
-          nivel: "B2",
-          certificado: "1234567",
-        },
-        {
-          no: 3,
-          lengua: "Aleman",
-          nivel: "A1",
-          certificado: "2345678",
-        },
-        // Agrega más objetos para representar tus datos aquí
-      ];
-      
-
     const [currentPage, setCurrentPage] = useState(1);
-    const totalPages = Math.ceil(data.length / itemsPerPage);
+    const totalPages = Math.ceil(lenguas.length / itemsPerPage);
 
     const renderTableRows = () => {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
-        return data.slice(startIndex, endIndex).map((row, index) => (
+        return lenguas.slice(startIndex, endIndex).map((row, index) => (
             <TableRow key={index}>
-                <TableCell>{row.no}</TableCell>
+                <TableCell>{row.id}</TableCell>
                 <TableCell>{row.lengua}</TableCell>
                 <TableCell>{row.nivel}</TableCell>
-                <TableCell>{row.certificado}</TableCell>
+                <TableCell>Pendiente subir certificado</TableCell>
             </TableRow>
         ));
     };
@@ -64,9 +41,31 @@ const Lenguas = () => {
                                 <TableColumn>Nivel</TableColumn>
                                 <TableColumn>Certificado</TableColumn>
                             </TableHeader>
-                            <TableBody>
-                                {renderTableRows()}
-                            </TableBody>
+                            {isLoaded?(
+                              <TableBody>
+                                {Array(5).fill().map((_, index) => (
+                                  <TableRow key={index}>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                    <TableCell>
+                                      <Skeleton className=' rounded-lg' >.</Skeleton>
+                                    </TableCell>
+                                  </TableRow>
+                                ))}
+                              </TableBody>
+                              ) : (
+                                <TableBody>
+                                  {renderTableRows()}
+                                </TableBody>
+                              )
+                            }
                         </Table>
                         <Spacer y={3}/>
                         <Pagination

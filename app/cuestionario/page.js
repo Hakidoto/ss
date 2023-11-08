@@ -1,6 +1,6 @@
 "use client";
 
-import { Card, CardHeader, CardBody } from "@nextui-org/react";
+import { Card, CardHeader, CardBody } from "@nextui-org/card";
 import PanelCuestionario from "./panelcuestionario";
 
 export default function Page() {
@@ -10,7 +10,7 @@ export default function Page() {
         <h2 className="text-md">Cuestionarios disponibless</h2>
       </CardHeader>
       <CardBody>
-        <PanelCuestionario></PanelCuestionario>
+        <PanelCuestionario ></PanelCuestionario>
       </CardBody>
     </Card>
   );
