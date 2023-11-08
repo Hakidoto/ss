@@ -1,8 +1,7 @@
 // surveyHandler.js
 import { NextResponse } from "next/server";
-const { PrismaClient } = require("@prisma/client");
+import prisma from "@/app/components/db";
 
-const prisma = new PrismaClient();
 
 export async function GET() {
   try {

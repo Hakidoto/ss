@@ -1,8 +1,7 @@
 // pages/api/usuarios/experienciaLaboral.js
-import { PrismaClient } from '@prisma/client';
 import { NextResponse } from "next/server";
 
-const prisma = new PrismaClient();
+import prisma from "@/app/components/db";
 
 export async function GET(req, {params}) {
   try {
