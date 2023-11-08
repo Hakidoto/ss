@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useEffect, useState } from 'react';
-import { Table, Card, CardHeader, CardBody, Tabs, Tab } from '@nextui-org/react';
+import { Table, Card, CardHeader, CardBody, Tabs, Tab, Button } from '@nextui-org/react';
 import style from "./components/style/CardU.module.css";
 import PersonalData from './components/PersonalData';
 import ContactData from './components/ContactData';
@@ -9,21 +9,23 @@ import StatusData from './components/StatusData';
 import WorkExperience from './components/WorkExperience';
 
 export default function Page() {
+  const [userId, setUserId] = useState(2);
   const [user, setUser] = useState(null);
   const [userExp, setUserExp] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [isEditable, setIsEditable] = useState(false);
 
 
   async function fetchData() {
+    setLoading(true);
     try {
-      const userId = 2; // Reemplaza con el ID del usuario que deseas obtener
-      const response = await fetch(`/api/usuario/${userId}`);
+      const UsuarioId = userId; // Reemplaza con el ID del usuario que deseas obtener
+      const response = await fetch(`/api/usuario/${UsuarioId}`);
   
       if (response.ok) {
         const user = await response.json();
         setUser(user);
         setLoading(false);
-  
         // Luego de obtener los datos del usuario, puedes llamar a fetchUserExpData
         await fetchUserExpData(user);
       } else {
@@ -38,7 +40,6 @@ export default function Page() {
     try {
       const rfc = user.RFC;
       const response = await fetch(`/api/usuario/experienciaLaboral?rfc=${rfc}`);
-      console.log("ss")
       if (response.ok) {
         const data = await response.json();
         setUserExp(data);
@@ -81,7 +82,7 @@ export default function Page() {
   const renderTabContent = (item) => {
     switch (item.id) {
       case "personalData":
-        return <PersonalData user = {user}/>;
+        return <PersonalData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "contactData":
         return <ContactData user = {user}/>;
       case "employmentStatus":
@@ -113,6 +114,9 @@ export default function Page() {
             )}
           </Tabs>
         </div>
+        <Button className='w-1/2' color='secondary' variant={isEditable?'solid' : 'flat'} size='md' onClick={()=> setIsEditable(!isEditable)}>
+          {isEditable? "Cancelar" : "Editar informacion personal"}
+        </Button>
       </CardBody>
     </Card>
   );
