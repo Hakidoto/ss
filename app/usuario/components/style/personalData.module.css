@@ -20,3 +20,12 @@
     color:#691c32;
 }
 
+.hov{
+    transition: all 0.3s ease; /* Agrega una transición suave a todas las propiedades con duración de 0.3 segundos */
+}
+
+.hov:hover{
+    margin-bottom: 7px;
+    height: 200px;
+    width: 200px;
+}
