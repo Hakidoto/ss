@@ -18,7 +18,7 @@
         "name": "Next.js: debug full stack",
         "type": "node-terminal",
         "request": "launch",
-        "command": "npx next dev --turbo",
+        "command": "npm run dev",
         "serverReadyAction": {
           "pattern": "- Local:.+(https?://.+)",
           "uriFormat": "%s",

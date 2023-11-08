@@ -8,7 +8,6 @@ import { usePathname } from "next/navigation";
 import { PlusIcon } from "@/app/components/icons/PlusIcon";
 import { LuSave } from "react-icons/lu";
 
-
 const getQuestions = (id) => {
   // Ensure you return the promise from fetch
   return fetch(`/api/cuestionario/pregunta/${id}`, {
@@ -26,13 +25,28 @@ const getQuestions = (id) => {
   });
 };
 
+const getAnswers = () => {
+  // Ensure you return the promise from fetch
+  return fetch(`/api/cuestionario/respuesta`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => {
+    // Check for a successful response (status code 200)
+    if (!res.ok) {
+      throw new Error(`Request failed with status: ${res.status}`);
+    }
+    // Parse the response as JSON
+    return res.json();
+  });
+};
+
 export default function Page() {
   const [questionData, setQuestionData] = useState([]);
-  const [newQuestion, setNewQuestion] = useState("");
+  const [answerData, setAnswerData] = useState([]);
   const [newQuestionAdded, setNewQuestionAdded] = useState(false); // Flag to track new question
   const [questionAnswers, setQuestionAnswers] = useState({});
-
-
   const pathname = usePathname();
   const parts = pathname.split("/");
   const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
@@ -40,10 +54,12 @@ export default function Page() {
   const fetchData = async () => {
     try {
       // Assuming getSurveys returns an array of questions objects
-      const data = await getQuestions(id);
+      const questions = await getQuestions(id);
+      const answers = await getAnswers();
 
-      setQuestionData(data);
-      console.log(data);
+      setAnswerData(answers);
+      setQuestionData(questions);
+      console.log(filteredAnswers);
     } catch (error) {
       // Handle error if needed
       console.error("Error fetching data:", error);
@@ -100,7 +116,7 @@ export default function Page() {
 
   useEffect(() => {
     fetchData();
-  // eslint-disable-next-line react-hooks/exhaustive-deps
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Fetch data when the component mounts
 
   return (
@@ -110,17 +126,23 @@ export default function Page() {
           <h2 className="text-md">Edicion de encuesta</h2>
         </CardHeader>
         <CardBody>
-          {questionData.map((question, index) => (
-            <CardPregunta
-              key={question.question_id}
-              index={index}
-              pregunta={question}
-              onRemove={() => removeQuestion(index)}
-              removeAnswers={() => removeAnswers(index)} // Pass this function
-              newQuestionAdded={newQuestionAdded}
-              getAllQuestionsAndAnswers={(answers) => getAllQuestionsAndAnswers(question.question_id, answers)}
-            />
-          ))}
+          {questionData.map((question, index) => {
+            return (
+              <CardPregunta
+                key={question.question_id}
+                index={index}
+                pregunta={question}
+                respuesta={answerData}
+                onRemove={() => removeQuestion(index)}
+                removeAnswers={() => removeAnswers(index)} // Pass this function
+                newQuestionAdded={newQuestionAdded}
+                getAllQuestionsAndAnswers={(answers) =>
+                  getAllQuestionsAndAnswers(question.question_id, answers)
+                }
+              />
+            );
+          })}
+
           <div className="flex justify-around">
             <div className="w-1/5">
               <Button

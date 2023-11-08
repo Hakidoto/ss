@@ -15,30 +15,23 @@ import {
   SelectItem,
   Textarea,
 } from "@nextui-org/react";
+import { usePathname } from "next/navigation";
 
 import React, { cache, use } from "react";
 import { useEffect, useState } from "react";
 
-const getQuestions = (id) => {
-  // Ensure you return the promise from fetch
-  return fetch(`/api/cuestionario/respuesta/${id}`, {
-    method: "GET",
-    headers: {
-      "Content-Type": "application/json",
-    },
-  }).then((res) => {
-    // Check for a successful response (status code 200)
-    if (!res.ok) {
-      throw new Error(`Request failed with status: ${res.status}`);
-    }
-    // Parse the response as JSON
-    return res.json();
-  });
-};
-
-export default function CardPregunta({ pregunta, onRemove, newQuestionAdded, getAllQuestionsAndAnswers }) {
+export default function CardPregunta({ pregunta, respuesta, onRemove, newQuestionAdded, getAllQuestionsAndAnswers }) {
   const [answerData, setAnswerData] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
+  const pathname = usePathname();
+  const parts = pathname.split("/");
+  const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
+
+  useEffect(() => {
+    const filteredAnswers = respuesta.filter((item) => (item.question_id === pregunta.question_id && item.survey_id === id));
+    setAnswerData(filteredAnswers);
+    getAllQuestionsAndAnswers(filteredAnswers);
+  }, [respuesta, pregunta.question_id]);
 
   const tipoPregunta = [
     {
@@ -59,20 +52,6 @@ export default function CardPregunta({ pregunta, onRemove, newQuestionAdded, get
       description: "La encuesta se encuentra programada para una fecha futura",
     },
   ];
-
-  const fetchData = async () => {
-    try {
-      // Only fetch data if the newQuestionAdded flag is false
-      if (!newQuestionAdded) {
-        // Assuming getSurveys returns an array of questions objects
-        const data = await getQuestions(pregunta.question_id);
-        setAnswerData(data);
-      }
-    } catch (error) {
-      // Handle error if needed
-      console.error("Error fetching data:", error);
-    }
-  };
 
   const renderAnswerInput = (answer, index) => {
     if (selectedType === "checkbox") {
@@ -151,11 +130,6 @@ export default function CardPregunta({ pregunta, onRemove, newQuestionAdded, get
     setAnswerData(updatedAnswers);
     getAllQuestionsAndAnswers(updatedAnswers);
   };
-
-
-  useEffect(() => {
-    fetchData();
-  }, []); // Fetch data when the component mounts
 
   return (
     <>

@@ -1,0 +1,15 @@
+// surveyHandler.js
+import { NextResponse } from "next/server";
+const { PrismaClient } = require("@prisma/client");
+
+const prisma = new PrismaClient();
+
+export async function GET() {
+    try {
+      const allAnswers = await prisma.answers.findMany();
+      return NextResponse.json(allAnswers);
+    } catch (error) {
+      console.error("Error handling GET request:", error);
+      return NextResponse.error(error.message, { status: 500 });
+    }
+  }
