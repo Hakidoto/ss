@@ -39,10 +39,10 @@ export default function NavbarTRC() {
 
   useEffect(() => {
     const pathname = window.location.pathname;
-    if (pathname === "/login") {
+    if (pathname === "/login" || pathname === "/restorepass") {
       const navbar = document.getElementById("navbar");
       if (navbar) {
-        navbar.style.display = "none"; // Oculta el Navbar
+        navbar.style.display = "none"; 
       }
     }
   }, []);
