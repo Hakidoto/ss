@@ -39,7 +39,7 @@ export default function NavbarTRC() {
 
   useEffect(() => {
     const pathname = window.location.pathname;
-    if (pathname === "/login" || pathname === "/restorepass") {
+    if (pathname === "/login" || pathname === "/login/restorepass") {
       const navbar = document.getElementById("navbar");
       if (navbar) {
         navbar.style.display = "none"; 
