@@ -13,12 +13,13 @@ import {
 export default function RestorePass() {
   return (
     <div className="flex items-center justify-center">
-      <Card className="max-w-full w-[340px] h-[400px]">
+      <Card className="w-[400px] h-[500px]">
         <CardHeader className="justify-center p-3">
-          <div className="text-center">
-            <h1>Recuperacion de contraseña</h1>
+          <div className="flex gap-4 justify-center items-center">
+            <h1>Recupera tu cuenta</h1>
           </div>
         </CardHeader>
+
         <CardBody className="overflow-hidden">
           <div>
             <form className="flex flex-col gap-4">
@@ -27,16 +28,26 @@ export default function RestorePass() {
                 label="Email"
                 placeholder="Ingresa tu correo"
                 type="username"
+                className="mb-1"
               />
 
-              <div className="flex justify-end mt-5">
-                <Button fullWidth color="primary">
-                  Enviar codigo de Recuperacion
-                </Button>
-              </div>
-              <div className="flex justify-end ">
-                <Link size="sm" href="/login/">
-                  Volver
+              <hr className="my-1 w-full border-gray-300" />
+
+              <div className="flex gap-2 justify-end ">
+                <Link href="/login">
+                  <a>
+                    <Button size="md" radius="lg" color="danger">
+                      Cancelar
+                    </Button>
+                  </a>
+                </Link>
+
+                <Link href="/login">
+                  <a>
+                    <Button size="md" radius="lg" color="primary">
+                      Enviar
+                    </Button>
+                  </a>
                 </Link>
               </div>
             </form>
