@@ -19,3 +19,26 @@ export async function GET(req, {params}) {
     return NextResponse.error(error.message, { status: 500 });
   }
 }
+
+export async function PUT(req, { params }) {
+  try {
+    const id = params.id;
+    console.log("apoci si mucho fail: ", id)
+    //const data = {nombre: "Nuevo Nombree", direccion: "yo q se"}//Exito <---------------------
+    //const data = JSON.parse(req.body); //Error <---------------------
+    const body = await req.json();
+
+    //const data = {nombre: body.nombre, direccion:body.direccion}
+    const data = { ...body };
+
+    console.log(data)
+    const updatedUser = await prisma.usrs.update({
+      where: { id: parseInt(id) },
+      data,
+    });
+
+    return NextResponse.json(updatedUser);
+  } catch (error) {
+    return NextResponse.error(error.message, { status: 500 });
+  }
+}
