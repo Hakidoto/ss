@@ -20,7 +20,13 @@ import { usePathname } from "next/navigation";
 import React, { cache, use } from "react";
 import { useEffect, useState } from "react";
 
-export default function CardPregunta({ pregunta, respuesta, onRemove, newQuestionAdded, getAllQuestionsAndAnswers }) {
+export default function CardPregunta({
+  pregunta,
+  respuesta,
+  onRemove,
+  newQuestionAdded,
+  getAllQuestionsAndAnswers,
+}) {
   const [answerData, setAnswerData] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
   const pathname = usePathname();
@@ -28,11 +34,14 @@ export default function CardPregunta({ pregunta, respuesta, onRemove, newQuestio
   const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
 
   useEffect(() => {
-    const filteredAnswers = respuesta.filter((item) => (item.question_id === pregunta.question_id && item.survey_id === id));
+    const filteredAnswers = respuesta.filter(
+      (item) =>
+        item.question_id === pregunta.question_id && item.survey_id === id
+    );
     setAnswerData(filteredAnswers);
     getAllQuestionsAndAnswers(filteredAnswers);
   }, [respuesta, pregunta.question_id]);
-
+  
   const tipoPregunta = [
     {
       label: "Opcion Multiple",
@@ -56,38 +65,90 @@ export default function CardPregunta({ pregunta, respuesta, onRemove, newQuestio
   const renderAnswerInput = (answer, index) => {
     if (selectedType === "checkbox") {
       return (
-        <Input
-        key={answer.answer_id}
-        autoFocus
-        label={`Respuesta ${index + 1}`}
-        defaultValue={answer.answer_text}
-        placeholder={`Ingresa respuesta ${index + 1}`}
-        variant="bordered"
-        className=" mb-3"
-      />
+        <>
+          <div className=" flex items-center justify-between">
+            <div className="mb-3 ml-3 w-1/12">
+              <Button
+                isIconOnly
+                color="danger"
+                aria-label="Like"
+                isDisabled={answerData.length === 1}
+                onClick={() => handleDelete(index)}
+              >
+                <DeleteIcon />
+              </Button>
+            </div>
+            <div className=" w-11/12">
+              <Input
+                key={answer.answer_id}
+                autoFocus
+                label={`Respuesta ${index + 1}`}
+                defaultValue={answer.answer_text}
+                placeholder={`Ingresa respuesta ${index + 1}`}
+                variant="bordered"
+                className=" mb-3"
+              />
+            </div>
+          </div>
+        </>
       );
     } else if (selectedType === "multiple_choice") {
       return (
-        <Input
-          key={answer.answer_id}
-          autoFocus
-          label={`Respuesta ${index + 1}`}
-          defaultValue={answer.answer_text}
-          placeholder={`Ingresa respuesta ${index + 1}`}
-          variant="bordered"
-          className=" mb-3"
-        />
+        <>
+          <div className=" flex items-center justify-between">
+            <div className="mb-3 ml-3 w-1/12">
+              <Button
+                isIconOnly
+                color="danger"
+                aria-label="Like"
+                isDisabled={answerData.length === 1}
+                onClick={() => handleDelete(index)}
+              >
+                <DeleteIcon />
+              </Button>
+            </div>
+            <div className=" w-11/12">
+              <Input
+                key={answer.answer_id}
+                autoFocus
+                label={`Respuesta ${index + 1}`}
+                defaultValue={answer.answer_text}
+                placeholder={`Ingresa respuesta ${index + 1}`}
+                variant="bordered"
+                className=" mb-3"
+              />
+            </div>
+          </div>
+        </>
       );
-    } else if (selectedType === "open_text") {
+    } else if (selectedType === "open_text" && index === 0) {
       return (
-        <Textarea
-          key={answer.answer_id}
-          label={`Respuesta ${index + 1}`}
-          defaultValue={answer.answer_text}
-          placeholder={`Ingresa respuesta abierta ${index + 1}`}
-          variant="bordered"
-          className=" mb-3"
-        />
+        <>
+         
+          <div className=" flex items-center justify-between">
+            <div className="mb-3 ml-3 w-1/12">
+              <Button
+                isIconOnly
+                isDisabled={selectedType === "open_text"}
+                color="danger"
+                aria-label="Like"
+                onClick={() => handleDelete(index)}
+              >
+                <DeleteIcon />
+              </Button>
+            </div>
+            <div className=" w-11/12">
+              <Textarea
+                isDisabled
+                key={answer.answer_id}
+                label={`Respuesta abierta`}
+                placeholder={`Ingresa una respuesta...`}
+                variant="bordered"
+                className=" mb-3"
+              />
+            </div>
+          </div>
+        </>
       );
     }
   };
@@ -95,15 +156,30 @@ export default function CardPregunta({ pregunta, respuesta, onRemove, newQuestio
   const handleSelectorChange = (event) => {
     const selectedValue = event.target.value;
     setSelectedType(selectedValue);
+    if (selectedValue !== "open_text") {
+      const defaultAnswers = Array.from({ length: 4 }, (_, index) => ({
+        answer_id: index,
+        question_id: pregunta.question_id,
+        answer_text: `Ingresa una respuesta...`,
+      }));
+      setAnswerData(defaultAnswers);
+      getAllQuestionsAndAnswers(answerData);
+    } else {
+      // Reset answerData to an array with a single element for "open_text"
+      setAnswerData([{ answer_id: 0, question_id: pregunta.question_id, answer_text: "Añade una respuesta..." }]);
+      getAllQuestionsAndAnswers(answerData);
+    }
+    
+    
   };
 
   const handleAddResponse = () => {
     // Create a new item to add to the answerData array.
 
     const highestAnswerId =
-    answerData.length > 0
-      ? Math.max(...answerData.map((answer) => answer.answer_id))
-      : 0;
+      answerData.length > 0
+        ? Math.max(...answerData.map((answer) => answer.answer_id))
+        : 0;
 
     const newResponse = {
       answer_id: highestAnswerId + 1,
@@ -121,12 +197,14 @@ export default function CardPregunta({ pregunta, respuesta, onRemove, newQuestio
     const updatedAnswerData = [...answerData];
     updatedAnswerData.splice(indexToDelete, 1);
     setAnswerData(updatedAnswerData);
-    getAllQuestionsAndAnswers(updatedAnswerData)
+    getAllQuestionsAndAnswers(updatedAnswerData);
   };
 
   const removeAllAnswers = () => {
     // Filter out answers with the specified question_id
-    const updatedAnswers = answerData.filter((answer) => answer.question_id !== pregunta.question_id);
+    const updatedAnswers = answerData.filter(
+      (answer) => answer.question_id !== pregunta.question_id
+    );
     setAnswerData(updatedAnswers);
     getAllQuestionsAndAnswers(updatedAnswers);
   };
@@ -167,31 +245,16 @@ export default function CardPregunta({ pregunta, respuesta, onRemove, newQuestio
           {answerData.length > 0 ? (
             <CardBody>
               {answerData.map((answer, index) => (
-                <>
-                  <div className=" flex items-center justify-between">
-                    <div className="mb-3 w-1/12">
-                      <Button
-                        isIconOnly
-                        color="danger"
-                        aria-label="Like"
-                        onClick={() => handleDelete(index)}
-                      >
-                        <DeleteIcon />
-                      </Button>
-                    </div>
-                    <div className=" w-11/12">
-                      {renderAnswerInput(answer, index)}
-                    </div>
-                  </div>
-                </>
+                <>{renderAnswerInput(answer, index)}</>
               ))}
               <div className="flex justify-between">
-                <div className="w-1/5">
+                <div className="ml-3 w-1/5">
                   <Button
                     onClick={handleAddResponse}
                     className="w-full"
                     color="primary"
                     endContent={<PlusIcon />}
+                    isDisabled={selectedType === "open_text"}
                   >
                     Añadir respuesta
                   </Button>
