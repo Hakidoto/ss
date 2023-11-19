@@ -23,6 +23,7 @@ import { useEffect, useState } from "react";
 export default function CardPregunta({
   pregunta,
   respuesta,
+  setRespuesta,
   onRemove,
   newQuestionAdded,
   getAllQuestionsAndAnswers,
@@ -41,7 +42,7 @@ export default function CardPregunta({
     setAnswerData(filteredAnswers);
     getAllQuestionsAndAnswers(filteredAnswers);
   }, [respuesta, pregunta.question_id]);
-  
+
   const tipoPregunta = [
     {
       label: "Opcion Multiple",
@@ -87,6 +88,7 @@ export default function CardPregunta({
                 placeholder={`Ingresa respuesta ${index + 1}`}
                 variant="bordered"
                 className=" mb-3"
+                onChange={(e) => updateAnswerData(index, e.target.value)}
               />
             </div>
           </div>
@@ -116,6 +118,7 @@ export default function CardPregunta({
                 placeholder={`Ingresa respuesta ${index + 1}`}
                 variant="bordered"
                 className=" mb-3"
+                onChange={(e) => updateAnswerData(index, e.target.value)}
               />
             </div>
           </div>
@@ -124,7 +127,6 @@ export default function CardPregunta({
     } else if (selectedType === "open_text" && index === 0) {
       return (
         <>
-         
           <div className=" flex items-center justify-between">
             <div className="mb-3 ml-3 w-1/12">
               <Button
@@ -145,6 +147,7 @@ export default function CardPregunta({
                 placeholder={`Ingresa una respuesta...`}
                 variant="bordered"
                 className=" mb-3"
+                onChange={(e) => updateAnswerData(index, e.target.value)}
               />
             </div>
           </div>
@@ -161,16 +164,22 @@ export default function CardPregunta({
         answer_id: index,
         question_id: pregunta.question_id,
         answer_text: `Ingresa una respuesta...`,
+        survey_id: id,
       }));
       setAnswerData(defaultAnswers);
       getAllQuestionsAndAnswers(answerData);
     } else {
       // Reset answerData to an array with a single element for "open_text"
-      setAnswerData([{ answer_id: 0, question_id: pregunta.question_id, answer_text: "Añade una respuesta..." }]);
+      setAnswerData([
+        {
+          answer_id: 0,
+          question_id: pregunta.question_id,
+          answer_text: "Añade una respuesta...",
+          survey_id: id,
+        },
+      ]);
       getAllQuestionsAndAnswers(answerData);
     }
-    
-    
   };
 
   const handleAddResponse = () => {
@@ -185,6 +194,7 @@ export default function CardPregunta({
       answer_id: highestAnswerId + 1,
       question_id: pregunta.question_id,
       answer_text: "Añade una respuesta...", // You can set the default values as needed
+      survey_id: id,
     };
 
     // Create a copy of the answerData array, add the new item, and update the state.
@@ -196,6 +206,21 @@ export default function CardPregunta({
   const handleDelete = (indexToDelete) => {
     const updatedAnswerData = [...answerData];
     updatedAnswerData.splice(indexToDelete, 1);
+    setAnswerData(updatedAnswerData);
+    getAllQuestionsAndAnswers(updatedAnswerData);
+  };
+
+  const updateAnswerData = (index, newText) => {
+    // Create a copy of the answerData array
+    const updatedAnswerData = [...answerData];
+
+    // Update the answer_text of the specified answer at the given index
+    updatedAnswerData[index] = {
+      ...updatedAnswerData[index],
+      answer_text: newText,
+    };
+
+    // Update the state with the new data
     setAnswerData(updatedAnswerData);
     getAllQuestionsAndAnswers(updatedAnswerData);
   };

@@ -72,6 +72,71 @@ export default function Page() {
     }));
   };
 
+  const saveSurveyData = async () => {
+    let allRequestsSuccessful = true;
+
+    try {
+      // Extract the id from each question's question_id of the questionData usestate
+      for (const question of questionData) {
+        const { question_id } = question;
+        const questionResponse = await fetch(
+          `/api/cuestionario/pregunta/${question_id}`,
+          {
+            method: "PUT",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(question),
+          }
+        );
+
+        // Check if the request was successful
+        if (!questionResponse.ok) {
+          console.error(`Failed to save question with id ${question_id}`);
+          allRequestsSuccessful = false;
+          // Handle error as needed
+        }
+      }
+
+      for (const question_id in questionAnswers) {
+        const answers = questionAnswers[question_id];
+      
+        // Assuming answers is an array, you can loop through it
+        for (const singleAnswer of answers) {
+          const answerResponse = await fetch(
+            `/api/cuestionario/respuesta/${singleAnswer.answer_id}`, // Use answer_id here
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(singleAnswer),
+            }
+          );
+
+          // Check if the request was successful
+          if (!answerResponse.ok) {
+            console.error(
+              `Failed to save answer for question with id ${question_id}`
+            );
+            allRequestsSuccessful = false;
+            // Handle error as needed
+          }
+        }
+      }
+
+      if (allRequestsSuccessful) {
+        console.log("All survey data saved successfully!");
+      } else {
+        console.error(
+          "Some requests failed. Survey data not saved completely."
+        );
+      }
+    } catch (error) {
+      console.error("Error saving survey data:", error);
+    }
+  };
+
   // Function to remove a question by index
   const removeQuestion = (indexToRemove) => {
     // Create a new array without the item to remove
@@ -83,7 +148,6 @@ export default function Page() {
   };
 
   const addQuestion = () => {
-    console.log(questionData);
     // Find the highest question_id in the existing questions
     const highestQuestionId =
       questionData.length > 0
@@ -118,6 +182,7 @@ export default function Page() {
   }, []); // Fetch data when the component mounts
 
   useEffect(() => {
+    console.log(questionData);
     console.log(questionAnswers);
   }, [questionAnswers]);
 
@@ -135,6 +200,7 @@ export default function Page() {
                 index={index}
                 pregunta={question}
                 respuesta={answerData}
+                setRespuesta={setAnswerData}
                 onRemove={() => removeQuestion(index)}
                 removeAnswers={() => removeAnswers(index)} // Pass this function
                 newQuestionAdded={newQuestionAdded}
@@ -160,6 +226,7 @@ export default function Page() {
               <Button
                 className="w-full"
                 color="success"
+                onClick={saveSurveyData}
                 endContent={<LuSave />}
               >
                 Guardar encuesta
