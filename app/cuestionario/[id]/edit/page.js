@@ -176,6 +176,15 @@ export default function Page() {
     setNewQuestionAdded(true);
   };
 
+  const updateQuestion = (index, newValue) => {
+    // Create a new array with the updated value
+    const updatedQuestion = [...questionData];
+    updatedQuestion[index] = newValue;
+
+    // Set the state with the updated array
+    setQuestionData(updatedQuestion);
+  };
+
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -207,6 +216,8 @@ export default function Page() {
                 getAllQuestionsAndAnswers={(answers) =>
                   getAllQuestionsAndAnswers(question.question_id, answers)
                 }
+                updateQuestions={(questionData) =>
+                  updateQuestion(index, questionData)}
               />
             );
           })}

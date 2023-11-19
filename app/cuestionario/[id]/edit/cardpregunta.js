@@ -27,6 +27,7 @@ export default function CardPregunta({
   onRemove,
   newQuestionAdded,
   getAllQuestionsAndAnswers,
+  updateQuestions
 }) {
   const [answerData, setAnswerData] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
@@ -225,6 +226,16 @@ export default function CardPregunta({
     getAllQuestionsAndAnswers(updatedAnswerData);
   };
 
+  const handleQuestionTextChange = (event) => {
+    const newQuestionText = event.target.value;
+
+    // Call the updateQuestions function to update the question_text
+    updateQuestions({
+      ...pregunta,
+      question_text: newQuestionText
+    });
+  };
+
   const removeAllAnswers = () => {
     // Filter out answers with the specified question_id
     const updatedAnswers = answerData.filter(
@@ -247,7 +258,8 @@ export default function CardPregunta({
                 className="w-full"
                 label="Pregunta"
                 placeholder="Ingresa el nombre de la pregunta"
-                defaultValue={pregunta.question_text}
+                value={pregunta.question_text}
+                onChange={handleQuestionTextChange} 
               />
             </div>
             <div className="w-1/3 ml-4 mr-3">
