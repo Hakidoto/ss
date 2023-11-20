@@ -7,6 +7,8 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { PlusIcon } from "@/app/components/icons/PlusIcon";
 import { LuSave } from "react-icons/lu";
+import { toast} from 'react-toastify';
+
 
 const getQuestions = (id) => {
   // Ensure you return the promise from fetch
@@ -127,25 +129,50 @@ export default function Page() {
 
       if (allRequestsSuccessful) {
         console.log("All survey data saved successfully!");
+        toast.success("Datos guardados con exito.");
+
       } else {
         console.error(
           "Some requests failed. Survey data not saved completely."
         );
+        toast.error("Hubo un error al guardar las encuestas, intente de nuevo...");
+
       }
     } catch (error) {
       console.error("Error saving survey data:", error);
     }
   };
 
-  // Function to remove a question by index
-  const removeQuestion = (indexToRemove) => {
-    // Create a new array without the item to remove
-    const updatedQuestions = questionData.filter(
-      (_, index) => index !== indexToRemove
-    );
-    // Update the state with the new array
-    setQuestionData(updatedQuestions);
+  const removeQuestion = async (indexToRemove) => {
+    try {
+      // Create a new array without the item to remove
+      const updatedQuestions = [...questionData];
+      const deletedQuestion = updatedQuestions.splice(indexToRemove, 1)[0];
+      console.log(deletedQuestion);
+      // Update the state with the new array
+      setQuestionData(updatedQuestions);
+    
+      const response = await fetch(`/api/cuestionario/pregunta/${deletedQuestion.question_id}`, {
+        method: 'DELETE',
+        headers: {
+          'Content-Type': 'application/json',
+          // Add any additional headers if needed
+        },
+        body: JSON.stringify(deletedQuestion),
+      });
+  
+      if (!response.ok) {
+        throw new Error(`Failed to delete question. Status: ${response.status}`);
+      }
+  
+      // Add any additional logic after a successful deletion
+  
+    } catch (error) {
+      console.error("Error handling delete question request:", error);
+      // Handle error as needed
+    }
   };
+  
 
   const addQuestion = () => {
     // Find the highest question_id in the existing questions
@@ -197,7 +224,7 @@ export default function Page() {
 
   return (
     <>
-      <Card className="mx-auto my-auto flex-1 w-full">
+      <Card className="mx-auto my-auto flex-1 min-h-[80vh]">
         <CardHeader className="flex items-center justify-center">
           <h2 className="text-md">Edicion de encuesta</h2>
         </CardHeader>

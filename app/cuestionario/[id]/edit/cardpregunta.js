@@ -27,7 +27,7 @@ export default function CardPregunta({
   onRemove,
   newQuestionAdded,
   getAllQuestionsAndAnswers,
-  updateQuestions
+  updateQuestions,
 }) {
   const [answerData, setAnswerData] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
@@ -204,11 +204,33 @@ export default function CardPregunta({
     getAllQuestionsAndAnswers(updatedAnswerData);
   };
 
-  const handleDelete = (indexToDelete) => {
-    const updatedAnswerData = [...answerData];
-    updatedAnswerData.splice(indexToDelete, 1);
-    setAnswerData(updatedAnswerData);
-    getAllQuestionsAndAnswers(updatedAnswerData);
+  const handleDelete = async (indexToDelete) => {
+    try {
+      const updatedAnswerData = [...answerData];
+      const deletedAnswer = updatedAnswerData.splice(indexToDelete, 1)[0];
+      setAnswerData(updatedAnswerData);
+
+      const response = await fetch(
+        `/api/cuestionario/respuesta/${deletedAnswer.answer_id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            // Add any additional headers if needed
+          },
+          body: JSON.stringify(deletedAnswer),
+        }
+      );
+
+      if (!response.ok) {
+        throw new Error(`Failed to delete answer. Status: ${response.status}`);
+      }
+
+      // Add any additional logic after a successful deletion
+    } catch (error) {
+      console.error("Error handling delete request:", error);
+      // Handle error as needed
+    }
   };
 
   const updateAnswerData = (index, newText) => {
@@ -232,7 +254,7 @@ export default function CardPregunta({
     // Call the updateQuestions function to update the question_text
     updateQuestions({
       ...pregunta,
-      question_text: newQuestionText
+      question_text: newQuestionText,
     });
   };
 
@@ -259,7 +281,7 @@ export default function CardPregunta({
                 label="Pregunta"
                 placeholder="Ingresa el nombre de la pregunta"
                 value={pregunta.question_text}
-                onChange={handleQuestionTextChange} 
+                onChange={handleQuestionTextChange}
               />
             </div>
             <div className="w-1/3 ml-4 mr-3">
