@@ -88,7 +88,7 @@ export default function Page() {
   const renderTabContent = (item) => {
     switch (item.id) {
       case "cursos":
-        return <Cursos cursos = {cursos} isLoaded = {loading}/>;
+        return <Cursos cursos = {cursos} isLoaded = {loading} fetchData={fetchUserCursos}/>;
       case "certificaciones":
         return <Certificaciones certificacion = {certificaciones} isLoaded = {loading}/>;
       case "lenguas":

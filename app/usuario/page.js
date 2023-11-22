@@ -84,11 +84,11 @@ export default function Page() {
       case "personalData":
         return <PersonalData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "contactData":
-        return <ContactData user = {user}/>;
+        return <ContactData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "employmentStatus":
-        return <StatusData user = {user}/>;
+        return <StatusData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "workExperience":
-        return <WorkExperience userExp = {userExp} loading = {loading}/>;
+        return <WorkExperience userExp={userExp} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading}/>;
       default:
         return null;
     }
@@ -114,7 +114,7 @@ export default function Page() {
             )}
           </Tabs>
         </div>
-        <Button className='w-1/2' color='secondary' variant={isEditable?'solid' : 'flat'} size='md' onClick={()=> setIsEditable(!isEditable)}>
+        <Button className={isEditable? `w-1/2  ${style.hov}` : `w-1/2`} color='secondary' variant={isEditable?'solid' : 'flat'} size='md' onClick={()=> setIsEditable(!isEditable)}>
           {isEditable? "Cancelar" : "Editar informacion personal"}
         </Button>
       </CardBody>

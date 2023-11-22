@@ -11,3 +11,13 @@
 .cardF{
   height: 100%;
 }
+
+.hov:hover {
+  background-color: #a81f00; /* Cambia el color de fondo a rojo */
+  color: #fff; /* Cambia el color del texto a blanco */
+  border: 2px solid #a81f00; /* Añade un borde rojo alrededor del botón */
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Añade una sombra sutil */
+  transform: scale(1.03); /* Escala ligeramente el botón para un efecto de aumento */
+  transition: all 0.3s ease; /* Agrega una transición suave para una animación más agradable */
+  cursor: pointer; /* Cambia el cursor a mano para indicar que es interactivo */
+}
