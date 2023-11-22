@@ -28,6 +28,8 @@ export default function CardPregunta({
   newQuestionAdded,
   getAllQuestionsAndAnswers,
   updateQuestions,
+  setPregunta,
+  questionData,
 }) {
   const [answerData, setAnswerData] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
@@ -160,6 +162,18 @@ export default function CardPregunta({
   const handleSelectorChange = (event) => {
     const selectedValue = event.target.value;
     setSelectedType(selectedValue);
+    const updatedQuestionData = [...questionData]; // Create a copy of the array
+    // Find the index of the question in the array
+    const questionIndex = updatedQuestionData.findIndex(
+      (q) => q.question_id === pregunta.question_id
+    );
+
+    // Update the question_type property
+    updatedQuestionData[questionIndex].question_type = selectedValue;
+
+    // Update the state with the new array
+    setPregunta(updatedQuestionData);
+
     if (selectedValue !== "open_text") {
       const defaultAnswers = Array.from({ length: 4 }, (_, index) => ({
         answer_id: index,
@@ -171,14 +185,13 @@ export default function CardPregunta({
       getAllQuestionsAndAnswers(answerData);
     } else {
       // Reset answerData to an array with a single element for "open_text"
-      setAnswerData([
-        {
-          answer_id: 0,
-          question_id: pregunta.question_id,
-          answer_text: "Añade una respuesta...",
-          survey_id: id,
-        },
-      ]);
+      const defaultAnswers = Array.from({ length: 1 }, (_, index) => ({
+        answer_id: index,
+        question_id: pregunta.question_id,
+        answer_text: `Ingresa una respuesta...`,
+        survey_id: id,
+      }));
+      setAnswerData(defaultAnswers);
       getAllQuestionsAndAnswers(answerData);
     }
   };

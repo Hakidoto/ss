@@ -235,6 +235,8 @@ export default function Page() {
                 key={question.question_id}
                 index={index}
                 pregunta={question}
+                questionData={questionData}
+                setPregunta={setQuestionData}
                 respuesta={answerData}
                 setRespuesta={setAnswerData}
                 onRemove={() => removeQuestion(index)}
@@ -273,7 +275,15 @@ export default function Page() {
           </div>
           ): (
             <CardBody className="flex items-center justify-center">
-              <p className="text-md mb-3">Cargando...</p>
+              <p className="text-md mb-3">No parece haber ninguna pregunta, añade una</p>
+              <Button
+                className="w-full"
+                color="primary"
+                onClick={addQuestion}
+                endContent={<PlusIcon />}
+              >
+                Añadir pregunta
+              </Button>
             </CardBody>
           )}
         </CardBody>
