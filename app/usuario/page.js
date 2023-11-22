@@ -11,7 +11,7 @@ import { useSession } from 'next-auth/react';
 
 export default function Page() {
   const { data: session, status } = useSession();
-  //const [userId, setUserId] = useState();
+  const [userId, setUserId] = useState();
   const [user, setUser] = useState(null);
   const [userRfc, setUserRfc] = useState("");
   const [userExp, setUserExp] = useState([]);
@@ -28,6 +28,7 @@ export default function Page() {
       if (response.ok) {
         const user = await response.json();
         setUser(user);
+        console.log(user)
         setUserRfc(user.RFC)
         setLoading(false);
         // Luego de obtener los datos del usuario, puedes llamar a fetchUserExpData
@@ -79,26 +80,22 @@ export default function Page() {
   
 
   useEffect(() => {
-    fetchData()
-  }, []);
+    if (session && session.user) {
+      fetchData();
+      setUserId(session.user.id)
+    }
+  }, [session]);
 
-  useEffect(() => {
-    console.log(user)
-  }, [userRfc]);
-
-
-  
-  
   const renderTabContent = (item) => {
     switch (item.id) {
       case "personalData":
-        return <PersonalData user = {user} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
+        return <PersonalData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "contactData":
-        return <ContactData user = {user} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
+        return <ContactData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "employmentStatus":
-        return <StatusData user = {user} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
+        return <StatusData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "workExperience":
-        return <WorkExperience userExp={userExp} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading} userRfc = {userRfc}/>;
+        return <WorkExperience userExp={userExp} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading} userRfc = {userRfc}/>;
       default:
         return null;
     }
