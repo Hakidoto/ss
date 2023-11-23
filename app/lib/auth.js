@@ -2,9 +2,11 @@ import { PrismaAdapter } from "@next-auth/prisma-adapter";
 import CredentialsProvider from "next-auth/providers/credentials";
 import prisma from "../components/db";
 import { compare } from "bcrypt";
+import { user } from "@nextui-org/react";
 
 export const authOptions = {
   adapter: PrismaAdapter(prisma),
+  secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
   },
@@ -48,4 +50,32 @@ export const authOptions = {
 
     }),
   ],
+  callbacks: {
+    async jwt({ token, user }) {
+      console.log(token, user);
+      // Persist the OAuth access_token and or the user id to the token right after signin
+      if (user) {
+        return{
+          ...token, 
+          username: user.username
+        }
+      }
+      return token
+    },
+    async session({ session, token }) {
+      console.log(token, session);
+      // Send properties to the client, like an access_token and user id from a provider.
+      if (session) {
+        return{
+          ...session, 
+          user: {
+            ...session.user,
+            username: token.username
+          }
+        }
+      }
+      
+      return session
+    }
+  }
 };
