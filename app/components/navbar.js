@@ -27,6 +27,7 @@ import { SunIcon } from "./icons/SunIcon";
 import { MoonIcon } from "./icons/MoonIcon";
 import style from "./styles/navbar.module.css";
 import { useEffect } from "react";
+import { signOut } from "next-auth/react";
 export default function NavbarTRC() {
   const router = useRouter();
   const pathname = usePathname();
@@ -37,12 +38,18 @@ export default function NavbarTRC() {
     { nombre: "Administracion", link: "/administracion" },
   ];
 
+  const signout = () =>
+    signOut({
+      redirect: true,
+      callbackUrl: `${window.location.origin}/login`,
+    });
+
   useEffect(() => {
     const pathname = window.location.pathname;
     if (pathname === "/login" || pathname === "/login/restorepass") {
       const navbar = document.getElementById("navbar");
       if (navbar) {
-        navbar.style.display = "none"; 
+        navbar.style.display = "none";
       }
     }
   }, []);
@@ -179,8 +186,8 @@ export default function NavbarTRC() {
               Ayuda & Comentarios
             </DropdownItem>
             <DropdownSection />
-            <DropdownItem key="logout" color="danger" href="/login">
-              Cerrar sesion
+            <DropdownItem color="danger">
+              <Button onClick={signout} variant="destructive">Cerrar sesion</Button>; 
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
