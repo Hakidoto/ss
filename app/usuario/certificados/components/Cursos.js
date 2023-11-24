@@ -5,7 +5,7 @@ import CardU from '../../components/CardU';
 import { EditIcon } from '@/app/components/icons/EditIcon';
 import { DeleteIcon } from '@/app/components/icons/DeleteIcon';
 
-const Cursos = ({cursos , isLoaded, fetchData}) => {
+const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
     const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
@@ -56,11 +56,13 @@ const Cursos = ({cursos , isLoaded, fetchData}) => {
       if(isOpenEdit){
         setEditingData((prevData) => ({
           ...prevData,
+          RFC: rfcUsuario,
           nombreCurso: inputValue
         }))
       }
       setData((prevData) => ({
         ...prevData,
+        RFC: rfcUsuario,
         nombreCurso: inputValue,
       }));
     }
@@ -69,11 +71,13 @@ const Cursos = ({cursos , isLoaded, fetchData}) => {
       if(isOpenEdit){
         setEditingData((prevData) => ({
           ...prevData,
+          RFC: rfcUsuario,
           tipoCurso: inputValue
         }))
       }
       setData((prevData) => ({
         ...prevData,
+        RFC: rfcUsuario,
         tipoCurso: inputValue,
       }));
     }
@@ -175,6 +179,7 @@ const Cursos = ({cursos , isLoaded, fetchData}) => {
       const selectedFile = e.target.files[0];
       setData((prevData) => ({
         ...prevData,
+        RFC: rfcUsuario,
         certificado: selectedFile,
       }));
     };

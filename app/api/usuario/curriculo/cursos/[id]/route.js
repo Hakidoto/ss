@@ -14,7 +14,6 @@ export async function GET(req, {params}) {
           },
         },
       });
-
     if (!user) {
       return NextResponse.error('Usuario no encontrado', { status: 404 });
     }

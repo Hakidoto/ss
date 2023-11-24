@@ -10,11 +10,13 @@ import Certificaciones from './components/Certificaciones';
 import Lenguas from './components/Lenguas';
 
 export default function Page() {
-  //const [user, setUser] = useState(null);
+  const [userId, setUserId] = useState(2);
+  const [user, setUser] = useState(null);
   const [cursos, setCursos] = useState([]);
   const [certificaciones, setCertificaciones] = useState([]);
   const [lenguas, setLenguas] = useState([]);
   const [loading, setLoading] = useState(true);
+  const [rfcUsuario, setRfcUsuario] = useState("");
   let tabs = [
     {
       id: "cursos",
@@ -30,11 +32,31 @@ export default function Page() {
     },
   ];
 
-  async function fetchUserCursos() {
+  async function fetchData() {
+    setLoading(true);
     try {
-      const rfc = "XYZ987654321";
-      const response = await fetch(`/api/usuario/curriculo/cursos?rfc=${rfc}`);
+      const UsuarioId = userId; // Reemplaza con el ID del usuario que deseas obtener
+      const response = await fetch(`/api/usuario/${UsuarioId}`);
   
+      if (response.ok) {
+        const user = await response.json();
+        setUser(user);
+        // Luego de obtener los datos del usuario, puedes llamar a fetchUserExpData
+        setRfcUsuario(user.RFC)
+        await fetchUserCursos(user);
+      } else {
+        console.error('Error al obtener datos de la API');
+      }
+    } catch (error) {
+      console.error('Error al conectarse a la API', error);
+    }
+  }
+
+
+  async function fetchUserCursos(user) {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/usuario/curriculo/cursos/curso/${encodeURIComponent(user.RFC)}`);
       if (response.ok) {
         const data = await response.json();
         setCursos(data);
@@ -45,6 +67,7 @@ export default function Page() {
     } catch (error) {
       console.error('Error al conectarse a la API', error);
     }
+    setLoading(false);
   }
   async function fetchUserCertificaciones() {
     try {
@@ -80,7 +103,7 @@ export default function Page() {
   }
 
   useEffect(() => {
-    fetchUserCursos()
+    fetchData()
     fetchUserCertificaciones()
     fetchUserLenguas()
   }, [])
@@ -88,7 +111,7 @@ export default function Page() {
   const renderTabContent = (item) => {
     switch (item.id) {
       case "cursos":
-        return <Cursos cursos = {cursos} isLoaded = {loading} fetchData={fetchUserCursos}/>;
+        return <Cursos cursos = {cursos} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
       case "certificaciones":
         return <Certificaciones certificacion = {certificaciones} isLoaded = {loading}/>;
       case "lenguas":
