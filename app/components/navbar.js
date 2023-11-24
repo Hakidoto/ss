@@ -187,7 +187,7 @@ export default function NavbarTRC() {
             </DropdownItem>
             <DropdownSection />
             <DropdownItem color="danger">
-              <Button onClick={signout} variant="destructive">Cerrar sesion</Button>; 
+              <Button onClick={signout} variant="destructive">Cerrar sesion</Button> 
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>
