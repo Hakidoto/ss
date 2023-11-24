@@ -9,6 +9,8 @@ export const authOptions = {
   secret: process.env.NEXTAUTH_SECRET,
   session: {
     strategy: "jwt",
+      // Configuración del tiempo de expiración del token
+      maxAge: 60 * 60, // Duración en segundos
   },
   pages: {
     signIn: "/login",
