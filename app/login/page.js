@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Input,
   Link,
@@ -14,6 +14,17 @@ import { useRouter } from "next/navigation";
 
 export default function App() {
   const router = useRouter();
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null); // Oculta la notificación después de 3 segundos
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -28,12 +39,12 @@ export default function App() {
 
     if (response?.error) {
       // Manejo de errores
+      setError("Error en las credenciales");
       console.error("Error al iniciar sesión:", response.error);
     } else if (response?.url) {
       // Redirigir a la página deseada después del inicio de sesión
-      router.push('/usuario')
+      router.push("/usuario");
       console.log(response, username);
-      
     }
   };
 
@@ -89,6 +100,41 @@ export default function App() {
           </div>
         </CardBody>
       </Card>
+
+      {error && (
+        <div className="toast-error">
+          <span className="error-text">{error}</span>
+        </div>
+      )}
+
+      <style jsx>{`
+        .toast-error {
+          position: fixed;
+          bottom: 30px;
+          left: 30px;
+          background-color: #ff4444;
+          color: white;
+          padding: 25px 25px;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          animation: slideIn 0.2s ease forwards;
+        }
+
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-100%);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .error-text {
+          font-size: 16px;
+        }
+      `}</style>
     </div>
   );
 }
