@@ -1,6 +1,6 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   Input,
   Link,
@@ -9,8 +9,45 @@ import {
   CardBody,
   CardHeader,
 } from "@nextui-org/react";
+import { signIn } from "next-auth/react";
+import { useRouter } from "next/navigation";
 
 export default function App() {
+  const router = useRouter();
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    if (error) {
+      const timer = setTimeout(() => {
+        setError(null); // Oculta la notificación después de 3 segundos
+      }, 3000);
+
+      return () => clearTimeout(timer);
+    }
+  }, [error]);
+
+  const handleSignIn = async (e) => {
+    e.preventDefault();
+    const username = e.target.username.value;
+    const password = e.target.password.value;
+
+    const response = await signIn("credentials", {
+      redirect: false,
+      username,
+      password,
+    });
+
+    if (response?.error) {
+      // Manejo de errores
+      setError("Error en las credenciales");
+      console.error("Error al iniciar sesión:", response.error);
+    } else if (response?.url) {
+      // Redirigir a la página deseada después del inicio de sesión
+      router.push("/usuario");
+      console.log(response, username);
+    }
+  };
+
   return (
     <div className="flex items-center justify-center">
       <Card className="w-[400px] h-[500px]">
@@ -25,33 +62,31 @@ export default function App() {
         </CardHeader>
         <CardBody className="overflow-hidden">
           <div>
-            <form className="flex flex-col gap-4">
+            <form className="flex flex-col gap-4" onSubmit={handleSignIn}>
               <Input
                 isRequired
+                name="username"
                 label="Usuario"
                 placeholder="Ingresa tu usuario"
                 type="username"
               />
               <Input
                 isRequired
+                name="password"
                 label="Contraseña"
                 placeholder="Ingresa la contraseña"
                 type="password"
               />
               <p className="text-center text-small mt-5">
                 <Link size="sm" href="/login/restorepass">
-                  <smal>Has olvidado tu contraseña?</smal>
+                  <small>Has olvidado tu contraseña?</small>
                 </Link>
               </p>
 
               <div className="flex gap-2 justify-center mb-5 ">
-                <Link href="/usuario">
-                  <a>
-                    <Button size="lg" radius="full" color="primary">
-                      Iniciar sesión
-                    </Button>
-                  </a>
-                </Link>
+                <Button type="submit" size="lg" radius="full" color="primary">
+                  Iniciar sesión
+                </Button>
               </div>
             </form>
           </div>
@@ -65,6 +100,41 @@ export default function App() {
           </div>
         </CardBody>
       </Card>
+
+      {error && (
+        <div className="toast-error">
+          <span className="error-text">{error}</span>
+        </div>
+      )}
+
+      <style jsx>{`
+        .toast-error {
+          position: fixed;
+          bottom: 30px;
+          left: 30px;
+          background-color: #ff4444;
+          color: white;
+          padding: 25px 25px;
+          border-radius: 8px;
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+          animation: slideIn 0.2s ease forwards;
+        }
+
+        @keyframes slideIn {
+          from {
+            opacity: 0;
+            transform: translateX(-100%);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+
+        .error-text {
+          font-size: 16px;
+        }
+      `}</style>
     </div>
   );
 }
