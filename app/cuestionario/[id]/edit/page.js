@@ -248,7 +248,7 @@ export default function Page() {
               />
             );
           })}
-
+        {questionData.length > 0 ? (
           <div className="flex justify-around">
             <div className="w-1/5">
               <Button
@@ -271,6 +271,11 @@ export default function Page() {
               </Button>
             </div>
           </div>
+          ): (
+            <CardBody className="flex items-center justify-center">
+              <p className="text-md mb-3">Cargando...</p>
+            </CardBody>
+          )}
         </CardBody>
       </Card>
     </>

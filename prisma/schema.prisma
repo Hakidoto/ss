@@ -48,7 +48,7 @@ model questions {
   question_text String                  @db.Text
   question_type questions_question_type
   answers       answers[]
-  surveys       surveys                 @relation(fields: [survey_id], references: [survey_id], onDelete: NoAction, onUpdate: NoAction, map: "questions_ibfk_1")
+  surveys       surveys                 @relation(fields: [survey_id], references: [survey_id], onDelete: Cascade, onUpdate: NoAction, map: "questions_ibfk_1")
   user_answers  user_answers[]
 
   @@index([survey_id], map: "survey_id")
