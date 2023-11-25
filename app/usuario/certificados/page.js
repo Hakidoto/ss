@@ -44,6 +44,8 @@ export default function Page() {
         // Luego de obtener los datos del usuario, puedes llamar a fetchUserExpData
         setRfcUsuario(user.RFC)
         await fetchUserCursos(user);
+        await fetchUserCertificaciones(user);
+        await fetchUserLenguas(user);
       } else {
         console.error('Error al obtener datos de la API');
       }
@@ -69,10 +71,10 @@ export default function Page() {
     }
     setLoading(false);
   }
-  async function fetchUserCertificaciones() {
+  async function fetchUserCertificaciones(user) {
     try {
-      const rfc = "XYZ987654321";
-      const response = await fetch(`/api/usuario/curriculo/certificaciones?rfc=${rfc}`);
+      //const rfc = "XYZ987654321";
+      const response = await fetch(`/api/usuario/curriculo/certificaciones/certificacion/${encodeURIComponent(user.RFC)}`);
   
       if (response.ok) {
         const data = await response.json();
@@ -84,11 +86,11 @@ export default function Page() {
     } catch (error) {
       console.error('Error al conectarse a la API', error);
     }
+    setLoading(false);
   }
-  async function fetchUserLenguas() {
+  async function fetchUserLenguas(user) {
     try {
-      const rfc = "XYZ987654321";
-      const response = await fetch(`/api/usuario/curriculo/lenguas?rfc=${rfc}`);
+      const response = await fetch(`/api/usuario/curriculo/lenguas/lengua/${encodeURIComponent(user.RFC)}`);
   
       if (response.ok) {
         const data = await response.json();
@@ -104,8 +106,8 @@ export default function Page() {
 
   useEffect(() => {
     fetchData()
-    fetchUserCertificaciones()
-    fetchUserLenguas()
+    //fetchUserCertificaciones()
+    //fetchUserLenguas()
   }, [])
   
   const renderTabContent = (item) => {
@@ -113,9 +115,9 @@ export default function Page() {
       case "cursos":
         return <Cursos cursos = {cursos} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
       case "certificaciones":
-        return <Certificaciones certificacion = {certificaciones} isLoaded = {loading}/>;
+        return <Certificaciones certificacion = {certificaciones} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
       case "lenguas":
-        return <Lenguas lenguas = {lenguas} isLoaded = {loading}/>;    
+        return <Lenguas lenguas = {lenguas} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;    
       default:
         return null;
     }

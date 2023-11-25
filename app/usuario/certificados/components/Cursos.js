@@ -81,7 +81,6 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         tipoCurso: inputValue,
       }));
     }
-
     const handleSave = async () => {
       try {
         const response = await fetch('/api/usuario/curriculo/cursos', {
@@ -104,7 +103,6 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
       }
   
     }
-
     const handleEditClick = (rowData) => {
       setEditingData({
         id: rowData.id,
@@ -113,7 +111,6 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         certificado: rowData.certificado,
       });
     };
-
     const handleEditSave = async () => {
       try {
         const response = await fetch(`/api/usuario/curriculo/cursos/${editingData.id}`, {
@@ -136,7 +133,6 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         console.log("Hubo un error al conectar con el api: ", error)
       }
     }
-
     const handleDeleteClick = (rowData) => {
       setDeletingData({
         id: rowData.id,
@@ -145,7 +141,6 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         certificado: rowData.certificado,
       });
     };
-
     const handleDelete = async () => {
       try {
         const response = await fetch(`/api/usuario/curriculo/cursos/${deletingData.id}`, {
@@ -168,12 +163,10 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         console.log("Hubo un error al conectar con el api: ", error)
       }
     }
-
     const handleButtonClick = () => {
       // Simular el clic en el input de tipo 'file'
       fileInputRef.current.click();
     };
-
     const handleFileChange = (e) => {
       // Acceder al archivo seleccionado
       const selectedFile = e.target.files[0];
@@ -183,13 +176,6 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         certificado: selectedFile,
       }));
     };
-
-    
-
-    useEffect(() => {
-      console.log(data)
-    }, [data])
-    
 
     return (
       <div className={`${style.personalData}`}>
