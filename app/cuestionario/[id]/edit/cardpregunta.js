@@ -182,7 +182,7 @@ export default function CardPregunta({
         survey_id: id,
       }));
       setAnswerData(defaultAnswers);
-      getAllQuestionsAndAnswers(answerData);
+      getAllQuestionsAndAnswers(defaultAnswers);
     } else {
       // Reset answerData to an array with a single element for "open_text"
       const defaultAnswers = Array.from({ length: 1 }, (_, index) => ({
@@ -192,7 +192,7 @@ export default function CardPregunta({
         survey_id: id,
       }));
       setAnswerData(defaultAnswers);
-      getAllQuestionsAndAnswers(answerData);
+      getAllQuestionsAndAnswers(defaultAnswers);
     }
   };
 
