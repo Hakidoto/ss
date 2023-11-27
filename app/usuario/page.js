@@ -11,6 +11,7 @@ import WorkExperience from './components/WorkExperience';
 export default function Page() {
   const [userId, setUserId] = useState(2);
   const [user, setUser] = useState(null);
+  const [userRfc, setUserRfc] = useState("");
   const [userExp, setUserExp] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEditable, setIsEditable] = useState(false);
@@ -25,6 +26,7 @@ export default function Page() {
       if (response.ok) {
         const user = await response.json();
         setUser(user);
+        setUserRfc(user.RFC)
         setLoading(false);
         // Luego de obtener los datos del usuario, puedes llamar a fetchUserExpData
         await fetchUserExpData(user);
@@ -39,10 +41,11 @@ export default function Page() {
   async function fetchUserExpData(user) {
     try {
       const rfc = user.RFC;
-      const response = await fetch(`/api/usuario/experienciaLaboral?rfc=${rfc}`);
+      const response = await fetch(`/api/usuario/experienciaLaboral/experiencia/${encodeURIComponent(user.RFC)}`);
       if (response.ok) {
         const data = await response.json();
         setUserExp(data);
+        setUserRfc(rfc)
         setLoading(false);
       } else {
         console.error('Error al obtener datos de la API');
@@ -77,6 +80,11 @@ export default function Page() {
     fetchData()
   }, []);
 
+  useEffect(() => {
+    console.log(user)
+  }, [userRfc]);
+
+
   
   
   const renderTabContent = (item) => {
@@ -88,7 +96,7 @@ export default function Page() {
       case "employmentStatus":
         return <StatusData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "workExperience":
-        return <WorkExperience userExp={userExp} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading}/>;
+        return <WorkExperience userExp={userExp} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading} userRfc = {userRfc}/>;
       default:
         return null;
     }

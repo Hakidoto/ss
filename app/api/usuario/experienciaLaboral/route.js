@@ -14,7 +14,6 @@ export async function GET(res, req){
 
 export async function POST(req, res) {
   try {
-    
     const body = await req.json();
     
     // Aquí puedes realizar alguna validación de los datos recibidos si es necesario

@@ -22,10 +22,10 @@ const Certificaciones = ({certificacion , isLoaded, fetchData, rfcUsuario}) => {
       certificado: null
     });
     const [data, setData] = useState({});
+    const fileInputRef = useRef(null);
     const itemsPerPage = 5;
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(certificacion.length / itemsPerPage);
-    const fileInputRef = useRef(null);
     
     const renderTableRows = () => {
         const startIndex = (currentPage - 1) * itemsPerPage;

@@ -5,7 +5,7 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagina
 import { EditIcon } from '@/app/components/icons/EditIcon';
 import { DeleteIcon } from '@/app/components/icons/DeleteIcon';
 
-const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
+const WorkExperience = ({ userExp, loading, fetchData, userId, userRfc }) => {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const itemsPerPage = 5;
@@ -14,6 +14,7 @@ const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
   const [data, setData] = useState({});
   const [editingData, setEditingData] = useState({
     id: null,
+    RFC: '',
     nombreEmpleo: '',
     nombreCompania: '',
     direccion: '',
@@ -24,6 +25,7 @@ const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
   });
   const [deletingData, setDeletingData] = useState({
     id: null,
+    RFC: '',
     nombreEmpleo: '',
     nombreCompania: '',
     direccion: '',
@@ -40,11 +42,13 @@ const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
     if (editOpen) {
       setEditingData((prevData) => ({
         ...prevData,
+        RFC: userRfc,
         nombreEmpleo: inputValue
       }))
     }
     setData((prevData) => ({
       ...prevData,
+      RFC: userRfc,
       nombreEmpleo: inputValue,
     }));
   }
@@ -53,11 +57,13 @@ const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
     if (editOpen) {
       setEditingData((prevData) => ({
         ...prevData,
+        RFC: userRfc,
         nombreCompania: inputValue
       }))
     }
     setData((prevData) => ({
       ...prevData,
+      RFC: userRfc,
       nombreCompania: inputValue,
     }));
   }
@@ -66,11 +72,13 @@ const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
     if (editOpen) {
       setEditingData((prevData) => ({
         ...prevData,
+        RFC: userRfc,
         direccion: inputValue
       }))
     }
     setData((prevData) => ({
       ...prevData,
+      RFC: userRfc,
       direccion: inputValue,
     }));
   }
@@ -79,11 +87,13 @@ const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
     if (editOpen) {
       setEditingData((prevData) => ({
         ...prevData,
+        RFC: userRfc,
         telefonoEmpleo: inputValue
       }))
     }
     setData((prevData) => ({
       ...prevData,
+      RFC: userRfc,
       telefonoEmpleo: inputValue,
     }));
   }
@@ -92,11 +102,13 @@ const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
     if (editOpen) {
       setEditingData((prevData) => ({
         ...prevData,
+        RFC: userRfc,
         puestoDesempenado: inputValue
       }))
     }
     setData((prevData) => ({
       ...prevData,
+      RFC: userRfc,
       puestoDesempenado: inputValue,
     }));
   }
@@ -105,11 +117,13 @@ const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
     if (editOpen) {
       setEditingData((prevData) => ({
         ...prevData,
+        RFC: userRfc,
         sueldoPromedio: inputValue
       }))
     }
     setData((prevData) => ({
       ...prevData,
+      RFC: userRfc,
       sueldoPromedio: inputValue,
     }));
   }
@@ -118,11 +132,13 @@ const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
     if (editOpen) {
       setEditingData((prevData) => ({
         ...prevData,
+        RFC: userRfc,
         motivoSeparacion: inputValue
       }))
     }
     setData((prevData) => ({
       ...prevData,
+      RFC: userRfc,
       motivoSeparacion: inputValue,
     }));
   }
@@ -254,6 +270,11 @@ const WorkExperience = ({ userExp, loading, fetchData, userId }) => {
       console.log("Hubo un error al conectar con el api: ", error)
     }
   }
+
+  useEffect(() => {
+    console.log(data)
+  }, [data])
+  
 
 
   return (
