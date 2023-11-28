@@ -9,6 +9,7 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
     const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
+    const [selectedFile, setSelectedFile] = useState(null);
     //const { isOpen: isOpenModal2, onOpen: onOpenModal2, onOpenChange: onOpenChangeModal2 } = useDisclosure();
     const [editingData, setEditingData] = useState({
       id: null,
@@ -163,7 +164,7 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         console.log("Hubo un error al conectar con el api: ", error)
       }
     }
-    const handleButtonClick = () => {
+    const handleButtonClick = async () => {
       // Simular el clic en el input de tipo 'file'
       fileInputRef.current.click();
     };
@@ -176,6 +177,58 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         certificado: selectedFile,
       }));
     };
+
+    const handleFileChangeEdit = (e) => {
+      // Acceder al archivo seleccionado
+      const selectedFile = e.target.files[0];
+      setSelectedFile(selectedFile);
+      
+    };
+
+    useEffect(() => {
+      console.log(selectedFile)
+      handleUploadFile()
+    }, [selectedFile])
+    
+    const handleUploadFile = async () =>{
+      if (!selectedFile) {
+        // Asegúrate de que se haya seleccionado un archivo
+        return;
+      }
+  
+      try {
+        /*// Construir el objeto FormData para enviar el archivo
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+  
+        // Realizar la solicitud POST al servidor
+        const response = await fetch('/api/usuario/pruebaArchivo', {
+          method: 'POST',
+          body: formData,
+        });
+  
+        // Manejar la respuesta del servidor
+        if (response.ok) {
+          console.log('Archivo subido exitosamente');
+        } else {
+          console.error('Error al subir el archivo');
+        }*/
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+
+        const response = await fetch('/api/usuario/pruebaArchivo', {
+          method: 'POST',
+          body: formData,
+        });
+        console.log(response)
+        const responseData = await response.json();
+        console.log(responseData);
+
+      } catch (error) {
+        console.error('Error en la solicitud:', error);
+      }
+    }
+    
 
     return (
       <div className={`${style.personalData}`}>
@@ -316,7 +369,13 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
                       variant="bordered"
                       color='success'
                     />
-                    <Button color='secondary'>Subir certificado</Button>
+                    <input
+                      ref={fileInputRef}
+                      type="file"
+                      style={{ display: 'none' }}
+                      onChange={handleFileChangeEdit}
+                    />
+                    <Button color='secondary' onClick={handleButtonClick}>Subir certificado</Button>
                   </ModalBody>
                   <ModalFooter>
                     <Button color="danger" variant="ghost" onPress={onClose}>
