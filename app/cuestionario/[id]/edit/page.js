@@ -181,16 +181,10 @@ export default function Page() {
         ? Math.max(...questionData.map((question) => question.question_id))
         : 0;
 
-    // Find the highest survey_id in the existing questions
-    const highestSurveyId =
-      questionData.length > 0
-        ? Math.max(...questionData.map((question) => question.survey_id))
-        : 0;
-
     // Create a new question object
     const newQuestionObject = {
       question_id: highestQuestionId + 1,
-      survey_id: highestSurveyId,
+      survey_id: id,
       question_text: "Ingresa la nueva pregunta",
       question_type: "multiple_choice",
     };

@@ -30,7 +30,7 @@ export async function PUT(request, { params }) {
     const changeAnswer = await prisma.answers.upsert({
       where: {
         answer_id_question_id_survey_id: {
-          answer_id: parseInt(data.answer_id), question_id: parseInt(data.question_id), survey_id: parseInt(data.survey_id)
+          answer_id: parseInt(answerId), question_id: parseInt(data.question_id), survey_id: parseInt(data.survey_id)
         }
       },
       update: data,
