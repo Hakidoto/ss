@@ -6,7 +6,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { PlusIcon } from "@/app/components/icons/PlusIcon";
 import { LuSave } from "react-icons/lu";
-import { toast} from 'react-toastify';
+import { toast } from "react-toastify";
 import CardRespUsuario from "./cardRespUsuario";
 
 
@@ -52,6 +52,7 @@ export default function Page() {
   const pathname = usePathname();
   const parts = pathname.split("/");
   const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
+  
 
   const fetchData = async () => {
     try {
@@ -74,10 +75,54 @@ export default function Page() {
     }));
   };
 
+  const saveUserAnswerData = async () => {
+    let allRequestsSuccessful = true;
+    const usuario_id= "1";
+
+    const userAnswersWithSurveyId = {
+      userAnswers: userAnswers, // Add a new property named userAnswers
+      survey_id: id,             // Add the new property survey_id with the value of id
+    };
+
+    try {
+      const questionResponse = await fetch(
+        `/api/cuestionario/respuesta_usuario/${usuario_id}`,
+        {
+          method: "PUT",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(userAnswersWithSurveyId),
+        }
+      );
+
+      // Check if the request was successful
+      if (!questionResponse.ok) {
+        console.error(`Failed to save user answers for id ${usuario_id}`);
+        allRequestsSuccessful = false;
+        // Handle error as needed
+      }
+
+      if (allRequestsSuccessful) {
+        console.log("All user answers saved successfully!");
+        toast.success("Respuestas guardados con exito.");
+      } else {
+        console.error(
+          "Some requests failed. Survey data not saved completely."
+        );
+        toast.error(
+          "Hubo un error al guardar las respuestas, intente de nuevo..."
+        );
+      }
+    } catch (error) {
+      console.error("Error saving user answers:", error);
+    }
+  };
+
   useEffect(() => {
     console.log(userAnswers);
   }, [userAnswers]);
-  
+
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -106,13 +151,13 @@ export default function Page() {
           })}
 
           <div className="flex justify-around">
-            <div className="w-1/5">
-            </div>
+            <div className="w-1/5"></div>
             <div className="w-1/5">
               <Button
                 className="w-full"
                 color="success"
                 endContent={<LuSave />}
+                onClick={saveUserAnswerData}
               >
                 Guardar respuestas
               </Button>
