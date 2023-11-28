@@ -78,7 +78,7 @@ export default function App() {
                 type="password"
               />
               <p className="text-center text-small mt-5">
-                <Link size="sm" href="/login/restorepass">
+                <Link size="sm" href="/restorepass">
                   <small>Has olvidado tu contraseña?</small>
                 </Link>
               </p>
