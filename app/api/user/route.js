@@ -1,17 +1,17 @@
 import prisma from "@/app/components/db";
 import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
-import * as z from 'zod' 
+
 //Schema para validacion de los input
 
 export async function POST(req) {
     try {
         const body = await req.json()
-        const {email, username, password} = body
+        const {correo, username, password} = body
 
-        //Valida si el email existe
-        const existingEmail = await prisma.user.findUnique({
-            where: {email: email}
+        //Valida si el correo existe
+        const existingEmail = await prisma.usrs.findUnique({
+            where: {correo: correo}
         })
         if(existingEmail){
             return NextResponse.json({
@@ -20,7 +20,7 @@ export async function POST(req) {
         }
 
          //Valida si el usuario existe
-         const existingUser = await prisma.user.findUnique({
+         const existingUser = await prisma.usrs.findUnique({
             where: {username: username}
         })
         if(existingUser){
@@ -31,10 +31,10 @@ export async function POST(req) {
 
         const hashedPassword = await hash(password, 10)
 
-        const newUser = await prisma.user.create({
+        const newUser = await prisma.usrs.create({
             data: {
                 username,
-                email, 
+                correo, 
                 password: hashedPassword
             }
         })
@@ -50,3 +50,14 @@ export async function POST(req) {
         }, {status: 500})
     }
 }
+
+export async function GET(){
+    try {
+      const users = await prisma.usrs.findMany(); // Obtener todos los usuarios de la base de datos
+      return NextResponse.json(users);
+    } catch (error) {
+        console.error("Error handling GET request:", error);
+        return NextResponse.error(error.message, { status: 500 });
+      }
+  };
+
