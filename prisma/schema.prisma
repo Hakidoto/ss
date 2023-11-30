@@ -8,21 +8,20 @@ datasource db {
 }
 
 model user {
-  id Int  @id @default(autoincrement())
+  id       Int    @id @default(autoincrement())
   username String @unique
-  email String @unique 
+  email    String @unique
   password String
 }
 
 model answers {
-  answer_id   Int
-  question_id Int
-  survey_id   Int
-  answer_text String    @db.Text
-  surveys     surveys   @relation(fields: [survey_id], references: [survey_id], onDelete: NoAction, onUpdate: NoAction, map: "answers_survey_id_fk")
-  questions   questions @relation(fields: [question_id], references: [question_id], onDelete: Cascade, onUpdate: NoAction, map: "answers_question_id_fk")
+  answer_id   Int        @id @default(autoincrement())
+  survey_id   Int?
+  question_id Int?
+  answer_text String     @db.Text
+  questions   questions? @relation(fields: [question_id], references: [question_id], onDelete: NoAction, onUpdate: NoAction, map: "answers_question_id_fk")
+  surveys     surveys?   @relation(fields: [survey_id], references: [survey_id], onDelete: NoAction, onUpdate: NoAction, map: "answers_survey_id_fk")
 
-  @@id([answer_id, question_id, survey_id])
   @@index([question_id], map: "question_id")
   @@index([survey_id], map: "survey_id")
 }
@@ -68,8 +67,8 @@ model usrs {
   id                            Int                             @id @default(autoincrement())
   RFC                           String?                         @unique(map: "unique_rfc") @db.VarChar(13)
   nombre                        String?                         @db.VarChar(50)
-  username                      String?                         @db.VarChar(15)
-  pass                          String?                         @db.VarChar(15)
+  username                      String?                         @unique(map: "username") @db.VarChar(15)
+  password                      String?                         @db.VarChar(20)
   edad                          String?                         @db.VarChar(3)
   direccion                     String?                         @db.VarChar(50)
   celular                       String?                         @db.VarChar(50)
