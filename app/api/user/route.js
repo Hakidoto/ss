@@ -6,48 +6,72 @@ import { hash } from "bcrypt";
 
 export async function POST(req) {
     try {
-        const body = await req.json()
-        const {correo, username, password} = body
+        const body = await req.json();
+        const {
+            RFC,
+            nombre,
+            username,
+            password,
+            edad,
+            direccion,
+            celular,
+            telefono,
+            correo,
+            redSocial,
+            tipoEmpleado,
+            contrato,
+            horario,
+            estado,
+            antiguedad,
+        } = body;
 
-        //Valida si el correo existe
-        const existingEmail = await prisma.usrs.findUnique({
-            where: {correo: correo}
-        })
-        if(existingEmail){
-            return NextResponse.json({
-                user: null, message: 'Ya existe un usuario con este email'}
-                , {status: 409})
+        const existingRFC = await prisma.usrs.findUnique({
+            where: { RFC: RFC },
+        });
+        if (existingRFC) {
+            return NextResponse.json(
+                {
+                    user: null,
+                    message: 'Ya existe un usuario con este RFC'
+                },
+                { status: 409 }
+            );
         }
-
-         //Valida si el usuario existe
-         const existingUser = await prisma.usrs.findUnique({
-            where: {username: username}
-        })
-        if(existingUser){
-            return NextResponse.json({
-                user: null, message: 'Ya existe un usuario con este nombre'}
-                , {status: 409})
-        }
-
-        const hashedPassword = await hash(password, 10)
 
         const newUser = await prisma.usrs.create({
             data: {
+                RFC,
+                nombre,
                 username,
-                correo, 
-                password: hashedPassword
-            }
-        })
+                password,
+                edad,
+                direccion,
+                celular,
+                telefono,
+                correo,
+                redSocial,
+                tipoEmpleado,
+                contrato,
+                horario,
+                estado,
+                antiguedad,
+            },
+        });
 
-        return NextResponse.json({
-            user: newUser, 
-            message: 'Usuario creado'      
-        }, {status: 201})
-
+        return NextResponse.json(
+            {
+                user: newUser,
+                message: 'Usuario creado correctamente',
+            },
+            { status: 201 }
+        );
     } catch (error) {
-        return NextResponse.json({
-            message: 'Algo salio mal'      
-        }, {status: 500})
+        return NextResponse.json(
+            {
+                message: 'Algo salió mal al procesar la solicitud',
+            },
+            { status: 500 }
+        );
     }
 }
 

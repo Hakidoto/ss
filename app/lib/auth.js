@@ -45,7 +45,9 @@ export const authOptions = {
         //     username: existingUser.username,
         //     correo: existingUser.correo
         // }
-  
+        
+        const passwordsMatch = (credentials.password === existingUser.password);
+
         if (passwordsMatch) {
           // La contraseña ingresada coincide con la contraseña almacenada
           return {
