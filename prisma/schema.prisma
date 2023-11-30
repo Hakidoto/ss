@@ -110,7 +110,7 @@ model cursos {
   RFC         String? @db.VarChar(13)
   nombreCurso String? @db.VarChar(50)
   tipoCurso   String? @db.VarChar(50)
-  certificado Bytes?  @db.MediumBlob
+  certificado String? @db.VarChar(255)
   usrs        usrs?   @relation(fields: [RFC], references: [RFC], onDelete: NoAction, onUpdate: NoAction, map: "cursos_ibfk_1")
 
   @@index([RFC], map: "RFC")

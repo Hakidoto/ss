@@ -9,6 +9,22 @@ export async function POST(req, res) {
         
         const data = await req.formData()
         const file = data.get('file')
+        const rfcUsr = data.get('RFC')
+        const nombreCursoUsr = data.get('nombreCurso')
+        const tipoCursoUsr = data.get('tipoCurso')
+        const body = {
+            RFC: rfcUsr,
+            nombreCurso: nombreCursoUsr,
+            tipoCurso: tipoCursoUsr,
+            certificado: null
+        }
+        console.log(body)
+
+        const user = await prisma.usrs.findUnique({
+          where: { RFC: rfcUsr },
+        });
+
+        console.log(user)
         //console.log(file)
         const bytesFile = await file.arrayBuffer()
         const bufferFile = Buffer.from(bytesFile)
@@ -20,6 +36,13 @@ export async function POST(req, res) {
         await mkdir(directoryPath, { recursive: true });
 
         await writeFile(filePath, bufferFile);
+
+
+        const newCurso = await prisma.cursos.create({
+            data: body,
+          });
+
+        console.log(newCurso)
 
         //return NextResponse.json(JSON.stringify({ message: 'Archivo recibido exitosamente' }));
         return new Response(JSON.stringify({

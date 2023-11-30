@@ -84,13 +84,17 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
     }
     const handleSave = async () => {
       try {
-        const response = await fetch('/api/usuario/curriculo/cursos', {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('RFC',rfcUsuario)
+        formData.append('nombreCurso',data.nombreCurso)
+        formData.append('tipoCurso',data.tipoCurso)
+        console.log(formData)
+        const response = await fetch('/api/usuario/pruebaArchivo', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+          body: formData,
         });
+    
         if (response.ok) {
           renderTableRows();
           fetchData();
@@ -174,62 +178,20 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
       setData((prevData) => ({
         ...prevData,
         RFC: rfcUsuario,
-        certificado: selectedFile,
+        //certificado: selectedFile,
       }));
+      setSelectedFile(selectedFile);
     };
 
     const handleFileChangeEdit = (e) => {
-      // Acceder al archivo seleccionado
-      const selectedFile = e.target.files[0];
-      setSelectedFile(selectedFile);
       
     };
 
     useEffect(() => {
       console.log(selectedFile)
-      handleUploadFile()
     }, [selectedFile])
     
-    const handleUploadFile = async () =>{
-      if (!selectedFile) {
-        // Asegúrate de que se haya seleccionado un archivo
-        return;
-      }
   
-      try {
-        /*// Construir el objeto FormData para enviar el archivo
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-  
-        // Realizar la solicitud POST al servidor
-        const response = await fetch('/api/usuario/pruebaArchivo', {
-          method: 'POST',
-          body: formData,
-        });
-  
-        // Manejar la respuesta del servidor
-        if (response.ok) {
-          console.log('Archivo subido exitosamente');
-        } else {
-          console.error('Error al subir el archivo');
-        }*/
-        const formData = new FormData();
-        formData.append('file', selectedFile);
-
-        const response = await fetch('/api/usuario/pruebaArchivo', {
-          method: 'POST',
-          body: formData,
-        });
-        console.log(response)
-        const responseData = await response.json();
-        console.log(responseData);
-
-      } catch (error) {
-        console.error('Error en la solicitud:', error);
-      }
-    }
-    
-
     return (
       <div className={`${style.personalData}`}>
         <div className={`flex justify-between h-full ${style.prueba}`}>
