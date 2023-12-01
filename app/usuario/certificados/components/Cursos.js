@@ -29,6 +29,30 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
     const totalPages = Math.ceil(cursos.length / itemsPerPage);
     const fileInputRef = useRef(null);
 
+    const DownloadComponent = async (row) => {
+
+      const id = row.id;
+      
+      const response = await fetch(`/api/usuario/file/${id}`,{
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json', // Asegúrate de enviar el tipo de contenido correcto
+        },
+        body: JSON.stringify({
+          tipoCert: 'curso'
+        }),
+      });
+      
+      console.log(response)
+      const blob = await response.blob();
+      const url = window.URL.createObjectURL(blob);
+      const link = document.createElement('a');
+      link.href = url;
+      link.download = `certificadoCurso_${id}.pdf`;
+      link.click();
+      window.URL.revokeObjectURL(url);
+    }
+
     const renderTableRows = () => {
       const startIndex = (currentPage - 1) * itemsPerPage;
       const endIndex = startIndex + itemsPerPage;
@@ -37,7 +61,14 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
           <TableCell>{row.id}</TableCell>
           <TableCell>{row.nombreCurso}</TableCell>
           <TableCell>{row.tipoCurso}</TableCell>
-          <TableCell>{(row.certificado)?"Ver certificado" : "Subir certificado"}</TableCell>
+          <TableCell>{(row.certificado)?(
+            <a onClick={()=> DownloadComponent(row)} download>
+              Ver certificado
+            </a>
+          
+          ) : (
+          "Subir certificado"
+          )}</TableCell>
           <TableCell>
             <div>
               <Button onPress={onOpenEdit} className='mx-1 my-1' color='secondary' variant='flat' onClick={() => handleEditClick(row)}>
@@ -89,8 +120,9 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         formData.append('RFC',rfcUsuario)
         formData.append('nombreCurso',data.nombreCurso)
         formData.append('tipoCurso',data.tipoCurso)
+        formData.append('tipoCert', data.tipoCert)
         console.log(formData)
-        const response = await fetch('/api/usuario/pruebaArchivo', {
+        const response = await fetch('/api/usuario/curriculo/cursos', {
           method: 'POST',
           body: formData,
         });
