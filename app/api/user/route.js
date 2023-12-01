@@ -1,52 +1,87 @@
 import prisma from "@/app/components/db";
 import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
-import * as z from 'zod' 
+
 //Schema para validacion de los input
 
 export async function POST(req) {
     try {
-        const body = await req.json()
-        const {email, username, password} = body
+        const body = await req.json();
+        const {
+            RFC,
+            nombre,
+            username,
+            password,
+            edad,
+            direccion,
+            celular,
+            telefono,
+            correo,
+            redSocial,
+            tipoEmpleado,
+            contrato,
+            horario,
+            estado,
+            antiguedad,
+        } = body;
 
-        //Valida si el email existe
-        const existingEmail = await prisma.user.findUnique({
-            where: {email: email}
-        })
-        if(existingEmail){
-            return NextResponse.json({
-                user: null, message: 'Ya existe un usuario con este email'}
-                , {status: 409})
+        const existingRFC = await prisma.usrs.findUnique({
+            where: { RFC: RFC },
+        });
+        if (existingRFC) {
+            return NextResponse.json(
+                {
+                    user: null,
+                    message: 'Ya existe un usuario con este RFC'
+                },
+                { status: 409 }
+            );
         }
 
-         //Valida si el usuario existe
-         const existingUser = await prisma.user.findUnique({
-            where: {username: username}
-        })
-        if(existingUser){
-            return NextResponse.json({
-                user: null, message: 'Ya existe un usuario con este nombre'}
-                , {status: 409})
-        }
-
-        const hashedPassword = await hash(password, 10)
-
-        const newUser = await prisma.user.create({
+        const newUser = await prisma.usrs.create({
             data: {
+                RFC,
+                nombre,
                 username,
-                email, 
-                password: hashedPassword
-            }
-        })
+                password,
+                edad,
+                direccion,
+                celular,
+                telefono,
+                correo,
+                redSocial,
+                tipoEmpleado,
+                contrato,
+                horario,
+                estado,
+                antiguedad,
+            },
+        });
 
-        return NextResponse.json({
-            user: newUser, 
-            message: 'Usuario creado'      
-        }, {status: 201})
-
+        return NextResponse.json(
+            {
+                user: newUser,
+                message: 'Usuario creado correctamente',
+            },
+            { status: 201 }
+        );
     } catch (error) {
-        return NextResponse.json({
-            message: 'Algo salio mal'      
-        }, {status: 500})
+        return NextResponse.json(
+            {
+                message: 'Algo salió mal al procesar la solicitud',
+            },
+            { status: 500 }
+        );
     }
 }
+
+export async function GET(){
+    try {
+      const users = await prisma.usrs.findMany(); // Obtener todos los usuarios de la base de datos
+      return NextResponse.json(users);
+    } catch (error) {
+        console.error("Error handling GET request:", error);
+        return NextResponse.error(error.message, { status: 500 });
+      }
+  };
+

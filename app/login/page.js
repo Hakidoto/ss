@@ -43,7 +43,7 @@ export default function App() {
       console.error("Error al iniciar sesión:", response.error);
     } else if (response?.url) {
       // Redirigir a la página deseada después del inicio de sesión
-      router.push("/usuario");
+      router.push("/");
       console.log(response, username);
     }
   };
@@ -77,11 +77,11 @@ export default function App() {
                 placeholder="Ingresa la contraseña"
                 type="password"
               />
-              <p className="text-center text-small mt-5">
-                <Link size="sm" href="/login/restorepass">
+              {/* <p className="text-center text-small mt-5">
+                <Link size="sm" href="/restorepass">
                   <small>Has olvidado tu contraseña?</small>
                 </Link>
-              </p>
+              </p> */}
 
               <div className="flex gap-2 justify-center mb-5 ">
                 <Button type="submit" size="lg" radius="full" color="primary">
