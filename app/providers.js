@@ -6,11 +6,15 @@ import { ThemeProvider, useTheme } from "next-themes";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";
-
+import NavbarTRC from "./components/navbar";
+import { usePathname } from "next/navigation";
 
 export function Providers({ children }) {
   const [currentTheme, setCurrentTheme] = useState("dark");
   const { theme } = useTheme();
+  const pathname = usePathname();
+  const pathParts = pathname.split("/");
+  const pathLink = "/" + pathParts[1];
 
   useEffect(() => {
     // Update the theme whenever it changes
@@ -24,6 +28,7 @@ export function Providers({ children }) {
         defaultTheme="dark"
         themes={["light", "dark", "modern"]}
       >
+        {pathLink != '/login' && <NavbarTRC />}
         {children}
         <ToastContainer
           position="top-right"

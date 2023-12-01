@@ -28,6 +28,7 @@ import { MoonIcon } from "./icons/MoonIcon";
 import style from "./styles/navbar.module.css";
 
 import { signOut } from "next-auth/react";
+import { useEffect } from "react";
 export default function NavbarTRC() {
   const router = useRouter();
   const pathname = usePathname();
@@ -43,16 +44,6 @@ export default function NavbarTRC() {
       redirect: true,
       callbackUrl: `${window.location.origin}/login`,
     });
-
-  useEffect(() => {
-    const pathname = window.location.pathname;
-    if (pathname === "/login" || pathname === "/restorepass") {
-      const navbar = document.getElementById("navbar");
-      if (navbar) {
-        navbar.style.display = "none";
-      }
-    }
-  }, []);
 
   const { theme, setTheme } = useTheme();
   const isSelected = theme === "dark";
