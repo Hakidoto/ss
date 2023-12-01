@@ -106,6 +106,7 @@ export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers
         <div className="ml-3">
           <Textarea
             label={`Respuesta abierta`}
+            onValueChange={handleValueChange}
             placeholder={`Ingresa una respuesta...`}
             variant="bordered"
             className="mb-3"

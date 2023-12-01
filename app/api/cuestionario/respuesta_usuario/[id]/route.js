@@ -1,16 +1,14 @@
 import { NextResponse } from "next/server";
 import prisma from "@/app/components/db";
 
-
-// Obtiene una o varias respuestas en base a la pregunta correspondiente
 export async function GET(request, { params }) {
   try {
-    const question_id = params.id;
+    const userAnswerId = params.id;
 
-    const getAnswer = await prisma.answers.findMany({
-      where: { question_id: parseInt(question_id) }, // Assuming ID is an integer
+    const getUserAnswer = await prisma.survey_responses.findMany({
+      where: { user_id: parseInt(userAnswerId) }, // Assuming ID is an integer
     });
-    return new NextResponse(JSON.stringify(getAnswer), {
+    return new NextResponse(JSON.stringify(getUserAnswer), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -22,22 +20,20 @@ export async function GET(request, { params }) {
 
 export async function PUT(request, { params }) {
   try {
-    const answerId = params.id;
+    const userAnswerId = params.id;
 
     const body = await request.json();
     const data = { ...body };
 
-    const changeAnswer = await prisma.answers.upsert({
-      where: {
-        answer_id_question_id_survey_id: {
-          answer_id: parseInt(answerId), question_id: parseInt(data.question_id), survey_id: parseInt(data.survey_id)
-        }
-      },
-      update: data,
-      create: data,
+    const userAnswer = await prisma.survey_responses.create({
+      data: {
+        user_id: parseInt(userAnswerId),
+        survey_id: data.survey_id,
+        answer: data.userAnswers, // Save the answerData in the 'answer' column
+      }
     });
 
-    return new NextResponse(JSON.stringify(changeAnswer), {
+    return new NextResponse(JSON.stringify(userAnswer), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -49,20 +45,20 @@ export async function PUT(request, { params }) {
 
 export async function DELETE(request, { params }) {
   try {
-    const answer_id = params.id;
+    const responseId = params.id;
     const body = await request.json();
     const data = { ...body };
 
     // Assuming prisma is your database client, update this part based on your setup
-    const deleteAnswer = await prisma.answers.delete({
+    const deleteQuestion = await prisma.survey_responses.delete({
       where: {
-        answer_id_question_id_survey_id: {
-          answer_id: parseInt(answer_id), question_id: parseInt(data.question_id), survey_id: parseInt(data.survey_id)
-        }
+        response_id: parseInt(responseId),
+        user_id: parseInt(data.user_id),
+        survey_id: parseInt(data.survey_id),
       },
     });
 
-    return new NextResponse(JSON.stringify(deleteAnswer), {
+    return new NextResponse(JSON.stringify(deleteQuestion), {
       status: 200,
       headers: { "Content-Type": "application/json" },
     });
@@ -71,4 +67,3 @@ export async function DELETE(request, { params }) {
     return NextResponse.error(error.message, { status: 500 });
   }
 }
-

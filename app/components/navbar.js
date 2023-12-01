@@ -26,8 +26,8 @@ import { useTheme } from "next-themes";
 import { SunIcon } from "./icons/SunIcon";
 import { MoonIcon } from "./icons/MoonIcon";
 import style from "./styles/navbar.module.css";
-import { useEffect } from "react";
-import { signOut, useSession } from "next-auth/react";
+
+import { signOut } from "next-auth/react";
 export default function NavbarTRC() {
   const router = useRouter();
   const pathname = usePathname();
@@ -37,10 +37,6 @@ export default function NavbarTRC() {
     { nombre: "Manuales", link: "/manuales" },
     { nombre: "Administracion", link: "/admi/panelusuarios" },
   ];
-
-  //const { data: session } = useSession();
-
- 
 
   const signout = () =>
     signOut({
@@ -189,11 +185,8 @@ export default function NavbarTRC() {
             <DropdownItem key="help_and_feedback" color="secondary">
               Ayuda & Comentarios
             </DropdownItem>
-            <DropdownSection />
-            <DropdownItem color="danger">
-              <Button onClick={signout} variant="destructive">
-                Cerrar sesion
-              </Button>
+            <DropdownItem as={Button} onClick={signout} variant="destructive" color="danger">
+              Cerrar sesion
             </DropdownItem>
           </DropdownMenu>
         </Dropdown>

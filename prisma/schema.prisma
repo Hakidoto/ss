@@ -15,13 +15,15 @@ model user {
 }
 
 model answers {
-  answer_id   Int        @id @default(autoincrement())
-  survey_id   Int?
-  question_id Int?
-  answer_text String     @db.Text
-  questions   questions? @relation(fields: [question_id], references: [question_id], onDelete: NoAction, onUpdate: NoAction, map: "answers_question_id_fk")
-  surveys     surveys?   @relation(fields: [survey_id], references: [survey_id], onDelete: NoAction, onUpdate: NoAction, map: "answers_survey_id_fk")
 
+  answer_id   Int
+  survey_id   Int
+  question_id Int
+  answer_text String    @db.Text
+  questions   questions @relation(fields: [question_id], references: [question_id], onDelete: Cascade, onUpdate: NoAction, map: "answers_question_id_fk")
+  surveys     surveys   @relation(fields: [survey_id], references: [survey_id], onDelete: NoAction, onUpdate: NoAction, map: "answers_survey_id_fk")
+
+  @@id([answer_id, question_id, survey_id])
   @@index([question_id], map: "question_id")
   @@index([survey_id], map: "survey_id")
 }
@@ -48,19 +50,19 @@ model questions {
   question_type questions_question_type
   answers       answers[]
   surveys       surveys                 @relation(fields: [survey_id], references: [survey_id], onDelete: Cascade, onUpdate: NoAction, map: "questions_ibfk_1")
-  user_answers  user_answers[]
 
   @@index([survey_id], map: "survey_id")
 }
 
 model surveys {
-  survey_id   Int         @id @default(autoincrement())
-  title       String      @db.VarChar(255)
-  description String?     @db.Text
-  created_at  DateTime?   @default(now()) @db.Timestamp(0)
-  estatus     String      @db.VarChar(25)
-  answers     answers[]
-  questions   questions[]
+  survey_id        Int                @id @default(autoincrement())
+  title            String             @db.VarChar(255)
+  description      String?            @db.Text
+  created_at       DateTime?          @default(now()) @db.Timestamp(0)
+  estatus          String             @db.VarChar(25)
+  answers          answers[]
+  questions        questions[]
+  survey_responses survey_responses[]
 }
 
 model usrs {
@@ -87,6 +89,7 @@ model usrs {
   incapacidades                 incapacidades[]
   lenguas                       lenguas[]
   procedimientosadministrativos procedimientosadministrativos[]
+  survey_responses              survey_responses[]
 
   @@index([RFC], map: "idx_RFC")
 }
@@ -157,13 +160,17 @@ model procedimientosadministrativos {
   @@index([RFC], map: "RFC")
 }
 
-model user_answers {
-  user_answer_id    Int        @id @default(autoincrement())
-  question_id       Int?
-  chosen_answer_ids String?    @db.Text
-  questions         questions? @relation(fields: [question_id], references: [question_id], onDelete: NoAction, onUpdate: NoAction, map: "user_answers_ibfk_2")
+model survey_responses {
+  response_id        Int       @id @default(autoincrement())
+  user_id            Int?
+  survey_id          Int?
+  answer             Json?
+  response_timestamp DateTime? @default(now()) @db.Timestamp(0)
+  usrs               usrs?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "survey_responses_ibfk_1")
+  surveys            surveys?  @relation(fields: [survey_id], references: [survey_id], onDelete: NoAction, onUpdate: NoAction, map: "survey_responses_ibfk_2")
 
-  @@index([question_id], map: "question_id")
+  @@index([survey_id], map: "survey_id")
+  @@index([user_id], map: "user_id")
 }
 
 enum questions_question_type {

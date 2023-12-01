@@ -181,16 +181,10 @@ export default function Page() {
         ? Math.max(...questionData.map((question) => question.question_id))
         : 0;
 
-    // Find the highest survey_id in the existing questions
-    const highestSurveyId =
-      questionData.length > 0
-        ? Math.max(...questionData.map((question) => question.survey_id))
-        : 0;
-
     // Create a new question object
     const newQuestionObject = {
       question_id: highestQuestionId + 1,
-      survey_id: highestSurveyId,
+      survey_id: id,
       question_text: "Ingresa la nueva pregunta",
       question_type: "multiple_choice",
     };
@@ -235,6 +229,8 @@ export default function Page() {
                 key={question.question_id}
                 index={index}
                 pregunta={question}
+                questionData={questionData}
+                setPregunta={setQuestionData}
                 respuesta={answerData}
                 setRespuesta={setAnswerData}
                 onRemove={() => removeQuestion(index)}
@@ -273,7 +269,15 @@ export default function Page() {
           </div>
           ): (
             <CardBody className="flex items-center justify-center">
-              <p className="text-md mb-3">Cargando...</p>
+              <p className="text-md mb-3">No parece haber ninguna pregunta, añade una</p>
+              <Button
+                className="w-full"
+                color="primary"
+                onClick={addQuestion}
+                endContent={<PlusIcon />}
+              >
+                Añadir pregunta
+              </Button>
             </CardBody>
           )}
         </CardBody>

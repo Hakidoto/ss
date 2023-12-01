@@ -34,6 +34,7 @@ import { DeleteIcon } from "../components/icons/DeleteIcon";
 import { EyeIcon } from "../components/icons/EyeIcon";
 import { MailIcon } from "../components/icons/MailIcon";
 import { LockIcon } from "../components/icons/LockIcon";
+import NextLink from "next/link";
 
 const statusColorMap = {
   activo: "success",
@@ -61,7 +62,7 @@ export default function CuestionarioDisponible() {
   const fetchData = async () => {
     try {
       // Assuming getSurveys returns an array of survey objects
-      const data = await getSurveys()
+      const data = await getSurveys();
 
       setSurveysData(data);
     } catch (error) {
@@ -71,83 +72,82 @@ export default function CuestionarioDisponible() {
   };
 
   useEffect(() => {
-    fetchData().then(() => {
-      setIsLoaded(true);
-      setLoading(false);
-    })
-    .catch((error) => {
-      console.error('Error fetching data:', error);
-      setLoading(false);
-    });
+    fetchData()
+      .then(() => {
+        setIsLoaded(true);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
   }, []); // Fetch data when the component mounts
 
-  const renderCell = React.useCallback(
-    (survey, columnKey) => {
-      const cellValue = survey[columnKey];
+  const renderCell = React.useCallback((survey, columnKey) => {
+    const cellValue = survey[columnKey];
 
-      switch (columnKey) {
-        case "title":
-          return (
-            <div>
-              <p className="text-bold text-sm">{cellValue}</p>
-            </div>
-          );
-        case "description":
-          return (
-            <div>
-              <p className="text-bold text-sm capitalize">{cellValue}</p>
-            </div>
-          );
-        case "estatus":
-          return (
-            <Chip
-              className="capitalize"
-              color={statusColorMap[survey.estatus]}
-              size="sm"
-              variant="flat"
-            >
-              {cellValue}
-            </Chip>
-          );
-        case 'created_at':
-          const originalDate = new Date(cellValue);
-          const day = originalDate.getDate().toString().padStart(2, '0');
-          const month = (originalDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so we add 1.
-          const year = originalDate.getFullYear();
-        
-          const formattedDate = `${day}-${month}-${year}`;
-          console.log(formattedDate);
-        
-          return (
-            <div>
-              <p className="text-bold text-sm">{formattedDate}</p>
-            </div>
-          );
-        case "actions":
-          return (
-            <div className="relative flex items-center gap-2">
-              <Tooltip content="Realizar cuestionario">
-                <Link
-                  href={`/cuestionario/${survey.survey_id}/submit`}
-                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
-                >
-                  <EyeIcon />
-                </Link>
-              </Tooltip>
-            </div>
-          );
-        default:
-          return cellValue;
-      }
-    },
-    []
-  );
+    switch (columnKey) {
+      case "title":
+        return (
+          <div>
+            <p className="text-bold text-sm">{cellValue}</p>
+          </div>
+        );
+      case "description":
+        return (
+          <div>
+            <p className="text-bold text-sm capitalize">{cellValue}</p>
+          </div>
+        );
+      case "estatus":
+        return (
+          <Chip
+            className="capitalize"
+            color={statusColorMap[survey.estatus]}
+            size="sm"
+            variant="flat"
+          >
+            {cellValue}
+          </Chip>
+        );
+      case "created_at":
+        const originalDate = new Date(cellValue);
+        const day = originalDate.getDate().toString().padStart(2, "0");
+        const month = (originalDate.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based, so we add 1.
+        const year = originalDate.getFullYear();
+
+        const formattedDate = `${day}-${month}-${year}`;
+        console.log(formattedDate);
+
+        return (
+          <div>
+            <p className="text-bold text-sm">{formattedDate}</p>
+          </div>
+        );
+      case "actions":
+        return (
+          <div className="relative flex items-center gap-2">
+            <Tooltip content="Realizar cuestionario">
+              <Button
+                as={NextLink}
+                href={`/cuestionario/${survey.survey_id}/submit`}
+                color="primary"
+                isIconOnly
+              >
+                <EditIcon />
+              </Button>
+            </Tooltip>
+          </div>
+        );
+      default:
+        return cellValue;
+    }
+  }, []);
 
   return (
     <div>
       <Card className="bg-background/60 dark:bg-default-100/50">
-        <CardHeader>
-        </CardHeader>
+        <CardHeader></CardHeader>
         <CardBody>
           <Skeleton isLoaded={isLoaded} className="rounded-2xl">
             <Table aria-label="Example table with custom cells">
