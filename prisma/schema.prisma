@@ -15,12 +15,11 @@ model user {
 }
 
 model answers {
-
   answer_id   Int
   survey_id   Int
   question_id Int
   answer_text String    @db.Text
-  questions   questions @relation(fields: [question_id], references: [question_id], onDelete: Cascade, onUpdate: NoAction, map: "answers_question_id_fk")
+  questions   questions @relation(fields: [question_id], references: [question_id], onDelete: Cascade, onUpdate: NoAction, map: "answers_ibfk_1")
   surveys     surveys   @relation(fields: [survey_id], references: [survey_id], onDelete: NoAction, onUpdate: NoAction, map: "answers_survey_id_fk")
 
   @@id([answer_id, question_id, survey_id])
@@ -44,13 +43,14 @@ model experiencialaboral {
 }
 
 model questions {
-  question_id   Int                     @id @default(autoincrement())
+  question_id   Int @unique
   survey_id     Int
   question_text String                  @db.Text
   question_type questions_question_type
   answers       answers[]
   surveys       surveys                 @relation(fields: [survey_id], references: [survey_id], onDelete: Cascade, onUpdate: NoAction, map: "questions_ibfk_1")
 
+  @@id([question_id, survey_id])
   @@index([survey_id], map: "survey_id")
 }
 
@@ -70,7 +70,6 @@ model usrs {
   RFC                           String?                         @unique(map: "unique_rfc") @db.VarChar(13)
   nombre                        String?                         @db.VarChar(50)
   username                      String?                         @unique(map: "username") @db.VarChar(15)
-  password                      String?                         @db.VarChar(20)
   edad                          String?                         @db.VarChar(3)
   direccion                     String?                         @db.VarChar(50)
   celular                       String?                         @db.VarChar(50)
@@ -82,6 +81,7 @@ model usrs {
   horario                       String?                         @db.VarChar(50)
   estado                        String?                         @db.VarChar(50)
   antiguedad                    String?                         @db.VarChar(50)
+  password                      String?                         @db.VarChar(20)
   certificaciones               certificaciones[]
   cursos                        cursos[]
   experiencialaboral            experiencialaboral[]
