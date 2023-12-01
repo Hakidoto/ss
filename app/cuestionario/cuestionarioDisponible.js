@@ -37,18 +37,37 @@ import { LockIcon } from "../components/icons/LockIcon";
 import NextLink from "next/link";
 
 const statusColorMap = {
-  activo: "success",
-  inactivo: "danger",
-  finalizado: "warning",
+  completada: "success",
+  noCompletada: "danger",
+  incompleta: "warning",
 };
 
 const getSurveys = cache(() =>
   fetch("/api/cuestionario").then((res) => res.json())
 );
 
+const getUserAnswer = cache((id) => {
+  // Ensure you return the promise from fetch
+  const idUsuario = "1"; //Temp, se reemplaza por la variable de sesion eventualmente
+  return fetch(`/api/cuestionario/respuesta_usuario/${idUsuario}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => {
+    // Check for a successful response (status code 200)
+    if (!res.ok) {
+      throw new Error(`Request failed with status: ${res.status}`);
+    }
+    // Parse the response as JSON
+    return res.json();
+  });
+});
+
 export default function CuestionarioDisponible() {
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [surveysData, setSurveysData] = useState([]);
+  const [userAnswerData, setUserAnswerData] = useState({});
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(true);
 
@@ -56,6 +75,7 @@ export default function CuestionarioDisponible() {
     { name: "TITULO", uid: "title" },
     { name: "DESCRIPCION", uid: "description" },
     { name: "FECHA", uid: "created_at" },
+    { name: "ESTATUS", uid: "estatus" },
     { name: "ACCIONES", uid: "actions" },
   ];
 
@@ -63,8 +83,10 @@ export default function CuestionarioDisponible() {
     try {
       // Assuming getSurveys returns an array of survey objects
       const data = await getSurveys();
+      const userAnswer = await getUserAnswer();
 
       setSurveysData(data);
+      setUserAnswerData(userAnswer);
     } catch (error) {
       // Handle error if needed
       console.error("Error fetching data:", error);
@@ -83,6 +105,10 @@ export default function CuestionarioDisponible() {
       });
   }, []); // Fetch data when the component mounts
 
+  useEffect(() => {
+    console.log(userAnswerData);
+  }, [userAnswerData]); // Fetch data when the component mounts
+
   const renderCell = React.useCallback((survey, columnKey) => {
     const cellValue = survey[columnKey];
 
@@ -100,14 +126,25 @@ export default function CuestionarioDisponible() {
           </div>
         );
       case "estatus":
+        let matchingSurvey = false;
+        if (userAnswerData.survey_id === survey.survey_id) {
+          matchingSurvey = true;
+        }
+        const status = matchingSurvey ? "completada" : "noCompletada";
+        let statusText = "";
+        if (status === "completada") {
+          statusText = "Realizada";
+        } else if (status === "noCompletada") {
+          statusText = "No realizada";
+        }
         return (
           <Chip
             className="capitalize"
-            color={statusColorMap[survey.estatus]}
+            color={statusColorMap[status]}
             size="sm"
             variant="flat"
           >
-            {cellValue}
+            {statusText}
           </Chip>
         );
       case "created_at":
