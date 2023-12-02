@@ -70,6 +70,8 @@ export default function CuestionarioDisponible() {
   const [userAnswerData, setUserAnswerData] = useState({});
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(true);
+  const [statusEncuestaMap, setStatusEncuestaMap] = useState({});
+
 
   const columns = [
     { name: "TITULO", uid: "title" },
@@ -83,15 +85,21 @@ export default function CuestionarioDisponible() {
     try {
       // Assuming getSurveys returns an array of survey objects
       const data = await getSurveys();
-      const userAnswer = await getUserAnswer();
-
       setSurveysData(data);
+    } catch (error) {
+      // Handle error for getSurveys
+      console.error("Error fetching surveys:", error);
+    }
+  
+    try {
+      const userAnswer = await getUserAnswer();
       setUserAnswerData(userAnswer);
     } catch (error) {
-      // Handle error if needed
-      console.error("Error fetching data:", error);
+      // Handle error for getUserAnswer
+      console.error("Error fetching user answer:", error);
     }
   };
+  
 
   useEffect(() => {
     fetchData()
@@ -105,9 +113,6 @@ export default function CuestionarioDisponible() {
       });
   }, []); // Fetch data when the component mounts
 
-  useEffect(() => {
-    console.log(userAnswerData);
-  }, [userAnswerData]); // Fetch data when the component mounts
 
   const renderCell = React.useCallback((survey, columnKey) => {
     const cellValue = survey[columnKey];
@@ -134,8 +139,16 @@ export default function CuestionarioDisponible() {
         let statusText = "";
         if (status === "completada") {
           statusText = "Realizada";
+          setStatusEncuestaMap((prevStatusMap) => ({
+            ...prevStatusMap,
+            [survey.survey_id]: true, // Set statusEncuesta to true if survey is completed
+          }));
         } else if (status === "noCompletada") {
           statusText = "No realizada";
+          setStatusEncuestaMap((prevStatusMap) => ({
+            ...prevStatusMap,
+            [survey.survey_id]: false, // Set statusEncuesta to false if survey is not completed
+          }));
         }
         return (
           <Chip
@@ -154,8 +167,6 @@ export default function CuestionarioDisponible() {
         const year = originalDate.getFullYear();
 
         const formattedDate = `${day}-${month}-${year}`;
-        console.log(formattedDate);
-
         return (
           <div>
             <p className="text-bold text-sm">{formattedDate}</p>
@@ -170,6 +181,7 @@ export default function CuestionarioDisponible() {
                 href={`/cuestionario/${survey.survey_id}/submit`}
                 color="primary"
                 isIconOnly
+                isDisabled={statusEncuestaMap[survey.survey_id]}
               >
                 <EditIcon />
               </Button>
@@ -179,7 +191,7 @@ export default function CuestionarioDisponible() {
       default:
         return cellValue;
     }
-  }, []);
+  }, [userAnswerData]);
 
   return (
     <div>

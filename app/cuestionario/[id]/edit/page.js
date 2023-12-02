@@ -27,6 +27,23 @@ const getQuestions = (id) => {
   });
 };
 
+const getLastQuestion = () => {
+  // Ensure you return the promise from fetch
+  return fetch(`/api/cuestionario/pregunta`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => {
+    // Check for a successful response (status code 200)
+    if (!res.ok) {
+      throw new Error(`Request failed with status: ${res.status}`);
+    }
+    // Parse the response as JSON
+    return res.json();
+  });
+};
+
 const getAnswers = () => {
   // Ensure you return the promise from fetch
   return fetch(`/api/cuestionario/respuesta`, {
@@ -46,6 +63,7 @@ const getAnswers = () => {
 
 export default function Page() {
   const [questionData, setQuestionData] = useState([]);
+  const [lastQuestion, setLastQuestion] = useState([])
   const [answerData, setAnswerData] = useState([]);
   const [newQuestionAdded, setNewQuestionAdded] = useState(false); // Flag to track new question
   const [questionAnswers, setQuestionAnswers] = useState({});
@@ -58,9 +76,11 @@ export default function Page() {
       // Assuming getSurveys returns an array of questions objects
       const questions = await getQuestions(id);
       const answers = await getAnswers();
+      const latestQuestion = await getLastQuestion();
 
       setAnswerData(answers);
       setQuestionData(questions);
+      setLastQuestion(latestQuestion);
     } catch (error) {
       // Handle error if needed
       console.error("Error fetching data:", error);
@@ -176,10 +196,7 @@ export default function Page() {
 
   const addQuestion = () => {
     // Find the highest question_id in the existing questions
-    const highestQuestionId =
-      questionData.length > 0
-        ? Math.max(...questionData.map((question) => question.question_id))
-        : 0;
+    const highestQuestionId = lastQuestion.question_id;
 
     // Create a new question object
     const newQuestionObject = {
@@ -193,6 +210,7 @@ export default function Page() {
     const updatedQuestions = [...questionData, newQuestionObject];
 
     // Update the state with the new array
+    setLastQuestion(newQuestionObject);
     setQuestionData(updatedQuestions);
     setNewQuestionAdded(true);
   };
@@ -212,6 +230,7 @@ export default function Page() {
   }, []); // Fetch data when the component mounts
 
   useEffect(() => {
+    console.log(lastQuestion);
     console.log(questionData);
     console.log(questionAnswers);
   }, [questionAnswers]);
