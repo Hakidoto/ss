@@ -43,7 +43,7 @@ model experiencialaboral {
 }
 
 model questions {
-  question_id   Int @unique
+  question_id   Int                     @unique @default(autoincrement())
   survey_id     Int
   question_text String                  @db.Text
   question_type questions_question_type
