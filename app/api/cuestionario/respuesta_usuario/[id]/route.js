@@ -5,7 +5,7 @@ export async function GET(request, { params }) {
   try {
     const userAnswerId = params.id;
 
-    const getUserAnswer = await prisma.survey_responses.findFirstOrThrow({
+    const getUserAnswer = await prisma.survey_responses.findMany({
       where: { user_id: parseInt(userAnswerId)}, // Assuming ID is an integer
     });
     return new NextResponse(JSON.stringify(getUserAnswer), {

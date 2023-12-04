@@ -67,11 +67,10 @@ const getUserAnswer = cache((id) => {
 export default function CuestionarioDisponible() {
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [surveysData, setSurveysData] = useState([]);
-  const [userAnswerData, setUserAnswerData] = useState({});
+  const [userAnswerData, setUserAnswerData] = useState([]);
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(true);
   const [statusEncuestaMap, setStatusEncuestaMap] = useState({});
-
 
   const columns = [
     { name: "TITULO", uid: "title" },
@@ -90,7 +89,7 @@ export default function CuestionarioDisponible() {
       // Handle error for getSurveys
       console.error("Error fetching surveys:", error);
     }
-  
+
     try {
       const userAnswer = await getUserAnswer();
       setUserAnswerData(userAnswer);
@@ -99,7 +98,48 @@ export default function CuestionarioDisponible() {
       console.error("Error fetching user answer:", error);
     }
   };
+
+  useEffect(() => {
+    // Run checkResponses when both userAnswerData and surveysData have values
+    checkResponses();
+  }, [userAnswerData]);
+
+  const checkResponses = () => {
+    // Check if userAnswerData is an array
+    if (Array.isArray(userAnswerData)) {
+      userAnswerData.forEach((userAnswer) => {
+        processUserAnswer(userAnswer);
+      });
+    } else {
+      // If not an array, treat it as a single object
+      processUserAnswer(userAnswerData);
+    }
+  };
   
+  const processUserAnswer = (userAnswer) => {
+    // Check if userAnswer has survey_id property
+    if ('survey_id' in userAnswer) {
+      // Check if there's a survey in surveysData with a matching survey_id
+      const surveyIndex = surveysData.findIndex(
+        (survey) => survey.survey_id === userAnswer.survey_id
+      );
+  
+      if (surveyIndex !== -1) {
+        // Survey found, update surveysData with "user_responded: true"
+        setSurveysData((prevSurveysData) => [
+          ...prevSurveysData.slice(0, surveyIndex),
+          { ...prevSurveysData[surveyIndex], user_responded: true },
+          ...prevSurveysData.slice(surveyIndex + 1),
+        ]);
+      } else {
+        // Survey not found, update surveysData with "user_responded: false"
+        setSurveysData((prevSurveysData) => [
+          ...prevSurveysData,
+          { survey_id: userAnswer.survey_id, user_responded: false },
+        ]);
+      }
+    }
+  };
 
   useEffect(() => {
     fetchData()
@@ -113,6 +153,9 @@ export default function CuestionarioDisponible() {
       });
   }, []); // Fetch data when the component mounts
 
+  useEffect(() => {
+    console.log(surveysData);
+  }, [surveysData]); // Fetch data when the component mounts
 
   const renderCell = React.useCallback((survey, columnKey) => {
     const cellValue = survey[columnKey];
@@ -131,24 +174,12 @@ export default function CuestionarioDisponible() {
           </div>
         );
       case "estatus":
-        let matchingSurvey = false;
-        if (userAnswerData.survey_id === survey.survey_id) {
-          matchingSurvey = true;
-        }
-        const status = matchingSurvey ? "completada" : "noCompletada";
+        const status = survey.user_responded ? "completada" : "noCompletada";
         let statusText = "";
         if (status === "completada") {
           statusText = "Realizada";
-          setStatusEncuestaMap((prevStatusMap) => ({
-            ...prevStatusMap,
-            [survey.survey_id]: true, // Set statusEncuesta to true if survey is completed
-          }));
         } else if (status === "noCompletada") {
           statusText = "No realizada";
-          setStatusEncuestaMap((prevStatusMap) => ({
-            ...prevStatusMap,
-            [survey.survey_id]: false, // Set statusEncuesta to false if survey is not completed
-          }));
         }
         return (
           <Chip
@@ -181,7 +212,7 @@ export default function CuestionarioDisponible() {
                 href={`/cuestionario/${survey.survey_id}/submit`}
                 color="primary"
                 isIconOnly
-                isDisabled={statusEncuestaMap[survey.survey_id]}
+                isDisabled={survey.user_responded}
               >
                 <EditIcon />
               </Button>
@@ -191,7 +222,7 @@ export default function CuestionarioDisponible() {
       default:
         return cellValue;
     }
-  }, [userAnswerData]);
+  }, []);
 
   return (
     <div>
@@ -210,7 +241,10 @@ export default function CuestionarioDisponible() {
                   </TableColumn>
                 )}
               </TableHeader>
-              <TableBody items={surveysData}>
+              <TableBody
+                emptyContent={"No rows to display."}
+                items={surveysData}
+              >
                 {(survey) => (
                   <TableRow key={survey.survey_id}>
                     {(columnKey) => (

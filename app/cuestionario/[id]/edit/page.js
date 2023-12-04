@@ -7,8 +7,7 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { PlusIcon } from "@/app/components/icons/PlusIcon";
 import { LuSave } from "react-icons/lu";
-import { toast} from 'react-toastify';
-
+import { toast } from "react-toastify";
 
 const getQuestions = (id) => {
   // Ensure you return the promise from fetch
@@ -63,7 +62,7 @@ const getAnswers = () => {
 
 export default function Page() {
   const [questionData, setQuestionData] = useState([]);
-  const [lastQuestion, setLastQuestion] = useState([])
+  const [lastQuestion, setLastQuestion] = useState([]);
   const [answerData, setAnswerData] = useState([]);
   const [newQuestionAdded, setNewQuestionAdded] = useState(false); // Flag to track new question
   const [questionAnswers, setQuestionAnswers] = useState({});
@@ -122,7 +121,7 @@ export default function Page() {
 
       for (const question_id in questionAnswers) {
         const answers = questionAnswers[question_id];
-      
+
         // Assuming answers is an array, you can loop through it
         for (const singleAnswer of answers) {
           const answerResponse = await fetch(
@@ -150,13 +149,13 @@ export default function Page() {
       if (allRequestsSuccessful) {
         console.log("All survey data saved successfully!");
         toast.success("Datos guardados con exito.");
-
       } else {
         console.error(
           "Some requests failed. Survey data not saved completely."
         );
-        toast.error("Hubo un error al guardar las encuestas, intente de nuevo...");
-
+        toast.error(
+          "Hubo un error al guardar las encuestas, intente de nuevo..."
+        );
       }
     } catch (error) {
       console.error("Error saving survey data:", error);
@@ -171,32 +170,43 @@ export default function Page() {
       console.log(deletedQuestion);
       // Update the state with the new array
       setQuestionData(updatedQuestions);
-    
-      const response = await fetch(`/api/cuestionario/pregunta/${deletedQuestion.question_id}`, {
-        method: 'DELETE',
-        headers: {
-          'Content-Type': 'application/json',
-          // Add any additional headers if needed
-        },
-        body: JSON.stringify(deletedQuestion),
-      });
-  
+
+      const response = await fetch(
+        `/api/cuestionario/pregunta/${deletedQuestion.question_id}`,
+        {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            // Add any additional headers if needed
+          },
+          body: JSON.stringify(deletedQuestion),
+        }
+      );
+
       if (!response.ok) {
-        throw new Error(`Failed to delete question. Status: ${response.status}`);
+        throw new Error(
+          `Failed to delete question. Status: ${response.status}`
+        );
       }
-  
+
       // Add any additional logic after a successful deletion
-  
     } catch (error) {
       console.error("Error handling delete question request:", error);
       // Handle error as needed
     }
   };
-  
 
   const addQuestion = () => {
     // Find the highest question_id in the existing questions
-    const highestQuestionId = lastQuestion.question_id;
+    let highestQuestionId = 0;
+    if ((lastQuestion != null)) {
+      highestQuestionId = lastQuestion.question_id;
+    } else {
+      highestQuestionId =
+        questionData.length > 0
+          ? Math.max(...questionData.map((question) => question.question_id))
+          : 0;
+    }
 
     // Create a new question object
     const newQuestionObject = {
@@ -259,36 +269,39 @@ export default function Page() {
                   getAllQuestionsAndAnswers(question.question_id, answers)
                 }
                 updateQuestions={(questionData) =>
-                  updateQuestion(index, questionData)}
+                  updateQuestion(index, questionData)
+                }
               />
             );
           })}
-        {questionData.length > 0 ? (
-          <div className="flex justify-around">
-            <div className="w-1/5">
-              <Button
-                className="w-full"
-                color="primary"
-                onClick={addQuestion}
-                endContent={<PlusIcon />}
-              >
-                Añadir pregunta
-              </Button>
+          {questionData.length > 0 ? (
+            <div className="flex justify-around">
+              <div className="w-1/5">
+                <Button
+                  className="w-full"
+                  color="primary"
+                  onClick={addQuestion}
+                  endContent={<PlusIcon />}
+                >
+                  Añadir pregunta
+                </Button>
+              </div>
+              <div className="w-1/5">
+                <Button
+                  className="w-full"
+                  color="success"
+                  onClick={saveSurveyData}
+                  endContent={<LuSave />}
+                >
+                  Guardar encuesta
+                </Button>
+              </div>
             </div>
-            <div className="w-1/5">
-              <Button
-                className="w-full"
-                color="success"
-                onClick={saveSurveyData}
-                endContent={<LuSave />}
-              >
-                Guardar encuesta
-              </Button>
-            </div>
-          </div>
-          ): (
+          ) : (
             <CardBody className="flex items-center justify-center">
-              <p className="text-md mb-3">No parece haber ninguna pregunta, añade una</p>
+              <p className="text-md mb-3">
+                No parece haber ninguna pregunta, añade una
+              </p>
               <Button
                 className="w-full"
                 color="primary"
