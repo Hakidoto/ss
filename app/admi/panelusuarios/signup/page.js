@@ -4,6 +4,7 @@ import React, { useState } from "react";
 import { Card, CardHeader, CardBody, Input, Button } from "@nextui-org/react";
 
 import { useRouter } from "next/navigation";
+import Link from "next/link";
 
 export default function SignUp() {
   const router = useRouter();
@@ -53,7 +54,7 @@ export default function SignUp() {
           nombre: "",
           nombre: "",
           username: "",
-          password: '',
+          password: "",
           edad: "",
           direccion: "",
           celular: "",
@@ -116,10 +117,20 @@ export default function SignUp() {
                 />
               </div>
             ))}
-            <div className="col-span-2 flex justify-center mt-3">
-              <Button type="submit" size="lg" radius="full" color="primary">
-                Registrar
-              </Button>
+            <div className="flex gap-2 justify-center mt-5 ">
+              <div>
+                <Link href="/admi/panelusuarios/">
+                  <Button size="lg" radius="lg" color="danger">
+                    Volver
+                  </Button>
+                </Link>
+              </div>
+
+              <div>
+                <Button type="submit" size="lg" radius="lg" color="primary">
+                  Confirmar
+                </Button>
+              </div>
             </div>
           </form>
           <hr className="my-3 w-full border-gray-300" />
