@@ -46,9 +46,27 @@ const getSurveys = cache(() =>
   fetch("/api/cuestionario").then((res) => res.json())
 );
 
+const getAllUserAnswer = cache(() => {
+  // Ensure you return the promise from fetch
+  return fetch(`/api/cuestionario/respuesta_usuario/`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => {
+    // Check for a successful response (status code 200)
+    if (!res.ok) {
+      throw new Error(`Request failed with status: ${res.status}`);
+    }
+    // Parse the response as JSON
+    return res.json();
+  });
+});
+
 export default function PanelCuestionario() {
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [surveysData, setSurveysData] = useState([]);
+  const [userAnswerData, setUserAnswerData] = useState([]);
   const [nombreEncuesta, setNombreEncuesta] = useState("");
   const [descripcion, setDescripcion] = useState("");
   const [estatusEncuesta, setEstatusEncuesta] = useState("");
@@ -118,12 +136,19 @@ export default function PanelCuestionario() {
   const fetchData = async () => {
     try {
       // Assuming getSurveys returns an array of survey objects
-      const data = await getSurveys()
-
+      const data = await getSurveys();
       setSurveysData(data);
     } catch (error) {
-      // Handle error if needed
-      console.error("Error fetching data:", error);
+      // Handle error for getSurveys
+      console.error("Error fetching surveys:", error);
+    }
+
+    try {
+      const userAnswer = await getAllUserAnswer();
+      setUserAnswerData(userAnswer);
+    } catch (error) {
+      // Handle error for getUserAnswer
+      console.error("Error fetching user answer:", error);
     }
   };
 
@@ -184,9 +209,12 @@ export default function PanelCuestionario() {
           return (
             <div className="relative flex items-center gap-2">
               <Tooltip content="Detalles">
-                <span className="text-lg text-default-400 cursor-pointer active:opacity-50">
+              <Link
+                  href={`/cuestionario/${survey.survey_id}/view`}
+                  className="text-lg text-default-400 cursor-pointer active:opacity-50"
+                >
                   <EyeIcon />
-                </span>
+                  </Link>
               </Tooltip>
               <Tooltip content="Editar cuestionario">
                 <Link
