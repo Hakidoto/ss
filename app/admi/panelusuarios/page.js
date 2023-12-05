@@ -8,6 +8,7 @@ export default function Admi() {
   const router = useRouter();
   const handleEditUser = () => {
     // Lógica para editar usuario
+    router.push("/admi/panelusuarios/resetpassword");
     console.log("Editar usuario");
   };
 

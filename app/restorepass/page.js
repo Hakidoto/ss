@@ -53,7 +53,7 @@ export default function RestorePass() {
       <Card className="w-[400px] h-[500px]">
         <CardHeader className="justify-center p-3">
           <div className="flex gap-4 justify-center items-center">
-            <h1>Recupera tu cuenta</h1>
+            <h1>Cambiar contraseña</h1>
           </div>
         </CardHeader>
         {error && <p>{error}</p>}
@@ -62,7 +62,7 @@ export default function RestorePass() {
             <form className="flex flex-col gap-4" onSubmit={handleSubmit}>
               <Input
                 isRequired
-                placeholder="Ingresa tu usuario"
+                placeholder="Ingresa el usuario"
                 type="text"
                 className="mb-1"
                 name="username"

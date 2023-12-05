@@ -83,7 +83,7 @@ export default function App() {
                 </Link>
               </p> */}
 
-              <div className="flex gap-2 justify-center mb-5 ">
+              <div className="flex gap-2 justify-center my-5 ">
                 <Button type="submit" size="lg" radius="full" color="primary">
                   Iniciar sesión
                 </Button>
