@@ -29,8 +29,9 @@ export function Providers({ children }) {
         defaultTheme="dark"
         themes={["light", "dark", "modern"]}
       >
-        {pathLink != "/login" && <NavbarTRC />}
         <SessionProvider>
+          {pathLink != "/login" && <NavbarTRC />}
+
           {children}
         </SessionProvider>
         <ToastContainer

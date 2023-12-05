@@ -27,10 +27,12 @@ import { SunIcon } from "./icons/SunIcon";
 import { MoonIcon } from "./icons/MoonIcon";
 import style from "./styles/navbar.module.css";
 
-import { signOut } from "next-auth/react";
+import { signOut, useSession } from "next-auth/react";
 import { useEffect } from "react";
 export default function NavbarTRC() {
   const router = useRouter();
+  const { data: session, status } = useSession();
+
   const pathname = usePathname();
   const menuItems = [
     { nombre: "Inicio", link: "/" },
@@ -129,8 +131,17 @@ export default function NavbarTRC() {
           </DropdownTrigger>
           <DropdownMenu aria-label="Profile Actions" variant="flat">
             <DropdownItem key="profile" className="h-14 gap-2">
-              <p className="font-semibold">Sesion de </p>
-              <p className="font-semibold">prueba@prisma.com</p>
+              {session ? ( // Check if a session exists
+                <>
+                  <p className="font-semibold">{session.user.username} </p>
+                  <p className="font-semibold">{session.user.email}</p>
+                </>
+              ) : (
+                <>
+                  <p className="font-semibold">Sesion de </p>
+                  <p className="font-semibold">prueba@prisma.com</p>
+                </>
+              )}
             </DropdownItem>
             <DropdownSection showDivider title="Perfil">
               <DropdownItem
@@ -176,7 +187,12 @@ export default function NavbarTRC() {
             <DropdownItem key="help_and_feedback" color="secondary">
               Ayuda & Comentarios
             </DropdownItem>
-            <DropdownItem as={Button} onClick={signout} variant="destructive" color="danger">
+            <DropdownItem
+              as={Button}
+              onClick={signout}
+              variant="destructive"
+              color="danger"
+            >
               Cerrar sesion
             </DropdownItem>
           </DropdownMenu>
