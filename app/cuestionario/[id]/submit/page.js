@@ -8,6 +8,7 @@ import { PlusIcon } from "@/app/components/icons/PlusIcon";
 import { LuSave } from "react-icons/lu";
 import { toast } from "react-toastify";
 import CardRespUsuario from "./cardRespUsuario";
+import { useSession } from "next-auth/react";
 
 
 const getQuestions = (id) => {
@@ -48,6 +49,7 @@ export default function Page() {
   const [questionData, setQuestionData] = useState([]);
   const [answerData, setAnswerData] = useState([]);
   const [userAnswers, setUserAnswers] = useState({});
+  const { data: session, status } = useSession();
 
   const pathname = usePathname();
   const parts = pathname.split("/");
@@ -77,7 +79,7 @@ export default function Page() {
 
   const saveUserAnswerData = async () => {
     let allRequestsSuccessful = true;
-    const usuario_id= "1";
+    const usuario_id= session.user.id;
 
     const userAnswersWithSurveyId = {
       userAnswers: userAnswers, // Add a new property named userAnswers

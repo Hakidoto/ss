@@ -35,6 +35,7 @@ import { EyeIcon } from "../components/icons/EyeIcon";
 import { MailIcon } from "../components/icons/MailIcon";
 import { LockIcon } from "../components/icons/LockIcon";
 import NextLink from "next/link";
+import { useSession } from "next-auth/react";
 
 const statusColorMap = {
   completada: "success",
@@ -48,8 +49,7 @@ const getSurveys = cache(() =>
 
 const getUserAnswer = cache((id) => {
   // Ensure you return the promise from fetch
-  const idUsuario = "1"; //Temp, se reemplaza por la variable de sesion eventualmente
-  return fetch(`/api/cuestionario/respuesta_usuario/${idUsuario}`, {
+  return fetch(`/api/cuestionario/respuesta_usuario/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -65,6 +65,7 @@ const getUserAnswer = cache((id) => {
 });
 
 export default function CuestionarioDisponible() {
+  const { data: session, status } = useSession();
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [surveysData, setSurveysData] = useState([]);
   const [userAnswerData, setUserAnswerData] = useState([]);
@@ -91,7 +92,7 @@ export default function CuestionarioDisponible() {
     }
 
     try {
-      const userAnswer = await getUserAnswer();
+      const userAnswer = await getUserAnswer(session.user.id);
       setUserAnswerData(userAnswer);
     } catch (error) {
       // Handle error for getUserAnswer
