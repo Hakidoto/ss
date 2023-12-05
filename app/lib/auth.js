@@ -51,7 +51,7 @@ export const authOptions = {
         if (passwordsMatch) {
           // La contraseña ingresada coincide con la contraseña almacenada
           return {
-            id: `${existingUser.id}`,
+            id: existingUser.id,
             username: existingUser.username,
             email: existingUser.correo,
           };
@@ -64,24 +64,28 @@ export const authOptions = {
   ],
   callbacks: {
     async jwt({ token, user }) {
-      console.log(token, user);
+      console.log("token:",  token);
+      console.log("user:", user);
       // Persist the OAuth access_token and or the user id to the token right after signin
       if (user) {
         return {
           ...token,
+          id: user.id, // persiste el id del usuario 
           username: user.username,
         };
       }
       return token;
     },
     async session({ session, token }) {
-      console.log(token, session);
+      console.log("token:",  token);
+      console.log("session:",  session);
       // Send properties to the client, like an access_token and user id from a provider.
       if (session) {
         return {
           ...session,
           user: {
             ...session.user,
+            id: token.id, // Add the user id to the session user
             username: token.username,
           },
         };

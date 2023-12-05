@@ -8,6 +8,7 @@ import "react-toastify/dist/ReactToastify.css";
 import { useState, useEffect } from "react";
 import NavbarTRC from "./components/navbar";
 import { usePathname } from "next/navigation";
+import { SessionProvider } from "next-auth/react";
 
 export function Providers({ children }) {
   const [currentTheme, setCurrentTheme] = useState("dark");
@@ -28,8 +29,10 @@ export function Providers({ children }) {
         defaultTheme="dark"
         themes={["light", "dark", "modern"]}
       >
-        {pathLink != '/login' && <NavbarTRC />}
-        {children}
+        {pathLink != "/login" && <NavbarTRC />}
+        <SessionProvider>
+          {children}
+        </SessionProvider>
         <ToastContainer
           position="top-right"
           autoClose={5000}
