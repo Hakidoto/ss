@@ -7,9 +7,11 @@ import PersonalData from './components/PersonalData';
 import ContactData from './components/ContactData';
 import StatusData from './components/StatusData';
 import WorkExperience from './components/WorkExperience';
+import { useSession } from 'next-auth/react';
 
 export default function Page() {
-  const [userId, setUserId] = useState(2);
+  const { data: session, status } = useSession();
+  //const [userId, setUserId] = useState();
   const [user, setUser] = useState(null);
   const [userRfc, setUserRfc] = useState("");
   const [userExp, setUserExp] = useState([]);
@@ -20,7 +22,7 @@ export default function Page() {
   async function fetchData() {
     setLoading(true);
     try {
-      const UsuarioId = userId; // Reemplaza con el ID del usuario que deseas obtener
+      const UsuarioId = session.user.id; // Reemplaza con el ID del usuario que deseas obtener
       const response = await fetch(`/api/usuario/${UsuarioId}`);
   
       if (response.ok) {
@@ -90,13 +92,13 @@ export default function Page() {
   const renderTabContent = (item) => {
     switch (item.id) {
       case "personalData":
-        return <PersonalData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
+        return <PersonalData user = {user} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "contactData":
-        return <ContactData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
+        return <ContactData user = {user} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "employmentStatus":
-        return <StatusData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
+        return <StatusData user = {user} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "workExperience":
-        return <WorkExperience userExp={userExp} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading} userRfc = {userRfc}/>;
+        return <WorkExperience userExp={userExp} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading} userRfc = {userRfc}/>;
       default:
         return null;
     }
