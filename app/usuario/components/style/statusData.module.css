@@ -18,3 +18,14 @@
 .rojo{
     color:#691c32;
 }
+
+.customLink {
+    color: rgb(57, 92, 247);
+    transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.customLink:hover {
+    cursor: pointer;
+    color: #fc2663;
+}
+

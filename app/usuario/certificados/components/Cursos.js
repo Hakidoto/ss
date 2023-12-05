@@ -15,7 +15,8 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
       id: null,
       nombreCurso: '',
       tipoCurso: '',
-      certificado: null
+      certificado: null,
+      tipoCert: 'curso'
     });
     const [deletingData, setDeletingData] = useState({
       id: null,
@@ -62,7 +63,7 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
           <TableCell>{row.nombreCurso}</TableCell>
           <TableCell>{row.tipoCurso}</TableCell>
           <TableCell>{(row.certificado)?(
-            <a onClick={()=> DownloadComponent(row)} download>
+            <a className={style.customLink} onClick={()=> DownloadComponent(row)} download>
               Ver certificado
             </a>
           
@@ -128,6 +129,7 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         });
     
         if (response.ok) {
+          setSelectedFile(null)
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
@@ -150,12 +152,18 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
     };
     const handleEditSave = async () => {
       try {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('RFC',rfcUsuario)
+        formData.append('nombreCurso',editingData.nombreCurso)
+        formData.append('tipoCurso',editingData.tipoCurso)
+        formData.append('tipoCert', editingData.tipoCert)
         const response = await fetch(`/api/usuario/curriculo/cursos/${editingData.id}`, {
           method: 'PUT',
-          headers: {
+          /*headers: {
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(editingData),
+          },*/
+          body: formData,
         });
   
         if (response.ok) {
@@ -168,6 +176,34 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
         }
       } catch (error) {
         console.log("Hubo un error al conectar con el api: ", error)
+      }
+    }
+    const DeleteFileEdit = async () => {
+      try{
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('RFC',rfcUsuario)
+        formData.append('nombreCurso',editingData.nombreCurso)
+        formData.append('tipoCurso',editingData.tipoCurso)
+        formData.append('tipoCert', 'cursoDel')
+        const response = await fetch(`/api/usuario/curriculo/cursos/${editingData.id}`, {
+          method: 'PUT',
+          /*headers: {
+            'Content-Type': 'application/json',
+          },*/
+          body: formData,
+        });
+  
+        if (response.ok) {
+          renderTableRows();
+          fetchData();
+          setCurrentPage(currentPage)
+          onClose();
+        } else {
+          console.log("Hubo un error al conectar con el api")
+        }
+      }catch(error){
+
       }
     }
     const handleDeleteClick = (rowData) => {
@@ -216,11 +252,21 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
     };
 
     const handleFileChangeEdit = (e) => {
+      // Acceder al archivo seleccionado
+      const selectedFile = e.target.files[0];
+      setEditingData((prevData) => ({
+        ...prevData,
+        RFC: rfcUsuario,
+        //certificado: selectedFile,
+        tipoCert: 'curso'
+      }));
+      setSelectedFile(selectedFile);
       
     };
 
     useEffect(() => {
       console.log(selectedFile)
+      console.log(editingData)
     }, [selectedFile])
     
   
@@ -369,7 +415,7 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
                       style={{ display: 'none' }}
                       onChange={handleFileChangeEdit}
                     />
-                    <Button color='secondary' onClick={handleButtonClick}>Subir certificado</Button>
+                    <Button color='secondary' onClick={editingData.certificado ?  DeleteFileEdit : handleButtonClick}>{editingData.certificado ? "Eliminar certificado" : "Subir certificado"}</Button>
                   </ModalBody>
                   <ModalFooter>
                     <Button color="danger" variant="ghost" onPress={onClose}>
@@ -409,7 +455,7 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
                       variant="bordered"
                       color='success'
                     />
-                    <Button color='secondary'>Subir certificado</Button>
+                    <Button color='secondary'>{}Subir certificado</Button>
                   </ModalBody>
                   <ModalFooter>
                     <Button color="primary" variant="ghost" onPress={onClose}>
