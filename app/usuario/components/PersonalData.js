@@ -1,20 +1,19 @@
-import React,{useState} from 'react';
+import React,{useEffect, useState} from 'react';
 import style from './style/personalData.module.css';
 import CardU from './CardU';
 import { Button, Skeleton } from '@nextui-org/react';
+import { useTheme } from 'next-themes';
 
 const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
   const [nombre, setNombre] = useState(user ? user.nombre : '');
   const [rfc, setRfc] = useState(user ? user.RFC : '');
   const [Direccion, setDireccion] = useState(user ? user.direccion : '');
   const [edad, setEdad] = useState(user ? user.edad : '');
+  const theme = useTheme();
 
   const handleNombreChange = (e) => {
     const inputValue = e.target.value;
     setNombre(inputValue);
-    if(nombre === "" || nombre === " "){
-      setNombre(user ? user.nombre : '');
-    }// NO FUNCIONO
   };
   const handleRFCChange = (e) => {
     const inputValue = e.target.value;
@@ -28,7 +27,16 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
     const inputValue = e.target.value;
     setEdad(inputValue);
   };
-
+  
+  useEffect(() => {
+    if(user){
+      setNombre(user.nombre)
+      setRfc(user.RFC)
+      setDireccion(user.direccion)
+      setEdad(user.edad)
+    }
+  }, [user])
+  
 
   const handleSave = async () => {
     try {
@@ -72,11 +80,12 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
               <input
                 type="text"
                 placeholder={user ? user.nombre : ''}
+                value={nombre}
                 onChange={handleNombreChange}
-                className={`rounded-md pl-3 mb-3 ${style.labelF} ${style.fadeIn}`}
+                className={theme.resolvedTheme == 'dark' ? `rounded-sm pl-3 mb-3 ${style.labelF}` : `rounded-sm border pl-3 mb-3 ${style.labelF}`}
               />
             ) : (
-              <p className={`rounded-md pl-3 mb-3 ${style.labelF} ${style.fadeIn}`}>
+              <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
                 {user ? user.nombre : <Skeleton className='rounded-lg'>.</Skeleton>}
               </p>
             )}
@@ -87,8 +96,9 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
               <input
                 type="text"
                 placeholder={user ? user.RFC : ''}
+                value={rfc}
                 onChange={handleRFCChange}
-                className={`rounded-md mb-3 pl-3 ${style.labelF}`}
+                className={theme.resolvedTheme == 'dark' ? `rounded-sm pl-3 mb-3 ${style.labelF}` : `rounded-sm border pl-3 mb-3 ${style.labelF}`}
               />
             ) : (
               <p className={`rounded-md mb-3 pl-3 ${style.labelF}`}>
@@ -102,8 +112,10 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
               <input
                 type="text"
                 placeholder={user ? user.direccion : ''}
+                value={Direccion}
+                contentEditable
                 onChange={handleDireccionChange}
-                className={`rounded-md mb-3 pl-3 ${style.labelF}`}
+                className={theme.resolvedTheme == 'dark' ? `rounded-sm pl-3 mb-3 ${style.labelF}` : `rounded-sm border pl-3 mb-3 ${style.labelF}`}
               />
             ) : (
               <p className={`rounded-md mb-3 pl-3 ${style.labelF}`}>
@@ -117,8 +129,9 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
               <input
                 type="text"
                 placeholder={user ? user.edad : ''}
+                value={edad}
                 onChange={handleEdadChange}
-                className={`rounded-md mb-3 pl-3 ${style.labelF}`}
+                className={theme.resolvedTheme == 'dark' ? `rounded-sm pl-3 mb-3 ${style.labelF}` : `rounded-sm border pl-3 mb-3 ${style.labelF}`}
               />
             ) : (
               <p className={`rounded-md mb-3 pl-3 ${style.labelF}`}>

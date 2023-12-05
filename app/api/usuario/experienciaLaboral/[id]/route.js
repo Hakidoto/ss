@@ -3,23 +3,37 @@ import { NextResponse } from "next/server";
 
 import prisma from "@/app/components/db";
 
-export async function GET(req, {params}) {
+export async function PUT(req, { params }) {
   try {
-    const rfc = params.rfc;
-    const user = await prisma.experiencialaboral.findMany({
-        where: {
-          usuario: {
-            rfc,
-          },
-        },
-      });
+    const id = params.id;
+    const body = await req.json();
+    
+    const data = { ...body };
 
-    if (!user) {
-      return NextResponse.error('Usuario no encontrado', { status: 404 });
-    }
+    console.log(data)
+    const updatedUser = await prisma.experiencialaboral.update({
+      where: { id: parseInt(id) },
+      data,
+    });
 
-    return NextResponse.json(user);
+    return NextResponse.json(updatedUser);
   } catch (error) {
+    console.log(error)
+    return NextResponse.error(error.message, { status: 500 });
+  }
+}
+
+export async function DELETE(req, { params }) {
+  try {
+    const id = params.id;
+
+    const deletedUser = await prisma.experiencialaboral.delete({
+      where: { id: parseInt(id) },
+    });
+
+    return NextResponse.json(deletedUser);
+  } catch (error) {
+    console.log(error)
     return NextResponse.error(error.message, { status: 500 });
   }
 }

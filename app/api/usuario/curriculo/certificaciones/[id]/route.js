@@ -3,7 +3,7 @@ import { NextResponse } from "next/server";
 
 import prisma from "@/app/components/db";
 
-export async function GET(req, {params}) {
+/*export async function GET(req, {params}) {
   try {
     const rfc = params.rfc;
     const user = await prisma.certificaciones.findMany({
@@ -20,6 +20,43 @@ export async function GET(req, {params}) {
 
     return NextResponse.json(user);
   } catch (error) {
+    return NextResponse.error(error.message, { status: 500 });
+  }
+}*/
+
+export async function PUT(req, { params }) {
+  try {
+    const id = params.id;
+    const body = await req.json();
+    
+    const data = { ...body };
+
+    console.log(data)
+    const updatedUser = await prisma.certificaciones.upsert({
+      where: { id: parseInt(id) },
+      update: data,
+      create: data,
+    });
+
+    return NextResponse.json(updatedUser);
+  } catch (error) {
+    console.log(data)
+    console.log(error)
+    return NextResponse.error(error.message, { status: 500 });
+  }
+}
+
+export async function DELETE(req, { params }) {
+  try {
+    const id = params.id;
+    console.log("SSS")
+    const deletedUser = await prisma.certificaciones.delete({
+      where: { id: parseInt(id) },
+    });
+
+    return NextResponse.json(deletedUser);
+  } catch (error) {
+    console.log(error)
     return NextResponse.error(error.message, { status: 500 });
   }
 }

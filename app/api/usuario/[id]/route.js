@@ -23,7 +23,6 @@ export async function GET(req, {params}) {
 export async function PUT(req, { params }) {
   try {
     const id = params.id;
-    console.log("apoci si mucho fail: ", id)
     //const data = {nombre: "Nuevo Nombree", direccion: "yo q se"}//Exito <---------------------
     //const data = JSON.parse(req.body); //Error <---------------------
     const body = await req.json();
@@ -39,6 +38,7 @@ export async function PUT(req, { params }) {
 
     return NextResponse.json(updatedUser);
   } catch (error) {
+    console.log(error)
     return NextResponse.error(error.message, { status: 500 });
   }
 }

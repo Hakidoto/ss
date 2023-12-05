@@ -7,10 +7,13 @@ import PersonalData from './components/PersonalData';
 import ContactData from './components/ContactData';
 import StatusData from './components/StatusData';
 import WorkExperience from './components/WorkExperience';
+import { useSession } from 'next-auth/react';
 
 export default function Page() {
-  const [userId, setUserId] = useState(2);
+  const { data: session, status } = useSession();
+  //const [userId, setUserId] = useState();
   const [user, setUser] = useState(null);
+  const [userRfc, setUserRfc] = useState("");
   const [userExp, setUserExp] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEditable, setIsEditable] = useState(false);
@@ -19,12 +22,13 @@ export default function Page() {
   async function fetchData() {
     setLoading(true);
     try {
-      const UsuarioId = userId; // Reemplaza con el ID del usuario que deseas obtener
+      const UsuarioId = session.user.id; // Reemplaza con el ID del usuario que deseas obtener
       const response = await fetch(`/api/usuario/${UsuarioId}`);
   
       if (response.ok) {
         const user = await response.json();
         setUser(user);
+        setUserRfc(user.RFC)
         setLoading(false);
         // Luego de obtener los datos del usuario, puedes llamar a fetchUserExpData
         await fetchUserExpData(user);
@@ -39,10 +43,11 @@ export default function Page() {
   async function fetchUserExpData(user) {
     try {
       const rfc = user.RFC;
-      const response = await fetch(`/api/usuario/experienciaLaboral?rfc=${rfc}`);
+      const response = await fetch(`/api/usuario/experienciaLaboral/experiencia/${encodeURIComponent(user.RFC)}`);
       if (response.ok) {
         const data = await response.json();
         setUserExp(data);
+        setUserRfc(rfc)
         setLoading(false);
       } else {
         console.error('Error al obtener datos de la API');
@@ -77,18 +82,23 @@ export default function Page() {
     fetchData()
   }, []);
 
+  useEffect(() => {
+    console.log(user)
+  }, [userRfc]);
+
+
   
   
   const renderTabContent = (item) => {
     switch (item.id) {
       case "personalData":
-        return <PersonalData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
+        return <PersonalData user = {user} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "contactData":
-        return <ContactData user = {user}/>;
+        return <ContactData user = {user} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "employmentStatus":
-        return <StatusData user = {user}/>;
+        return <StatusData user = {user} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "workExperience":
-        return <WorkExperience userExp = {userExp} loading = {loading}/>;
+        return <WorkExperience userExp={userExp} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading} userRfc = {userRfc}/>;
       default:
         return null;
     }
@@ -114,7 +124,7 @@ export default function Page() {
             )}
           </Tabs>
         </div>
-        <Button className='w-1/2' color='secondary' variant={isEditable?'solid' : 'flat'} size='md' onClick={()=> setIsEditable(!isEditable)}>
+        <Button className={isEditable? `w-1/2  ${style.hov}` : `w-1/2`} color='secondary' variant={isEditable?'solid' : 'flat'} size='md' onClick={()=> setIsEditable(!isEditable)}>
           {isEditable? "Cancelar" : "Editar informacion personal"}
         </Button>
       </CardBody>

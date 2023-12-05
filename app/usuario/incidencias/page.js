@@ -9,6 +9,9 @@ import Incapacidades from './components/Incapacidades';
 import Procesos from './components/Procesos';
 
 export default function Page() {
+  const [userId, setUserId] = useState(2);
+  const [user, setUser] = useState(null);
+  const [rfcUsuario, setRfcUsuario] = useState("");
   const [faltas, setFaltas] = useState([]);
   const [incapacidades, setIncapacidades] = useState([]);
   const [procedimientos, setProcedimientos] = useState([]);
@@ -29,10 +32,31 @@ export default function Page() {
     },
   ];
 
-  async function fetchUserFaltas() {
+  async function fetchData() {
+    setLoading(true);
     try {
-      const rfc = "XYZ987654321";
-      const response = await fetch(`/api/usuario/incidencias/faltas?rfc=${rfc}`);
+      const UsuarioId = userId; // Reemplaza con el ID del usuario que deseas obtener
+      const response = await fetch(`/api/usuario/${UsuarioId}`);
+  
+      if (response.ok) {
+        const user = await response.json();
+        setUser(user);
+        // Luego de obtener los datos del usuario, puedes llamar a fetchUserExpData
+        setRfcUsuario(user.RFC)
+        await fetchUserFaltas(user);
+        await fetchUserIncapacidades(user);
+        await fetchUserProcedimientos(user);
+      } else {
+        console.error('Error al obtener datos de la API');
+      }
+    } catch (error) {
+      console.error('Error al conectarse a la API', error);
+    }
+  }
+
+  async function fetchUserFaltas(user) {
+    try {
+      const response = await fetch(`/api/usuario/incidencias/faltas/falta/${encodeURIComponent(user.RFC)}`);
   
       if (response.ok) {
         const data = await response.json();
@@ -46,10 +70,9 @@ export default function Page() {
     }
   }
 
-  async function fetchUserIncapacidades() {
+  async function fetchUserIncapacidades(user) {
     try {
-      const rfc = "XYZ987654321";
-      const response = await fetch(`/api/usuario/incidencias/incapacidades?rfc=${rfc}`);
+      const response = await fetch(`/api/usuario/incidencias/incapacidades/incapacidad/${encodeURIComponent(user.RFC)}`);
   
       if (response.ok) {
         const data = await response.json();
@@ -63,11 +86,10 @@ export default function Page() {
     }
   }
 
-  async function fetchUserProcedimientos() {
+  async function fetchUserProcedimientos(user) {
     try {
-      const rfc = "XYZ987654321";
-      const response = await fetch(`/api/usuario/incidencias/procedimientos?rfc=${rfc}`);
-  
+
+      const response = await fetch(`/api/usuario/incidencias/procedimientos/procedimiento/${encodeURIComponent(user.RFC)}`);
       if (response.ok) {
         const data = await response.json();
         setProcedimientos(data);
@@ -83,20 +105,18 @@ export default function Page() {
   const renderTabContent = (item) => {
     switch (item.id) {
       case "faltas":
-        return <Faltas faltas = {faltas} loading = {loading}/> ;
+        return <Faltas faltas = {faltas} loading = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/> ;
       case "incapacidades":
-          return <Incapacidades incapacidades = {incapacidades} loading = {loading}/> ;
+          return <Incapacidades incapacidades = {incapacidades} loading = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/> ;
       case "procAdministrativos":
-        return <Procesos procedimientos = {procedimientos} loading = {loading}/> ;
+        return <Procesos procedimientos = {procedimientos} loading = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/> ;
       default:
         return null;
     }
   };
 
   useEffect(() => {
-    fetchUserFaltas();
-    fetchUserIncapacidades();
-    fetchUserProcedimientos();
+    fetchData()
   }, [])
 
   return (

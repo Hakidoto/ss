@@ -1,9 +1,26 @@
-import React, {useState} from 'react'
-import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spacer, Skeleton } from '@nextui-org/react';
+import React, {useState, useRef} from 'react'
+import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spacer, Skeleton,useDisclosure } from '@nextui-org/react';
 import style from '../../components/style/statusData.module.css'
 import CardU from '../../components/CardU';
 
-const Faltas = ({faltas, loading}) => {
+const Faltas = ({faltas, loading, fetchData, rfcUsuario}) => {
+    const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
+    const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
+    const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
+    const [editingData, setEditingData] = useState({
+      id: null,
+      nombreCertificado: '',
+      tipoCertificado: '',
+      certificado: null
+    });
+    const [deletingData, setDeletingData] = useState({
+      id: null,
+      nombreCertificado: '',
+      tipoCertificado: '',
+      certificado: null
+    });
+    const [data, setData] = useState({});
+    const fileInputRef = useRef(null);
     const itemsPerPage = 5;
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(faltas.length / itemsPerPage);
