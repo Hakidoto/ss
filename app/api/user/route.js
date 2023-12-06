@@ -1,6 +1,7 @@
 import prisma from "@/app/components/db";
 import { NextResponse } from "next/server";
 import { hash } from "bcrypt";
+import { toast } from "react-toastify";
 
 //Schema para validacion de los input
 
@@ -29,12 +30,13 @@ export async function POST(req) {
       where: { RFC: RFC },
     });
     if (existingRFC) {
+     
       return NextResponse.json(
         {
           user: null,
           message: "Ya existe un usuario con este RFC",
         },
-        { status: 409 }
+        { status: 409 },  
       );
     }
     // Verificar si existe un usuario con el mismo username
@@ -51,12 +53,14 @@ export async function POST(req) {
       );
     }
 
+    const hashedPassword = await hash(password, 10);
+
     const newUser = await prisma.usrs.create({
       data: {
         RFC,
         nombre,
         username,
-        password,
+        password: hashedPassword,
         edad,
         direccion,
         celular,
@@ -79,6 +83,7 @@ export async function POST(req) {
       { status: 201 }
     );
   } catch (error) {
+    console.error("Error:", error);
     return NextResponse.json(
       {
         message: "Algo salió mal al procesar la solicitud",

@@ -34,31 +34,31 @@ export const authOptions = {
           return null;
         }
 
-        // const passwordMatch = await compare(credentials.password, existingUser.password)
+        const passwordMatch = await compare(credentials.password, existingUser.password)
 
-        // if(!passwordMatch){
-        //     return null
-        // }
-
-        // return {
-        //     id: `${existingUser.id}`,
-        //     username: existingUser.username,
-        //     correo: existingUser.correo
-        // }
-        
-        const passwordsMatch = (credentials.password === existingUser.password);
-
-        if (passwordsMatch) {
-          // La contraseña ingresada coincide con la contraseña almacenada
-          return {
-            id: existingUser.id,
-            username: existingUser.username,
-            email: existingUser.correo,
-          };
-        } else {
-          // Las contraseñas no coinciden
-          return null;
+        if(!passwordMatch){
+            return null
         }
+
+        return {
+            id: `${existingUser.id}`,
+            username: existingUser.username,
+            correo: existingUser.correo
+        }
+        
+        // const passwordsMatch = (credentials.password === existingUser.password);
+
+        // if (passwordsMatch) {
+        //   // La contraseña ingresada coincide con la contraseña almacenada
+        //   return {
+        //     id: existingUser.id,
+        //     username: existingUser.username,
+        //     email: existingUser.correo,
+        //   };
+        // } else {
+        //   // Las contraseñas no coinciden
+        //   return null;
+        // }
       },
     }),
   ],
