@@ -49,7 +49,7 @@ const getSurveys = cache(() =>
 
 const getUserAnswer = cache((id) => {
   // Ensure you return the promise from fetch
-  return fetch(`/api/cuestionario/respuesta_usuario/${id}`, {
+  return fetch(`/api/cuestionario/respuesta/usuario/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",

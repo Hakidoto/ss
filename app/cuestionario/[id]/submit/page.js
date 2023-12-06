@@ -88,7 +88,7 @@ export default function Page() {
 
     try {
       const questionResponse = await fetch(
-        `/api/cuestionario/respuesta_usuario/${usuario_id}`,
+        `/api/cuestionario/respuesta/usuario/${usuario_id}`,
         {
           method: "PUT",
           headers: {

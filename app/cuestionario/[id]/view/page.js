@@ -30,7 +30,7 @@ const getQuestions = (id) => {
 
 const getUserAnswer = cache((id) => {
     // Ensure you return the promise from fetch
-    return fetch(`/api/cuestionario/respuesta_usuario/${id}`, {
+    return fetch(`/api/cuestionario/respuesta/encuesta/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -85,12 +85,14 @@ export default function Page() {
       console.error("Error fetching surveys:", error);
     }
 
-    try {
-      const userAnswer = await getUserAnswer(session.user.id);
-      setUserAnswers(userAnswer);
-    } catch (error) {
-      // Handle error for getUserAnswer
-      console.error("Error fetching user answer:", error);
+    if (session) {
+      try {
+        const userAnswer = await getUserAnswer(session.user.id);
+        setUserAnswers(userAnswer);
+      } catch (error) {
+        // Handle error for getUserAnswer
+        console.error("Error fetching user answer:", error);
+      }
     }
     try {
         const answer = await getAnswers();
