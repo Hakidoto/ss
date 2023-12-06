@@ -121,9 +121,6 @@ export default function Page() {
     }
   };
 
-  useEffect(() => {
-    console.log(userAnswers);
-  }, [userAnswers]);
 
   useEffect(() => {
     fetchData();

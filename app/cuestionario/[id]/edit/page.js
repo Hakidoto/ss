@@ -238,13 +238,7 @@ export default function Page() {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Fetch data when the component mounts
-
-  useEffect(() => {
-    console.log(lastQuestion);
-    console.log(questionData);
-    console.log(questionAnswers);
-  }, [questionAnswers]);
-
+  
   return (
     <>
       <Card className="mx-auto my-auto flex-1 min-h-[80vh]">

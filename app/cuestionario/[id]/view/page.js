@@ -103,10 +103,6 @@ export default function Page() {
 
 
   useEffect(() => {
-    console.log(userAnswers);
-  }, [userAnswers]);
-
-  useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Fetch data when the component mounts

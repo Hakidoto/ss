@@ -154,9 +154,6 @@ export default function CuestionarioDisponible() {
       });
   }, []); // Fetch data when the component mounts
 
-  useEffect(() => {
-    console.log(surveysData);
-  }, [surveysData]); // Fetch data when the component mounts
 
   const renderCell = React.useCallback((survey, columnKey) => {
     const cellValue = survey[columnKey];

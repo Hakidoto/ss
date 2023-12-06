@@ -198,7 +198,6 @@ export default function PanelCuestionario() {
           const year = originalDate.getFullYear();
         
           const formattedDate = `${day}-${month}-${year}`;
-          console.log(formattedDate);
         
           return (
             <div>

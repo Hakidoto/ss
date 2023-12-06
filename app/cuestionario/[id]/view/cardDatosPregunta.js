@@ -21,11 +21,10 @@ import {
 import { ResponsivePie } from "@nivo/pie";
 import { usePathname } from "next/navigation";
 
-import React, { cache, use } from "react";
+import React, { cache, use, useMemo } from "react";
 import { useEffect, useState } from "react";
 
 export default function CardDatosPregunta({ pregunta, respuesta, userAnswers }) {
-  const [answerData, setAnswerData] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
   const [userAnswerData, setUserAnswerData] = useState({})
@@ -34,13 +33,15 @@ export default function CardDatosPregunta({ pregunta, respuesta, userAnswers }) 
   const parts = pathname.split("/");
   const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
 
-  useEffect(() => {
-    const filteredAnswers = respuesta.filter(
+  const filteredAnswers = useMemo(() => {
+    // ✅ Does not re-run unless todos or filter change
+    return respuesta.filter(
       (item) =>
         item.question_id === pregunta.question_id && item.survey_id === id
     );
-    setAnswerData(filteredAnswers);
   }, [respuesta, pregunta.question_id]);
+
+  const [answerData, setAnswerData] = useState(filteredAnswers);
 
   const tipoPregunta = [
     {

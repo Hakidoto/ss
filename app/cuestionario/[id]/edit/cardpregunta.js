@@ -17,8 +17,8 @@ import {
 } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 
-import React, { cache, use } from "react";
-import { useEffect, useState } from "react";
+import React, { cache, use, useMemo } from "react";
+import { useState } from "react";
 
 export default function CardPregunta({
   pregunta,
@@ -31,20 +31,18 @@ export default function CardPregunta({
   setPregunta,
   questionData,
 }) {
-  const [answerData, setAnswerData] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
   const pathname = usePathname();
   const parts = pathname.split("/");
   const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
-
-  useEffect(() => {
-    const filteredAnswers = respuesta.filter(
+  const filteredAnswers = useMemo(() => {
+    // ✅ Does not re-run unless todos or filter change
+    return respuesta.filter(
       (item) =>
         item.question_id === pregunta.question_id && item.survey_id === id
     );
-    setAnswerData(filteredAnswers);
-    getAllQuestionsAndAnswers(filteredAnswers);
   }, [respuesta, pregunta.question_id]);
+  const [answerData, setAnswerData] = useState(filteredAnswers);
 
   const tipoPregunta = [
     {
@@ -222,6 +220,7 @@ export default function CardPregunta({
       const updatedAnswerData = [...answerData];
       const deletedAnswer = updatedAnswerData.splice(indexToDelete, 1)[0];
       setAnswerData(updatedAnswerData);
+      getAllQuestionsAndAnswers(updatedAnswerData);
 
       const response = await fetch(
         `/api/cuestionario/respuesta/${deletedAnswer.answer_id}`,
