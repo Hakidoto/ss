@@ -8,6 +8,7 @@ import { PlusIcon } from "@/app/components/icons/PlusIcon";
 import { LuSave } from "react-icons/lu";
 import { toast } from "react-toastify";
 import CardDatosPregunta from "./cardDatosPregunta";
+import { useSession } from "next-auth/react";
 
 
 const getQuestions = (id) => {
@@ -29,8 +30,7 @@ const getQuestions = (id) => {
 
 const getUserAnswer = cache((id) => {
     // Ensure you return the promise from fetch
-    const idUsuario = "1"; //Temp, se reemplaza por la variable de sesion eventualmente
-    return fetch(`/api/cuestionario/respuesta_usuario/${idUsuario}`, {
+    return fetch(`/api/cuestionario/respuesta_usuario/${id}`, {
       method: "GET",
       headers: {
         "Content-Type": "application/json",
@@ -66,6 +66,8 @@ export default function Page() {
   const [questionData, setQuestionData] = useState([]);
   const [answerData, setAnswerData] = useState([]);
   const [userAnswers, setUserAnswers] = useState([]);
+  const { data: session, status } = useSession();
+
   
 
   const pathname = usePathname();
@@ -84,7 +86,7 @@ export default function Page() {
     }
 
     try {
-      const userAnswer = await getUserAnswer();
+      const userAnswer = await getUserAnswer(session.user.id);
       setUserAnswers(userAnswer);
     } catch (error) {
       // Handle error for getUserAnswer
@@ -123,6 +125,7 @@ export default function Page() {
                 index={index}
                 pregunta={question}
                 respuesta={answerData}
+                userAnswers={userAnswers}
               />
             );
           })}

@@ -18,16 +18,17 @@ import {
   SelectItem,
   Textarea,
 } from "@nextui-org/react";
+import { ResponsivePie } from "@nivo/pie";
 import { usePathname } from "next/navigation";
 
 import React, { cache, use } from "react";
 import { useEffect, useState } from "react";
 
-export default function CardDatosPregunta({ pregunta, respuesta}) {
+export default function CardDatosPregunta({ pregunta, respuesta, userAnswers }) {
   const [answerData, setAnswerData] = useState([]);
   const [selectedAnswers, setSelectedAnswers] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
-
+  const [userAnswerData, setUserAnswerData] = useState({})
 
   const pathname = usePathname();
   const parts = pathname.split("/");
@@ -89,19 +90,24 @@ export default function CardDatosPregunta({ pregunta, respuesta}) {
       // Code for rendering Radio input
       return (
         <div className="ml-3">
-          <RadioGroup
-            isDisabled
-            label={`Selecciona una respuesta`}
-            className="mb-3"
-            onValueChange={handleValueChange}
-            value={selectedAnswers}
-          >
-            {answerData.map((answer, index) => (
-              <Radio key={answer.answer_id} value={answer.answer_id}>
-                {answer.answer_text}
-              </Radio>
-            ))}
-          </RadioGroup>
+          <div className=" w-1/4">
+            <ResponsivePie></ResponsivePie>
+          </div>
+          <div className=" w-3/4">
+            <RadioGroup
+              isDisabled
+              label={`Selecciona una respuesta`}
+              className="mb-3"
+              onValueChange={handleValueChange}
+              value={selectedAnswers}
+            >
+              {answerData.map((answer, index) => (
+                <Radio key={answer.answer_id} value={answer.answer_id}>
+                  {answer.answer_text}
+                </Radio>
+              ))}
+            </RadioGroup>
+          </div>
         </div>
       );
     } else if (selectedType === "open_text") {
