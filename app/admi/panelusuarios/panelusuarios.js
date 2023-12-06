@@ -62,7 +62,7 @@ export const PanelUsuario = () => {
           {filteredUsers.map((user) => (
             <TableRow key={user.id}>
               <TableCell>{user.id}</TableCell>
-              <TableCell>{user.nombre}</TableCell>
+              <TableCell>{user.username}</TableCell>
               <TableCell>{user.correo}</TableCell>
               <TableCell>{user.edad}</TableCell>
               <TableCell>{user.celular}</TableCell>
