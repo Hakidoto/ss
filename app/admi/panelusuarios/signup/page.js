@@ -5,6 +5,7 @@ import { Card, CardHeader, CardBody, Input, Button } from "@nextui-org/react";
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 export default function SignUp() {
   const router = useRouter();
@@ -67,9 +68,10 @@ export default function SignUp() {
           estado: "",
           antiguedad: "",
         });
-        console.log(data);
+        toast.success('Usuario creado correctamente')
+
       } else {
-        console.error("Error en la respuesta del servidor");
+        toast.error('Revise los campos llenados')
       }
     } catch (error) {
       console.error("Error:", error);
@@ -80,7 +82,7 @@ export default function SignUp() {
     { name: "RFC", label: "RFC", type: "text" },
     { name: "nombre", label: "Nombre", type: "text" },
     { name: "username", label: "Nombre de usuario", type: "text" },
-    { name: "password", label: "Contraseña", type: "text" },
+    { name: "password", label: "Contraseña", type: "password" },
     { name: "edad", label: "Edad", type: "text" },
     { name: "direccion", label: "Dirección", type: "text" },
     { name: "celular", label: "Celular", type: "text" },
@@ -98,8 +100,8 @@ export default function SignUp() {
     <div className="flex items-center justify-center">
       <Card className="w-[100%]">
         <CardHeader className="flex items-center justify-center">
-          <h2>Registro de nuevo usuario</h2>
-          asdas
+          <h2>Registro de nuevos usuarios</h2>
+     
         </CardHeader>
 
         <CardBody className="overflow-hidden">
