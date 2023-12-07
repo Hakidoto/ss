@@ -127,7 +127,7 @@ export default function NavbarTRC() {
             <DropdownItem key="profile" className="h-14 gap-2">
               {session ? ( // Check if a session exists
                 <>
-                  <p className="font-semibold">{session.user.username} </p>
+                  <p className="font-semibold">Sesion de {session.user.username} </p>
                   <p className="font-semibold">{session.user.email}</p>
                 </>
               ) : (
@@ -206,7 +206,6 @@ export default function NavbarTRC() {
             <DropdownItem
               as={Button}
               onClick={signout}
-              variant="destructive"
               color="danger"
             >
               Cerrar sesion

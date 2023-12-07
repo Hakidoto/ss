@@ -102,47 +102,13 @@ export default function Page() {
   const renderTabContent = (item) => {
     switch (item.id) {
       case "personalData":
-        return (
-          <PersonalData
-            user={user}
-            isEditable={isEditable}
-            userId={session.user.id}
-            fetchData={fetchData}
-            setIsEditable={setIsEditable}
-          />
-        );
+        return <PersonalData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "contactData":
-        return (
-          <ContactData
-            user={user}
-            isEditable={isEditable}
-            userId={session.user.id}
-            fetchData={fetchData}
-            setIsEditable={setIsEditable}
-          />
-        );
+        return <ContactData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "employmentStatus":
-        return (
-          <StatusData
-            user={user}
-            isEditable={isEditable}
-            userId={session.user.id}
-            fetchData={fetchData}
-            setIsEditable={setIsEditable}
-          />
-        );
+        return <StatusData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "workExperience":
-        return (
-          <WorkExperience
-            userExp={userExp}
-            isEditable={isEditable}
-            userId={session.user.id}
-            fetchData={fetchData}
-            setIsEditable={setIsEditable}
-            loading={loading}
-            userRfc={userRfc}
-          />
-        );
+        return <WorkExperience userExp={userExp} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading} userRfc = {userRfc}/>;
       default:
         return null;
     }

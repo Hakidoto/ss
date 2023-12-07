@@ -8,9 +8,11 @@ import style from "../components/style/CardU.module.css"
 import Cursos from './components/Cursos';
 import Certificaciones from './components/Certificaciones';
 import Lenguas from './components/Lenguas';
+import { useSession } from 'next-auth/react';
 
 export default function Page() {
-  const [userId, setUserId] = useState(2);
+  const { data: session, status } = useSession();
+  const [userId, setUserId] = useState();
   const [user, setUser] = useState(null);
   const [cursos, setCursos] = useState([]);
   const [certificaciones, setCertificaciones] = useState([]);
@@ -35,7 +37,7 @@ export default function Page() {
   async function fetchData() {
     setLoading(true);
     try {
-      const UsuarioId = userId; // Reemplaza con el ID del usuario que deseas obtener
+      const UsuarioId = session.user.id; // Reemplaza con el ID del usuario que deseas obtener
       const response = await fetch(`/api/usuario/${UsuarioId}`);
   
       if (response.ok) {
@@ -105,10 +107,11 @@ export default function Page() {
   }
 
   useEffect(() => {
-    fetchData()
-    //fetchUserCertificaciones()
-    //fetchUserLenguas()
-  }, [])
+    if (session && session.user) {
+      fetchData();
+      setUserId(session.user.id)
+    }
+  }, [session]);
   
   const renderTabContent = (item) => {
     switch (item.id) {

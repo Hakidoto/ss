@@ -6,15 +6,6 @@ import path from "path";
 
 import prisma from "@/app/components/db";
 
-/*export async function GET(res, req){
-  try{
-    const data = await prisma.cursos.findMany();
-    return NextResponse.json(data)
-  }catch(error){
-    return NextResponse.error(error.message, { status: 500 });
-  }
-}*/
-
 export async function POST(req, res) {
   try {
       
