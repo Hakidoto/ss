@@ -157,22 +157,24 @@ export async function DELETE(req, { params }) {
         where: { RFC: cert.RFC },
       });
 
-      const certificadoNombre =  cert.certificado
-      const directoryPath = path.join(process.cwd(), '/app/resources');
-      const directoryUsrPath = path.join(directoryPath,user.id.toString(),'certificaciones')
-      const filePath = path.join(directoryUsrPath, certificadoNombre);
+      if(cert.certificado){
+        const certificadoNombre =  cert.certificado
+        const directoryPath = path.join(process.cwd(), '/app/resources');
+        const directoryUsrPath = path.join(directoryPath,user.id.toString(),'certificaciones')
+        const filePath = path.join(directoryUsrPath, certificadoNombre);
 
-      if (fs.existsSync(filePath)) {
-        // Eliminar el archivo
-        fs.unlink(filePath, (err) => {
-          if (err) {
-            console.error(`Error al eliminar el archivo ${filePath}: ${err}`);
-          } else {
-            console.log(`Archivo ${filePath} eliminado con éxito`);
-          }
-        });
-      } else {
-        console.log(`El archivo ${filePath} no existe`);
+        if (fs.existsSync(filePath)) {
+          // Eliminar el archivo
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error(`Error al eliminar el archivo ${filePath}: ${err}`);
+            } else {
+              console.log(`Archivo ${filePath} eliminado con éxito`);
+            }
+          });
+        } else {
+          console.log(`El archivo ${filePath} no existe`);
+        }
       }
     }
     const deletedUser = await prisma.certificaciones.delete({
