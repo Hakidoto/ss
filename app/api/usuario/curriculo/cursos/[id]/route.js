@@ -157,8 +157,42 @@ export async function PUT(req, { params }) {
 
 export async function DELETE(req, { params }) {
   try {
+    const fs = require('fs');
     const id = params.id;
+    console.log("SSS")
 
+    const cert = await prisma.cursos.findUnique({
+      where: { id: parseInt(id) },
+    });
+
+    if(cert){
+      const user = await prisma.usrs.findUnique({
+        where: { RFC: cert.RFC },
+      });
+
+      const cursoNombre =  cert.certificado
+      const directoryPath = path.join(process.cwd(), '/app/resources');
+      const directoryUsrPath = path.join(directoryPath,user.id.toString(),'cursos')
+      const filePath = path.join(directoryUsrPath, cursoNombre);
+
+      try{
+        if (fs.existsSync(filePath)) {
+          // Eliminar el archivo
+          fs.unlink(filePath, (err) => {
+            if (err) {
+              console.error(`Error al eliminar el archivo ${filePath}: ${err}`);
+            } else {
+              console.log(`Archivo ${filePath} eliminado con éxito`);
+            }
+          });
+        } else {
+          console.log(`El archivo ${filePath} no existe`);
+        }
+      }catch(error){
+        console.log("Ocurrio un error: ", error)
+      }
+      
+    }
     const deletedUser = await prisma.cursos.delete({
       where: { id: parseInt(id) },
     });
