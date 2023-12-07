@@ -31,28 +31,35 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
     const fileInputRef = useRef(null);
 
     const DownloadComponent = async (row) => {
-
       const id = row.id;
-      
-      const response = await fetch(`/api/usuario/file/${id}`,{
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // Asegúrate de enviar el tipo de contenido correcto
-        },
-        body: JSON.stringify({
-          tipoCert: 'curso'
-        }),
-      });
-      
-      console.log(response)
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `certificadoCurso_${id}.pdf`;
-      link.click();
-      window.URL.revokeObjectURL(url);
-    }
+    
+      try {
+        const response = await fetch(`/api/usuario/file/${id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tipoCert: 'curso',
+          }),
+        });
+    
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `certificadoCurso_${id}.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+        } else {
+          alert("Ocurrio un error al bajar el archivo del servidor")
+        }
+      } catch (error) {
+        // Manejar errores de red u otros errores de cliente
+        console.error('Error en la aplicación cliente:', error);
+      }
+    };
 
     const renderTableRows = () => {
       const startIndex = (currentPage - 1) * itemsPerPage;
@@ -69,7 +76,8 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
           
           ) : (
           "Subir certificado"
-          )}</TableCell>
+          )}
+          </TableCell>
           <TableCell>
             <div>
               <Button onPress={onOpenEdit} className='mx-1 my-1' color='secondary' variant='flat' onClick={() => handleEditClick(row)}>
@@ -415,7 +423,13 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
                       style={{ display: 'none' }}
                       onChange={handleFileChangeEdit}
                     />
-                    <Button color='secondary' onClick={editingData.certificado ?  DeleteFileEdit : handleButtonClick}>{editingData.certificado ? "Eliminar certificado" : "Subir certificado"}</Button>
+                    <Button color='secondary' onClick={editingData.certificado ?  DeleteFileEdit : handleButtonClick}>
+                    {
+                      editingData.certificado || selectedFile
+                      ? "Eliminar certificado"
+                      : "Subir certificado"
+                    }
+                    </Button>
                   </ModalBody>
                   <ModalFooter>
                     <Button color="danger" variant="ghost" onPress={onClose}>
@@ -455,7 +469,6 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
                       variant="bordered"
                       color='success'
                     />
-                    <Button color='secondary'>{}Subir certificado</Button>
                   </ModalBody>
                   <ModalFooter>
                     <Button color="primary" variant="ghost" onPress={onClose}>
