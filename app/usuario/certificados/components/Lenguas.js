@@ -9,6 +9,7 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
     const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
+    const [selectedFile, setSelectedFile] = useState(null);
     const [editingData, setEditingData] = useState({
       id: null,
       nombreLengua: '',
@@ -91,18 +92,23 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
       setData((prevData) => ({
         ...prevData,
         RFC: rfcUsuario,
-        certificado: selectedFile,
+        //certificado: selectedFile,
       }));
+      setSelectedFile(selectedFile);
     };
     const handleSave = async () => {
       try {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('RFC',rfcUsuario)
+        formData.append('lengua',data.lengua)
+        formData.append('nivel',data.nivel)
+        console.log(formData)
         const response = await fetch('/api/usuario/curriculo/lenguas', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+          body: formData,
         });
+    
         if (response.ok) {
           renderTableRows();
           fetchData();
@@ -180,6 +186,7 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
 
     useEffect(() => {
       console.log(data)
+      console.log(selectedFile)
     }, [data])
     
 
