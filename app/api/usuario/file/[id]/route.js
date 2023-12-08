@@ -88,6 +88,31 @@ export async function POST(req, {params}) {
             }
         }
 
+        if(data.tipoCert == 'incapacidad'){
+
+            const cert = await prisma.incapacidades.findUnique({
+                where: { id: parseInt(id) },
+            });
+    
+            console.log(cert)
+            var nombreArchivo = cert.justificante
+
+            try{
+                const buffer = await readFile(path.join(path.join(process.cwd() ,'\\app\\resources\\2\\incapacidades', nombreArchivo)));
+                console.log(path.join(path.join(process.cwd() ,'\\app\\resources\\2\\incapacidades', nombreArchivo)))
+                const headers = new Headers();
+                headers.append('Content-Disposition', `attachment; filename="${nombreArchivo}"`);
+                headers.append('Content-Type', 'application/pdf'); // Cambiado a 'application/pdf' para indicar que es un archivo PDF
+                return new Response(buffer, {
+                  headers,
+                });
+            }catch(error){
+                console.log(error)
+                console.error('Error al procesar el archivo en el servidor:', error);
+                return NextResponse.error(JSON.stringify({ error: 'Error al procesar el archivo en el servidor', details: error.message }), { status: 500 });
+            }
+        }
+
         
     }catch (error) {
         console.log(error)
