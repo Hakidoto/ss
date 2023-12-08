@@ -10,7 +10,6 @@ import { toast } from "react-toastify";
 import CardDatosPregunta from "./cardDatosPregunta";
 import { useSession } from "next-auth/react";
 
-
 const getQuestions = (id) => {
   // Ensure you return the promise from fetch
   return fetch(`/api/cuestionario/pregunta/${id}`, {
@@ -29,21 +28,25 @@ const getQuestions = (id) => {
 };
 
 const getUserAnswer = cache((id) => {
-    // Ensure you return the promise from fetch
-    return fetch(`/api/cuestionario/respuesta/encuesta/${id}`, {
-      method: "GET",
-      headers: {
-        "Content-Type": "application/json",
-      },
-    }).then((res) => {
-      // Check for a successful response (status code 200)
-      if (!res.ok) {
-        throw new Error(`Request failed with status: ${res.status}`);
-      }
-      // Parse the response as JSON
-      return res.json();
-    });
+  // Ensure you return the promise from fetch
+  return fetch(`/api/cuestionario/respuesta/encuesta/${id}`, {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  }).then((res) => {
+    // Check for a successful response (status code 200)
+    if (!res.ok) {
+      throw new Error(`Request failed with status: ${res.status}`);
+    }
+    // Parse the response as JSON
+    return res.json();
   });
+});
+
+const getAllUsers = cache(() =>
+  fetch("/api/usuario").then((res) => res.json())
+);
 
 const getAnswers = () => {
   // Ensure you return the promise from fetch
@@ -66,43 +69,43 @@ export default function Page() {
   const [questionData, setQuestionData] = useState([]);
   const [answerData, setAnswerData] = useState([]);
   const [userAnswers, setUserAnswers] = useState([]);
-  const { data: session, status } = useSession();
+  const [userAnswerData, setUserAnswerData] = useState([]);
+  const [userData, setUserData] = useState([]);
 
-  
+  const { data: session, status } = useSession();
 
   const pathname = usePathname();
   const parts = pathname.split("/");
-  const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
-  
+  const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas}}
+
+  const getAllUserAnswers = (questionId, answers) => {
+    setUserAnswerData((prevUserAnswers) => ({
+      ...prevUserAnswers,
+      [questionId]: answers,
+    }));
+  };
 
   const fetchData = async () => {
     try {
       // Assuming getSurveys returns an array of survey objects
       const data = await getQuestions(id);
+      const userAnswer = await getUserAnswer(id);
+      const answer = await getAnswers();
+      const users = await getAllUsers();
       setQuestionData(data);
+      setUserAnswers(userAnswer);
+      setAnswerData(answer);
+      setUserData(users);
     } catch (error) {
-      // Handle error for getSurveys
-      console.error("Error fetching surveys:", error);
+      // Handle error for getUserAnswer
+      console.error("Error fetching data:", error);
     }
-
-    if (session) {
-      try {
-        const userAnswer = await getUserAnswer(session.user.id);
-        setUserAnswers(userAnswer);
-      } catch (error) {
-        // Handle error for getUserAnswer
-        console.error("Error fetching user answer:", error);
-      }
-    }
-    try {
-        const answer = await getAnswers();
-        setAnswerData(answer);
-      } catch (error) {
-        // Handle error for getUserAnswer
-        console.error("Error fetching user answer:", error);
-      }
   };
-
+  
+  useEffect(() => {
+    console.log(userAnswerData)
+  }, [userAnswerData])
+  
 
   useEffect(() => {
     fetchData();
@@ -124,6 +127,11 @@ export default function Page() {
                 pregunta={question}
                 respuesta={answerData}
                 userAnswers={userAnswers}
+                users={userData}
+                allUserAnswerData={userAnswerData}
+                getAllUserAnswers={(answers) =>
+                  getAllUserAnswers(question.question_id, answers)
+                }
               />
             );
           })}

@@ -73,6 +73,7 @@ export default function CuestionarioDisponible() {
   const [loading, setLoading] = useState(true);
   const [statusEncuestaMap, setStatusEncuestaMap] = useState({});
 
+
   const columns = [
     { name: "TITULO", uid: "title" },
     { name: "DESCRIPCION", uid: "description" },
