@@ -31,6 +31,8 @@ export async function POST(request) {
           title: json.title,
           description: json.description,
           estatus: json.estatus,
+          start_date: json.start_date,
+          end_date: json.end_date,
           // Add other fields as needed
         },
       });

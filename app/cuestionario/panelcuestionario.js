@@ -45,7 +45,7 @@ import {
   PopoverContent,
   PopoverTrigger,
 } from "@/components/ui/popover";
-import { addDays, format } from "date-fns";
+import { addDays, format, formatISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 import { useToast } from "@/components/ui/use-toast";
@@ -97,15 +97,9 @@ export default function PanelCuestionario() {
     try {
       const formattedDateRange = date?.from
         ? date.to
-          ? `${format(date.from, "LLL dd, y", {
-              locale: es,
-            })} - ${format(date.to, "LLL dd, y", {
-              locale: es,
-            })}`
-          : format(date.from, "LLL dd, y", {
-              locale: es,
-            })
-        : "Indefinido";
+          ? `${formatISO(date.from)} - ${formatISO(date.to)}`
+          : formatISO(date.from)
+        : "";
 
       let start_date = "";
       let end_date = "";
@@ -116,8 +110,7 @@ export default function PanelCuestionario() {
         start_date = startDatePart;
         end_date = endDatePart;
       } else {
-        // If formattedDateRange does not contain a middle dash
-        start_date = "indefinido";
+        start_date = ""; // Use '0000-00-00' for an empty end_date
         end_date = formattedDateRange; // You can leave it empty or set it to some default value
       }
 
@@ -154,6 +147,10 @@ export default function PanelCuestionario() {
           action: (
             <ToastAction asChild altText="A edicion">
               <Button
+                color="primary"
+                variant="solid"
+                radius="md"
+                size="sm"
                 as={NextLink}
                 href={`/cuestionario/${createdSurvey.survey_id}/edit`}
               >
@@ -165,6 +162,24 @@ export default function PanelCuestionario() {
       } else {
         // Handle error
         console.error("Error creating cuestionario:", response.statusText);
+        toast({
+            variant: "destructive",
+            title: "Error al crear cuestionario",
+            description: "Ha ocurrido un error al crear el cuestionario",
+            action: (
+              <ToastAction asChild altText="Al menu">
+                <Button
+                  color="primary"
+                  variant="solid"
+                  radius="md"
+                  size="sm"
+                  onClick={handleCrear}
+                >
+                  Reintentar
+                </Button>
+              </ToastAction>
+            ),
+          });
       }
     } catch (error) {
       console.error("Error:", error.message);
@@ -258,7 +273,7 @@ export default function PanelCuestionario() {
               className="capitalize"
               color={statusColorMap[survey.estatus]}
               size="sm"
-              variant="flat"
+              variant="solid"
             >
               {cellValue}
             </Chip>

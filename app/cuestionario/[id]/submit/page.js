@@ -6,9 +6,12 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { PlusIcon } from "@/app/components/icons/PlusIcon";
 import { LuSave } from "react-icons/lu";
-import { toast } from "react-toastify";
 import CardRespUsuario from "./cardRespUsuario";
 import { useSession } from "next-auth/react";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
+import NextLink from "next/link";
+
 
 
 const getQuestions = (id) => {
@@ -50,6 +53,7 @@ export default function Page() {
   const [answerData, setAnswerData] = useState([]);
   const [userAnswers, setUserAnswers] = useState({});
   const { data: session, status } = useSession();
+  const {toast} = useToast();
 
   const pathname = usePathname();
   const parts = pathname.split("/");
@@ -107,14 +111,46 @@ export default function Page() {
 
       if (allRequestsSuccessful) {
         console.log("All user answers saved successfully!");
-        toast.success("Respuestas guardados con exito.");
+        toast({
+          title: "Guardado completado",
+          description: "Respuestas guardadas exitosamente",
+          action: (
+            <ToastAction asChild altText="Al menu">
+              <Button
+                color="primary"
+                variant="solid"
+                radius="md"
+                size="sm"
+                as={NextLink}
+                href={`/cuestionario/`}
+              >
+                Regresar al menu
+              </Button>
+            </ToastAction>
+          ),
+        });
       } else {
         console.error(
           "Some requests failed. Survey data not saved completely."
         );
-        toast.error(
-          "Hubo un error al guardar las respuestas, intente de nuevo..."
-        );
+        toast({
+          variant: "destructive",
+          title: "Error al guardar",
+          description: "Ha ocurrido un error al guardar las respuestas",
+          action: (
+            <ToastAction asChild altText="Al menu">
+              <Button
+                color="primary"
+                variant="solid"
+                radius="md"
+                size="sm"
+                onClick={saveUserAnswerData}
+              >
+                Reintentar
+              </Button>
+            </ToastAction>
+          ),
+        });
       }
     } catch (error) {
       console.error("Error saving user answers:", error);

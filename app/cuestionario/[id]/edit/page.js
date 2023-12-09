@@ -18,9 +18,8 @@ import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
 import { PlusIcon } from "@/app/components/icons/PlusIcon";
 import { LuSave } from "react-icons/lu";
-import { toast } from "react-toastify";
 import { Calendar as CalendarIcon } from "lucide-react";
-
+import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { ShadButton } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
@@ -33,6 +32,9 @@ import { addDays, format } from "date-fns";
 import { es } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
 import { selectorEstatus } from "@/app/components/example/data";
+import NextLink from "next/link";
+import { ToastAction } from "@/components/ui/toast";
+
 
 const getQuestions = (id) => {
   // Ensure you return the promise from fetch
@@ -100,6 +102,7 @@ export default function Page() {
   const [newQuestionAdded, setNewQuestionAdded] = useState(false); // Flag to track new question
   const [questionAnswers, setQuestionAnswers] = useState({});
   const [surveyData, setSurveyData] = useState({});
+  const {toast} = useToast();
 
   const pathname = usePathname();
   const parts = pathname.split("/");
@@ -185,14 +188,46 @@ export default function Page() {
 
       if (allRequestsSuccessful) {
         console.log("All survey data saved successfully!");
-        toast.success("Datos guardados con exito.");
+        toast({
+          title: "Guardado completado",
+          description: "Los cambios se han guardado exitosamente",
+          action: (
+            <ToastAction asChild altText="Al menu">
+              <Button
+                color="primary"
+                variant="solid"
+                radius="md"
+                size="sm"
+                as={NextLink}
+                href={`/cuestionario/`}
+              >
+                Regresar al menu
+              </Button>
+            </ToastAction>
+          ),
+        });
       } else {
         console.error(
           "Some requests failed. Survey data not saved completely."
         );
-        toast.error(
-          "Hubo un error al guardar las encuestas, intente de nuevo..."
-        );
+        toast({
+          variant: "destructive",
+          title: "Error al guardar",
+          description: "Ha ocurrido un error al guardar los cambios",
+          action: (
+            <ToastAction asChild altText="Al menu">
+              <Button
+                color="primary"
+                variant="solid"
+                radius="md"
+                size="sm"
+                onClick={saveSurveyData}
+              >
+                Reintentar
+              </Button>
+            </ToastAction>
+          ),
+        });
       }
     } catch (error) {
       console.error("Error saving survey data:", error);
