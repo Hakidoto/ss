@@ -13,7 +13,7 @@ export async function GET(req, {params}) {
     if (!user) {
       return NextResponse.error('Usuario no encontrado', { status: 404 });
     }
-
+    console.log(user)
     return NextResponse.json(user);
   } catch (error) {
     return NextResponse.error(error.message, { status: 500 });
@@ -35,7 +35,7 @@ export async function PUT(req, { params }) {
       where: { id: parseInt(id) },
       data,
     });
-
+    
     return NextResponse.json(updatedUser);
   } catch (error) {
     console.log(error)

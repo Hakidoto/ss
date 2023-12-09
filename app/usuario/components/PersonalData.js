@@ -147,7 +147,7 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
         </div>
         <hr />
         <div className='w-1/2'>
-          <CardU />
+          <CardU user = {user}/>
         </div>
       </div>
     </div>

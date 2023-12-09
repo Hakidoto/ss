@@ -1,6 +1,21 @@
-import {Card, CardHeader, CardBody, CardFooter, Divider, Link, Image} from "@nextui-org/react";
-import style from "./style/CardU.module.css"
-export default function CardU() {
+import { Card, CardHeader, CardBody, CardFooter, Divider, Link, Image } from "@nextui-org/react";
+import { useState, useEffect } from "react";
+import { useSession } from 'next-auth/react';
+import style from "./style/CardU.module.css";
+import { Button, Skeleton } from '@nextui-org/react';
+
+
+
+export default function CardU({user}) {
+  const { data: session, status } = useSession();
+  const [usrData, setUsrData] = useState({});
+
+  useEffect(() => {
+    if (session && session.user) {
+      setUsrData(user)
+    }
+  }, [session]);
+  
   return (
     <Card className={`${style.cardF}`}>
       <CardHeader className="flex gap-3 justify-end">
@@ -11,24 +26,22 @@ export default function CardU() {
           src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
           width={40}
         />
-        <div className="flex flex-col">
-          <p className="text-md">NextUI</p>
-          <p className="text-small text-default-500">nextui.org</p>
+        <div className="flex flex-col w-full">
+          <p className="text-right min-w-full ">{session ? session.user.username : <Skeleton className='rounded-lg'>.</Skeleton>}</p>
+          <p className="text-small text-default-500 min-w-full text-right">{session ? session.user.email : <Skeleton className='rounded-lg'>.</Skeleton>}</p>
         </div>
       </CardHeader>
       <Divider/>
       <CardBody className=" text-center">
-        <p>Make beautiful websites regardless of your design experience.</p>
+        <div className=" container">
+          
+        </div>
       </CardBody>
       <Divider/>
       <CardFooter>
-        <Link
-          isExternal
-          showAnchorIcon
-          href="https://github.com/nextui-org/nextui"
-        >
-          Visit source code on GitHub.
-        </Link>
+        <Button color="success" className="">
+          Cambiar nombre de usuario o contraseña
+        </Button>
       </CardFooter>
     </Card>
   );
