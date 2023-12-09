@@ -92,12 +92,14 @@ export default function CuestionarioDisponible() {
       console.error("Error fetching surveys:", error);
     }
 
-    try {
-      const userAnswer = await getUserAnswer(session.user.id);
-      setUserAnswerData(userAnswer);
-    } catch (error) {
-      // Handle error for getUserAnswer
-      console.error("Error fetching user answer:", error);
+    if (session) {
+      try {
+        const userAnswer = await getUserAnswer(session.user.id);
+        setUserAnswerData(userAnswer);
+      } catch (error) {
+        // Handle error for getUserAnswer
+        console.error("Error fetching user answer:", error);
+      }
     }
   };
 
