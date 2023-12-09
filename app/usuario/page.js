@@ -89,7 +89,7 @@ export default function Page() {
   const renderTabContent = (item) => {
     switch (item.id) {
       case "personalData":
-        return <PersonalData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
+        return <PersonalData user = {user} isEditable = {isEditable} userId = {session.user.id} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "contactData":
         return <ContactData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "employmentStatus":
