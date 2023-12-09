@@ -21,3 +21,12 @@
   transition: all 0.3s ease; /* Agrega una transición suave para una animación más agradable */
   cursor: pointer; /* Cambia el cursor a mano para indicar que es interactivo */
 }
+
+.imgUsr {
+  transition: transform 0.3s ease-in-out;
+}
+
+.imgUsr:hover {
+  cursor: pointer;
+  transform: translateY(3px) scale(1.3);
+}

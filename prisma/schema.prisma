@@ -85,6 +85,8 @@ model usrs {
   antiguedad                    String?                         @db.VarChar(50)
   password                      String?                         @db.VarChar(20)
   puesto                        String?                         @db.VarChar(255)
+  nivelAcceso                   String?                         @db.VarChar(255)
+  img                           Bytes?
   certificaciones               certificaciones[]
   cursos                        cursos[]
   experiencialaboral            experiencialaboral[]
