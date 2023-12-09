@@ -35,6 +35,22 @@ import { EyeIcon } from "../components/icons/EyeIcon";
 import { columns, selectorEstatus } from "../components/example/data";
 import { MailIcon } from "../components/icons/MailIcon";
 import { LockIcon } from "../components/icons/LockIcon";
+import { Calendar as CalendarIcon } from "lucide-react";
+import NextLink from "next/link";
+import { cn } from "@/lib/utils";
+import { ShadButton } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { addDays, format } from "date-fns";
+import { es } from "date-fns/locale";
+import { DateRange } from "react-day-picker";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import { ToastAction } from "@/components/ui/toast";
 
 const statusColorMap = {
   activo: "success",
@@ -66,21 +82,52 @@ const getAllUserAnswer = cache(() => {
 export default function PanelCuestionario() {
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [surveysData, setSurveysData] = useState([]);
+  const [survey, setSurvey] = useState({});
   const [userAnswerData, setUserAnswerData] = useState([]);
-  const [nombreEncuesta, setNombreEncuesta] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [estatusEncuesta, setEstatusEncuesta] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(true);
-
+  const [date, setDate] = useState({
+    from: new Date(),
+    to: addDays(new Date(), 20),
+  });
+  const { toast } = useToast();
+  const router = useRouter();
 
   const handleCrear = async () => {
     try {
+      const formattedDateRange = date?.from
+        ? date.to
+          ? `${format(date.from, "LLL dd, y", {
+              locale: es,
+            })} - ${format(date.to, "LLL dd, y", {
+              locale: es,
+            })}`
+          : format(date.from, "LLL dd, y", {
+              locale: es,
+            })
+        : "Indefinido";
+
+      let start_date = "";
+      let end_date = "";
+
+      if (formattedDateRange.includes(" - ")) {
+        // If formattedDateRange contains a middle dash
+        const [startDatePart, endDatePart] = formattedDateRange.split(" - ");
+        start_date = startDatePart;
+        end_date = endDatePart;
+      } else {
+        // If formattedDateRange does not contain a middle dash
+        start_date = "indefinido";
+        end_date = formattedDateRange; // You can leave it empty or set it to some default value
+      }
+
       // Prepare the data to be sent in the request body
       const data = {
-        title: nombreEncuesta,
-        description: descripcion,
-        estatus: estatusEncuesta,
+        title: survey.title,
+        description: survey.description,
+        estatus: survey.estatus,
+        start_date: start_date,
+        end_date: end_date,
       };
 
       // Send a POST request to the API
@@ -101,6 +148,20 @@ export default function PanelCuestionario() {
         setSurveysData((prevSurveys) => [...prevSurveys, createdSurvey]);
         console.log("Cuestionario creado exitosamente");
         onOpenChange();
+        toast({
+          title: "Proceso exitoso",
+          description: "Se ha creado la encuesta satisfactoriamente",
+          action: (
+            <ToastAction asChild altText="A edicion">
+              <Button
+                as={NextLink}
+                href={`/cuestionario/${createdSurvey.survey_id}/edit`}
+              >
+                Ir a la edicion
+              </Button>
+            </ToastAction>
+          ),
+        });
       } else {
         // Handle error
         console.error("Error creating cuestionario:", response.statusText);
@@ -152,15 +213,26 @@ export default function PanelCuestionario() {
     }
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+
+    // Update the corresponding field in surveyData based on the input's name
+    setSurvey((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   useEffect(() => {
-    fetchData().then(() => {
-      setIsLoaded(true);
-      setLoading(false);
-    })
-    .catch((error) => {
-      console.error('Error fetching data:', error);
-      setLoading(false);
-    });
+    fetchData()
+      .then(() => {
+        setIsLoaded(true);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
   }, []); // Fetch data when the component mounts
 
   const renderCell = React.useCallback(
@@ -191,14 +263,16 @@ export default function PanelCuestionario() {
               {cellValue}
             </Chip>
           );
-        case 'created_at':
+        case "created_at":
           const originalDate = new Date(cellValue);
-          const day = originalDate.getDate().toString().padStart(2, '0');
-          const month = (originalDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so we add 1.
+          const day = originalDate.getDate().toString().padStart(2, "0");
+          const month = (originalDate.getMonth() + 1)
+            .toString()
+            .padStart(2, "0"); // Months are zero-based, so we add 1.
           const year = originalDate.getFullYear();
-        
+
           const formattedDate = `${day}-${month}-${year}`;
-        
+
           return (
             <div>
               <p className="text-bold text-sm">{formattedDate}</p>
@@ -208,12 +282,12 @@ export default function PanelCuestionario() {
           return (
             <div className="relative flex items-center gap-2">
               <Tooltip content="Detalles">
-              <Link
+                <Link
                   href={`/cuestionario/${survey.survey_id}/view`}
                   className="text-lg text-default-400 cursor-pointer active:opacity-50"
                 >
                   <EyeIcon />
-                  </Link>
+                </Link>
               </Tooltip>
               <Tooltip content="Editar cuestionario">
                 <Link
@@ -260,18 +334,54 @@ export default function PanelCuestionario() {
                   autoFocus
                   label="Nombre de la encuesta"
                   placeholder="Ingresa el nombre"
+                  name="title"
                   variant="bordered"
-                  onChange={(e) => setNombreEncuesta(e.target.value)}
+                  onChange={handleInputChange}
                 />
                 <Input
                   label="Descripcion"
                   placeholder="Ingresa una descripcion"
                   variant="bordered"
-                  onChange={(e) => setDescripcion(e.target.value)}
+                  name="description"
+                  onChange={handleInputChange}
                 />
+                <Popover>
+                  <PopoverTrigger asChild>
+                    <Input
+                      label="Selecciona el periodo limite de la encuesta"
+                      name="dates"
+                      value={
+                        date?.from
+                          ? date.to
+                            ? `${format(date.from, "LLL dd, y", {
+                                locale: es,
+                              })} - ${format(date.to, "LLL dd, y", {
+                                locale: es,
+                              })}`
+                            : format(date.from, "LLL dd, y", {
+                                locale: es,
+                              })
+                          : "Selecciona un rango de fechas"
+                      }
+                      startContent={<CalendarIcon className="mr-2 h-4 w-4" />}
+                      id="date"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      initialFocus
+                      mode="range"
+                      defaultMonth={date?.from}
+                      selected={date}
+                      onSelect={setDate}
+                      numberOfMonths={2}
+                    />
+                  </PopoverContent>
+                </Popover>
                 <Select
                   label="Estatus de la encuesta"
-                  onChange={(e) => setEstatusEncuesta(e.target.value)}
+                  name="estatus"
+                  onChange={handleInputChange}
                 >
                   {selectorEstatus.map((estatus) => (
                     <SelectItem key={estatus.value} value={estatus.value}>

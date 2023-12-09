@@ -1,6 +1,17 @@
 "use client";
 
-import { Card, CardHeader, CardBody, Button } from "@nextui-org/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Button,
+  Tab,
+  Tabs,
+  CardFooter,
+  Input,
+  Select,
+  SelectItem,
+} from "@nextui-org/react";
 import CardPregunta from "./cardpregunta";
 import React, { cache, use } from "react";
 import { useEffect, useState } from "react";
@@ -8,6 +19,20 @@ import { usePathname } from "next/navigation";
 import { PlusIcon } from "@/app/components/icons/PlusIcon";
 import { LuSave } from "react-icons/lu";
 import { toast } from "react-toastify";
+import { Calendar as CalendarIcon } from "lucide-react";
+
+import { cn } from "@/lib/utils";
+import { ShadButton } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import {
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
+import { addDays, format } from "date-fns";
+import { es } from "date-fns/locale";
+import { DateRange } from "react-day-picker";
+import { selectorEstatus } from "@/app/components/example/data";
 
 const getQuestions = (id) => {
   // Ensure you return the promise from fetch
@@ -60,12 +85,22 @@ const getAnswers = () => {
   });
 };
 
+const getSurvey = cache((id) =>
+  fetch(`/api/cuestionario/${id}`).then((res) => res.json())
+);
+
 export default function Page() {
+  const [date, setDate] = useState({
+    from: new Date(),
+    to: addDays(new Date(), 20),
+  });
   const [questionData, setQuestionData] = useState([]);
   const [lastQuestion, setLastQuestion] = useState([]);
   const [answerData, setAnswerData] = useState([]);
   const [newQuestionAdded, setNewQuestionAdded] = useState(false); // Flag to track new question
   const [questionAnswers, setQuestionAnswers] = useState({});
+  const [surveyData, setSurveyData] = useState({});
+
   const pathname = usePathname();
   const parts = pathname.split("/");
   const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
@@ -76,10 +111,12 @@ export default function Page() {
       const questions = await getQuestions(id);
       const answers = await getAnswers();
       const latestQuestion = await getLastQuestion();
+      const survey = await getSurvey(id);
 
       setAnswerData(answers);
       setQuestionData(questions);
       setLastQuestion(latestQuestion);
+      setSurveyData(survey);
     } catch (error) {
       // Handle error if needed
       console.error("Error fetching data:", error);
@@ -199,7 +236,7 @@ export default function Page() {
   const addQuestion = () => {
     // Find the highest question_id in the existing questions
     let highestQuestionId = 0;
-    if ((lastQuestion != null)) {
+    if (lastQuestion != null) {
       highestQuestionId = lastQuestion.question_id;
     } else {
       highestQuestionId =
@@ -238,76 +275,184 @@ export default function Page() {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []); // Fetch data when the component mounts
-  
+
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+
+    // Update the corresponding field in surveyData based on the input's name
+    setSurveyData((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   return (
     <>
-      <Card className="mx-auto my-auto flex-1 min-h-[80vh]">
-        <CardHeader className="flex items-center justify-center">
-          <h2 className="text-md">Edicion de encuesta</h2>
-        </CardHeader>
-        <CardBody>
-          {questionData.map((question, index) => {
-            return (
-              <CardPregunta
-                key={question.question_id}
-                index={index}
-                pregunta={question}
-                questionData={questionData}
-                setPregunta={setQuestionData}
-                respuesta={answerData}
-                setRespuesta={setAnswerData}
-                onRemove={() => removeQuestion(index)}
-                removeAnswers={() => removeAnswers(index)} // Pass this function
-                newQuestionAdded={newQuestionAdded}
-                getAllQuestionsAndAnswers={(answers) =>
-                  getAllQuestionsAndAnswers(question.question_id, answers)
-                }
-                updateQuestions={(questionData) =>
-                  updateQuestion(index, questionData)
-                }
-              />
-            );
-          })}
-          {questionData.length > 0 ? (
-            <div className="flex justify-around">
-              <div className="w-1/5">
-                <Button
-                  className="w-full"
-                  color="primary"
-                  onClick={addQuestion}
-                  endContent={<PlusIcon />}
-                >
-                  Añadir pregunta
-                </Button>
-              </div>
-              <div className="w-1/5">
-                <Button
-                  className="w-full"
-                  color="success"
-                  onClick={saveSurveyData}
-                  endContent={<LuSave />}
-                >
-                  Guardar encuesta
-                </Button>
-              </div>
-            </div>
-          ) : (
-            <CardBody className="flex items-center justify-center">
-              <p className="text-md mb-3">
-                No parece haber ninguna pregunta, añade una
-              </p>
-              <Button
-                className="w-full"
-                color="primary"
-                onClick={addQuestion}
-                endContent={<PlusIcon />}
-              >
-                Añadir pregunta
-              </Button>
+      <Tabs color="danger" className="grid w-full grid-cols-1">
+        <Tab key="Preguntas" title="Preguntas">
+          <Card className="mx-auto my-auto flex-1 min-h-[80vh]">
+            <CardHeader className="flex items-center justify-center">
+              <h2 className=" text-2xl ">Edicion de preguntas</h2>
+            </CardHeader>
+            <CardBody>
+              {questionData.map((question, index) => {
+                return (
+                  <CardPregunta
+                    key={question.question_id}
+                    index={index}
+                    pregunta={question}
+                    questionData={questionData}
+                    setPregunta={setQuestionData}
+                    respuesta={answerData}
+                    setRespuesta={setAnswerData}
+                    onRemove={() => removeQuestion(index)}
+                    removeAnswers={() => removeAnswers(index)} // Pass this function
+                    newQuestionAdded={newQuestionAdded}
+                    getAllQuestionsAndAnswers={(answers) =>
+                      getAllQuestionsAndAnswers(question.question_id, answers)
+                    }
+                    updateQuestions={(questionData) =>
+                      updateQuestion(index, questionData)
+                    }
+                  />
+                );
+              })}
+
+              {questionData.length > 0 ? (
+                <CardFooter>
+                  <div className="flex justify-around w-full">
+                    <div className="w-1/5">
+                      <Button
+                        className="w-full"
+                        color="primary"
+                        onClick={addQuestion}
+                        endContent={<PlusIcon />}
+                      >
+                        Añadir pregunta
+                      </Button>
+                    </div>
+                    <div className="w-1/5">
+                      <Button
+                        className="w-full"
+                        color="success"
+                        onClick={saveSurveyData}
+                        endContent={<LuSave />}
+                      >
+                        Guardar encuesta
+                      </Button>
+                    </div>
+                  </div>
+                </CardFooter>
+              ) : (
+                <CardBody className="flex items-center justify-center">
+                  <p className="text-md mb-3">
+                    No parece haber ninguna pregunta, añade una
+                  </p>
+                  <Button
+                    className="w-full"
+                    color="primary"
+                    onClick={addQuestion}
+                    endContent={<PlusIcon />}
+                  >
+                    Añadir pregunta
+                  </Button>
+                </CardBody>
+              )}
             </CardBody>
-          )}
-        </CardBody>
-      </Card>
+          </Card>
+        </Tab>
+        <Tab key="Ajustes" title="Ajustes de encuesta">
+          <Card className="mx-auto my-auto flex-1 min-h-[80vh]">
+            <CardHeader className="flex items-center justify-center">
+              <h2 className=" text-2xl ">Ajustes de encuesta</h2>
+            </CardHeader>
+            <CardBody>
+              <div className="flex items-center justify-center mb-5">
+                <Card
+                  isBlurred
+                  className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
+                >
+                  <CardBody>
+                    <div className=" ml-3 items-center justify-center mr-3 space-y-4">
+                      <div className="space-y-1">
+                        <Input
+                          className="w-1/2"
+                          label="Nombre de la encuesta"
+                          name="title"
+                          placeholder={surveyData?.description}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Input
+                          className="w-1/2"
+                          label="Descripcion"
+                          name="description"
+                          placeholder={surveyData?.title}
+                          onChange={handleInputChange}
+                        />
+                      </div>
+                      <div className="space-y-1">
+                        <Popover>
+                          <PopoverTrigger asChild>
+                            <Input
+                              label="Selecciona el periodo limite de la encuesta"
+                              className="w-1/2"
+                              value={
+                                date?.from
+                                  ? date.to
+                                    ? `${format(date.from, "LLL dd, y", {
+                                        locale: es,
+                                      })} - ${format(date.to, "LLL dd, y", {
+                                        locale: es,
+                                      })}`
+                                    : format(date.from, "LLL dd, y", {
+                                        locale: es,
+                                      })
+                                  : "Selecciona un rango de fechas"
+                              }
+                              startContent={
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                              }
+                              id="date"
+                            />
+                          </PopoverTrigger>
+                          <PopoverContent className="w-auto p-0">
+                            <Calendar
+                              initialFocus
+                              mode="range"
+                              defaultMonth={date?.from}
+                              selected={date}
+                              onSelect={setDate}
+                              numberOfMonths={2}
+                            />
+                          </PopoverContent>
+                        </Popover>
+                      </div>
+                      <div className="space-y-1">
+                        <Select
+                          label="Estatus de la encuesta"
+                          className="w-1/2"
+                          defaultSelectedKeys={[surveyData?.estatus]}
+                        >
+                          {selectorEstatus.map((estatus) => (
+                            <SelectItem
+                              key={estatus.value}
+                              value={estatus.value}
+                            >
+                              {estatus.label}
+                            </SelectItem>
+                          ))}
+                        </Select>
+                      </div>
+                    </div>
+                  </CardBody>
+                </Card>
+              </div>
+            </CardBody>
+          </Card>
+        </Tab>
+      </Tabs>
     </>
   );
 }
