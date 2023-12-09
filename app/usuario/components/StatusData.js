@@ -7,6 +7,7 @@ import { useTheme } from 'next-themes';
 const StatusData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
   const [tipoEmpleado, setTipoEmpleado] = useState(user ? user.tipoEmpleado : '');
   const [contrato, setContrato] = useState(user ? user.contrato : '');
+  const [puesto, setPuesto] = useState(user ? user.puesto : '');
   const [horario, setHorario] = useState(user ? user.horario : '');
   const [estado, setEstado] = useState(user ? user.estado : '');
   const [antiguedad, setAntiguedad] = useState(user ? user.antiguedad : '');
@@ -15,11 +16,13 @@ const StatusData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
   useEffect(() => {
     if(user){
       setTipoEmpleado(user.tipoEmpleado)
+      setPuesto(user.puesto)
       setContrato(user.contrato)
       setHorario(user.horario)
       setEstado(user.estado)
       setAntiguedad(user.antiguedad)
     }
+    console.log(user)
   }, [user])
 
   const handleTipoEmpleadoChange = (e) => {
@@ -29,6 +32,10 @@ const StatusData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
   const handleContratoChange = (e) => {
     const inputValue = e.target.value;
     setContrato(inputValue);
+  };
+  const handlePuestoChange = (e) => {
+    const inputValue = e.target.value;
+    setPuesto(inputValue);
   };
   const handleHorarioChange = (e) => {
     const inputValue = e.target.value;
@@ -53,6 +60,7 @@ const StatusData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
         },
         body: JSON.stringify({
           tipoEmpleado,
+          puesto,
           contrato,
           horario,
           estado,
@@ -93,6 +101,22 @@ const StatusData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
             ) : (
               <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
                 {user ? user.tipoEmpleado : <Skeleton className='rounded-lg'>.</Skeleton>}
+              </p>
+            )}
+          </div>
+          <div className=''>
+            <p className={`font-bold mb-2  ${style.rojo}`}>Puesto:</p>
+            {isEditable ? (
+              <input
+                type="text"
+                placeholder={user ? user.puesto : ''}
+                value={puesto}
+                onChange={handlePuestoChange}
+                className={theme.resolvedTheme == 'dark' ? `rounded-sm pl-3 mb-3 ${style.labelF}` : `rounded-sm border pl-3 mb-3 ${style.labelF}`}
+              />
+            ) : (
+              <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
+                {user ? user.puesto : <Skeleton className='rounded-lg'>.</Skeleton>}
               </p>
             )}
           </div>

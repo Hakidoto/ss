@@ -84,6 +84,7 @@ model usrs {
   estado                        String?                         @db.VarChar(50)
   antiguedad                    String?                         @db.VarChar(50)
   password                      String                          @db.VarChar(100)
+  puesto                        String?                         @db.VarChar(255)
   certificaciones               certificaciones[]
   cursos                        cursos[]
   experiencialaboral            experiencialaboral[]
