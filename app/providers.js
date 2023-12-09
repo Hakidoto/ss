@@ -10,6 +10,7 @@ import NavbarTRC from "./components/navbar";
 import { usePathname } from "next/navigation";
 import { SessionProvider } from "next-auth/react";
 import { ThemeProvider } from "./components/ThemeProvider";
+import { Toaster } from "@/components/ui/toaster";
 
 export function Providers({ children }) {
   const [currentTheme, setCurrentTheme] = useState("dark");
@@ -34,19 +35,8 @@ export function Providers({ children }) {
           {pathLink != "/login" && <NavbarTRC />}
 
           {children}
-        </SessionProvider>
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop={false}
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme={currentTheme}
-        />
+        </SessionProvider>  
+        <Toaster />
       </ThemeProvider>
     </NextUIProvider>
   );
