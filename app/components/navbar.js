@@ -32,6 +32,7 @@ import { useEffect } from "react";
 export default function NavbarTRC() {
   const router = useRouter();
   const { data: session, status } = useSession();
+  const { theme, setTheme } = useTheme();
 
   const pathname = usePathname();
   const menuItems = [
@@ -46,13 +47,6 @@ export default function NavbarTRC() {
       redirect: true,
       callbackUrl: `${window.location.origin}/login`,
     });
-
-  const { theme, setTheme } = useTheme();
-  const isSelected = theme === "dark";
-
-  const toggleTheme = () => {
-    setTheme(theme === "light" ? "dark" : "light");
-  };
 
   return (
     <Navbar
@@ -129,7 +123,7 @@ export default function NavbarTRC() {
               src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
             />
           </DropdownTrigger>
-          <DropdownMenu aria-label="Profile Actions" variant="flat">
+          <DropdownMenu closeOnSelect={false} aria-label="Profile Actions" variant="flat">
             <DropdownItem key="profile" className="h-14 gap-2">
               {session ? ( // Check if a session exists
                 <>
@@ -170,16 +164,38 @@ export default function NavbarTRC() {
               </DropdownItem>
             </DropdownSection>
             <DropdownSection title="Sistema" />
-            <DropdownItem className="flex items-center" key="theme_switch">
-              <Switch
-                startContent={<MoonIcon />}
-                endContent={<SunIcon />}
-                size="sm"
-                isSelected={isSelected}
-                onValueChange={toggleTheme}
-              >
-                <span>{theme === "dark" ? "Modo Oscuro" : "Modo Claro"}</span>
-              </Switch>
+            <DropdownItem startContent={theme == 'dark' ?<MoonIcon/>: <SunIcon/>} className="flex items-center" key="theme_switch">
+              <Dropdown>
+                <DropdownTrigger>
+                  <span className="w-full" variant="bordered">Cambiar tema</span>
+                </DropdownTrigger>
+                <DropdownMenu
+                  variant="faded"
+                  aria-label="Dropdown menu with icons"
+                >
+                  <DropdownItem
+                    key="light"
+                    startContent={<SunIcon />}
+                    onClick={() => setTheme("light")}
+                  >
+                    Tema claro
+                  </DropdownItem>
+                  <DropdownItem
+                    key="dark"
+                    startContent={<MoonIcon />}
+                    onClick={() => setTheme("dark")}
+                  >
+                    Tema oscuro
+                  </DropdownItem>
+                  <DropdownItem
+                    key="system"
+                    onClick={() => setTheme("system")}
+                    startContent={<MoonIcon />}
+                  >
+                    Sistema
+                  </DropdownItem>
+                </DropdownMenu>
+              </Dropdown>
             </DropdownItem>
             <DropdownItem key="configurations" color="secondary">
               Configuracion
