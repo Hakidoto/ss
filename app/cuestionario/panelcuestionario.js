@@ -28,6 +28,9 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 } from "@nextui-org/react";
 import { EditIcon } from "../components/icons/EditIcon";
 import { DeleteIcon } from "../components/icons/DeleteIcon";
@@ -40,11 +43,6 @@ import NextLink from "next/link";
 import { cn } from "@/lib/utils";
 import { ShadButton } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { addDays, format, formatISO } from "date-fns";
 import { es } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
@@ -361,7 +359,7 @@ export default function PanelCuestionario() {
                   onChange={handleInputChange}
                 />
                 <Popover>
-                  <PopoverTrigger asChild>
+                  <PopoverTrigger>
                     <Input
                       label="Selecciona el periodo limite de la encuesta"
                       name="dates"

@@ -69,7 +69,7 @@ export default function CardPregunta({
       return (
         <>
           <div className=" flex items-center justify-between">
-            <div className="mb-3 ml-3 w-1/12">
+            <div className="mb-3 ml-3 mr-3 w-1/12">
               <Button
                 isIconOnly
                 color="danger"
@@ -99,7 +99,7 @@ export default function CardPregunta({
       return (
         <>
           <div className=" flex items-center justify-between">
-            <div className="mb-3 ml-3 w-1/12">
+            <div className="mb-3 ml-3 mr-3 w-1/12">
               <Button
                 isIconOnly
                 color="danger"
@@ -129,7 +129,7 @@ export default function CardPregunta({
       return (
         <>
           <div className=" flex items-center justify-between">
-            <div className="mb-3 ml-3 w-1/12">
+            <div className="mb-3 ml-3 mr-3 w-1/12">
               <Button
                 isIconOnly
                 isDisabled={selectedType === "open_text"}
@@ -287,7 +287,7 @@ export default function CardPregunta({
           className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
         >
           <CardHeader className=" flex items-center justify-between">
-            <div className=" ml-3 w-2/3">
+            <div className=" ml-3 mr-3 w-2/3">
               <Input
                 className="w-full"
                 label="Pregunta"
@@ -319,7 +319,7 @@ export default function CardPregunta({
                 <>{renderAnswerInput(answer, index)}</>
               ))}
               <div className="flex justify-between">
-                <div className="ml-3 w-1/5">
+                <div className="ml-3 mr-3 w-1/5">
                   <Button
                     onClick={handleAddResponse}
                     className="w-full"

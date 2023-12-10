@@ -11,6 +11,9 @@ import {
   Input,
   Select,
   SelectItem,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 } from "@nextui-org/react";
 import CardPregunta from "./cardpregunta";
 import React, { cache, use } from "react";
@@ -23,11 +26,6 @@ import { useToast } from "@/components/ui/use-toast";
 import { cn } from "@/lib/utils";
 import { ShadButton } from "@/components/ui/button";
 import { Calendar } from "@/components/ui/calendar";
-import {
-  Popover,
-  PopoverContent,
-  PopoverTrigger,
-} from "@/components/ui/popover";
 import { addDays, format } from "date-fns";
 import { es } from "date-fns/locale";
 import { DateRange } from "react-day-picker";
@@ -429,7 +427,7 @@ export default function Page() {
                       </div>
                       <div className="space-y-1">
                         <Popover>
-                          <PopoverTrigger asChild>
+                          <PopoverTrigger>
                             <Input
                               label="Selecciona el periodo limite de la encuesta"
                               className="w-1/2"
