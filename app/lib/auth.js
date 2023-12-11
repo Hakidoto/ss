@@ -34,51 +34,41 @@ export const authOptions = {
           return null;
         }
 
-        // const passwordMatch = await compare(credentials.password, existingUser.password)
+        const passwordMatch = await compare(
+          credentials.password,
+          existingUser.password
+        );
 
-        // if(!passwordMatch){
-        //     return null
-        // }
-
-        // return {
-        //     id: `${existingUser.id}`,
-        //     username: existingUser.username,
-        //     correo: existingUser.correo
-        // }
-        
-        const passwordsMatch = (credentials.password === existingUser.password);
-
-        if (passwordsMatch) {
-          // La contraseña ingresada coincide con la contraseña almacenada
-          return {
-            id: existingUser.id,
-            username: existingUser.username,
-            email: existingUser.correo,
-          };
-        } else {
-          // Las contraseñas no coinciden
+        if (!passwordMatch) {
           return null;
         }
+
+        return {
+          id: `${existingUser.id}`,
+          username: existingUser.username,
+          email: existingUser.correo,
+          name: existingUser.username,
+        };
       },
     }),
   ],
   callbacks: {
     async jwt({ token, user }) {
-      console.log("token:",  token);
+      console.log("token:", token);
       console.log("user:", user);
       // Persist the OAuth access_token and or the user id to the token right after signin
       if (user) {
         return {
           ...token,
-          id: user.id, // persiste el id del usuario 
+          id: user.id, // persiste el id del usuario
           username: user.username,
+          email: user.correo,
+          name: user.username,
         };
       }
       return token;
     },
     async session({ session, token }) {
-      console.log("token:",  token);
-      console.log("session:",  session);
       // Send properties to the client, like an access_token and user id from a provider.
       if (session) {
         return {
@@ -87,10 +77,11 @@ export const authOptions = {
             ...session.user,
             id: token.id, // Add the user id to the session user
             username: token.username,
+            email: token.correo,
+            name: token.username,
           },
         };
       }
-
       return session;
     },
   },
