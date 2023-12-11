@@ -20,11 +20,10 @@ import {
 } from "@nextui-org/react";
 import { usePathname } from "next/navigation";
 
-import React, { cache, use } from "react";
+import React, { cache, use, useMemo } from "react";
 import { useEffect, useState } from "react";
 
 export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers }) {
-  const [answerData, setAnswerData] = useState([]);
   const [selectedType, setSelectedType] = useState(pregunta.question_type); // Track the selected question type
   const [selectedAnswers, setSelectedAnswers] = useState([]);
 
@@ -32,13 +31,14 @@ export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers
   const parts = pathname.split("/");
   const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
 
-  useEffect(() => {
-    const filteredAnswers = respuesta.filter(
+  const filteredAnswers = useMemo(() => {
+    // ✅ Does not re-run unless todos or filter change
+    return respuesta.filter(
       (item) =>
         item.question_id === pregunta.question_id && item.survey_id === id
     );
-    setAnswerData(filteredAnswers);
   }, [respuesta, pregunta.question_id]);
+  const [answerData, setAnswerData] = useState(filteredAnswers);
 
   const tipoPregunta = [
     {
@@ -68,7 +68,7 @@ export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers
   const renderAnswerInput = () => {
     if (selectedType === "checkbox") {
       return (
-        <div className="ml-3">
+        <div className="ml-3 mr-3">
           <CheckboxGroup
             label={`Selecciona una respuesta`}
             className="mb-3"
@@ -86,7 +86,7 @@ export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers
     } else if (selectedType === "multiple_choice") {
       // Code for rendering Radio input
       return (
-        <div className="ml-3">
+        <div className="ml-3 mr-3">
           <RadioGroup
             label={`Selecciona una respuesta`}
             className="mb-3"
@@ -103,7 +103,7 @@ export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers
       );
     } else if (selectedType === "open_text") {
       return (
-        <div className="ml-3">
+        <div className="ml-3 mr-3">
           <Textarea
             label={`Respuesta abierta`}
             onValueChange={handleValueChange}
@@ -124,7 +124,7 @@ export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers
           className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
         >
           <CardHeader className=" flex items-center justify-between">
-            <div className=" ml-3 w-full">
+            <div className=" ml-3 mr-3 w-full">
               <Input
                 isReadOnly
                 className="w-full"

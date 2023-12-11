@@ -49,7 +49,7 @@ const getSurveys = cache(() =>
 
 const getUserAnswer = cache((id) => {
   // Ensure you return the promise from fetch
-  return fetch(`/api/cuestionario/respuesta_usuario/${id}`, {
+  return fetch(`/api/cuestionario/respuesta/usuario/${id}`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -73,6 +73,7 @@ export default function CuestionarioDisponible() {
   const [loading, setLoading] = useState(true);
   const [statusEncuestaMap, setStatusEncuestaMap] = useState({});
 
+
   const columns = [
     { name: "TITULO", uid: "title" },
     { name: "DESCRIPCION", uid: "description" },
@@ -91,12 +92,14 @@ export default function CuestionarioDisponible() {
       console.error("Error fetching surveys:", error);
     }
 
-    try {
-      const userAnswer = await getUserAnswer(session.user.id);
-      setUserAnswerData(userAnswer);
-    } catch (error) {
-      // Handle error for getUserAnswer
-      console.error("Error fetching user answer:", error);
+    if (session) {
+      try {
+        const userAnswer = await getUserAnswer(session.user.id);
+        setUserAnswerData(userAnswer);
+      } catch (error) {
+        // Handle error for getUserAnswer
+        console.error("Error fetching user answer:", error);
+      }
     }
   };
 
@@ -154,9 +157,6 @@ export default function CuestionarioDisponible() {
       });
   }, []); // Fetch data when the component mounts
 
-  useEffect(() => {
-    console.log(surveysData);
-  }, [surveysData]); // Fetch data when the component mounts
 
   const renderCell = React.useCallback((survey, columnKey) => {
     const cellValue = survey[columnKey];

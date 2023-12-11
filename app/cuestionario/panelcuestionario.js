@@ -28,6 +28,9 @@ import {
   Card,
   CardBody,
   CardHeader,
+  Popover,
+  PopoverTrigger,
+  PopoverContent,
 } from "@nextui-org/react";
 import { EditIcon } from "../components/icons/EditIcon";
 import { DeleteIcon } from "../components/icons/DeleteIcon";
@@ -35,6 +38,17 @@ import { EyeIcon } from "../components/icons/EyeIcon";
 import { columns, selectorEstatus } from "../components/example/data";
 import { MailIcon } from "../components/icons/MailIcon";
 import { LockIcon } from "../components/icons/LockIcon";
+import { Calendar as CalendarIcon } from "lucide-react";
+import NextLink from "next/link";
+import { cn } from "@/lib/utils";
+import { ShadButton } from "@/components/ui/button";
+import { Calendar } from "@/components/ui/calendar";
+import { addDays, format, formatISO } from "date-fns";
+import { es } from "date-fns/locale";
+import { DateRange } from "react-day-picker";
+import { useToast } from "@/components/ui/use-toast";
+import { useRouter } from "next/navigation";
+import { ToastAction } from "@/components/ui/toast";
 
 const statusColorMap = {
   activo: "success",
@@ -48,7 +62,7 @@ const getSurveys = cache(() =>
 
 const getAllUserAnswer = cache(() => {
   // Ensure you return the promise from fetch
-  return fetch(`/api/cuestionario/respuesta_usuario/`, {
+  return fetch(`/api/cuestionario/respuesta/usuario/`, {
     method: "GET",
     headers: {
       "Content-Type": "application/json",
@@ -66,21 +80,45 @@ const getAllUserAnswer = cache(() => {
 export default function PanelCuestionario() {
   const [isLoaded, setIsLoaded] = React.useState(false);
   const [surveysData, setSurveysData] = useState([]);
+  const [survey, setSurvey] = useState({});
   const [userAnswerData, setUserAnswerData] = useState([]);
-  const [nombreEncuesta, setNombreEncuesta] = useState("");
-  const [descripcion, setDescripcion] = useState("");
-  const [estatusEncuesta, setEstatusEncuesta] = useState("");
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(true);
-
+  const [date, setDate] = useState({
+    from: new Date(),
+    to: addDays(new Date(), 20),
+  });
+  const { toast } = useToast();
+  const router = useRouter();
 
   const handleCrear = async () => {
     try {
+      const formattedDateRange = date?.from
+        ? date.to
+          ? `${formatISO(date.from)} - ${formatISO(date.to)}`
+          : formatISO(date.from)
+        : "";
+
+      let start_date = "";
+      let end_date = "";
+
+      if (formattedDateRange.includes(" - ")) {
+        // If formattedDateRange contains a middle dash
+        const [startDatePart, endDatePart] = formattedDateRange.split(" - ");
+        start_date = startDatePart;
+        end_date = endDatePart;
+      } else {
+        start_date = ""; // Use '0000-00-00' for an empty end_date
+        end_date = formattedDateRange; // You can leave it empty or set it to some default value
+      }
+
       // Prepare the data to be sent in the request body
       const data = {
-        title: nombreEncuesta,
-        description: descripcion,
-        estatus: estatusEncuesta,
+        title: survey.title,
+        description: survey.description,
+        estatus: survey.estatus,
+        start_date: start_date,
+        end_date: end_date,
       };
 
       // Send a POST request to the API
@@ -101,9 +139,45 @@ export default function PanelCuestionario() {
         setSurveysData((prevSurveys) => [...prevSurveys, createdSurvey]);
         console.log("Cuestionario creado exitosamente");
         onOpenChange();
+        toast({
+          title: "Proceso exitoso",
+          description: "Se ha creado la encuesta satisfactoriamente",
+          action: (
+            <ToastAction asChild altText="A edicion">
+              <Button
+                color="primary"
+                variant="solid"
+                radius="md"
+                size="sm"
+                as={NextLink}
+                href={`/cuestionario/${createdSurvey.survey_id}/edit`}
+              >
+                Ir a la edicion
+              </Button>
+            </ToastAction>
+          ),
+        });
       } else {
         // Handle error
         console.error("Error creating cuestionario:", response.statusText);
+        toast({
+            variant: "destructive",
+            title: "Error al crear cuestionario",
+            description: "Ha ocurrido un error al crear el cuestionario",
+            action: (
+              <ToastAction asChild altText="Al menu">
+                <Button
+                  color="primary"
+                  variant="solid"
+                  radius="md"
+                  size="sm"
+                  onClick={handleCrear}
+                >
+                  Reintentar
+                </Button>
+              </ToastAction>
+            ),
+          });
       }
     } catch (error) {
       console.error("Error:", error.message);
@@ -152,15 +226,26 @@ export default function PanelCuestionario() {
     }
   };
 
+  const handleInputChange = (event) => {
+    const { name, value } = event.target;
+
+    // Update the corresponding field in surveyData based on the input's name
+    setSurvey((prevData) => ({
+      ...prevData,
+      [name]: value,
+    }));
+  };
+
   useEffect(() => {
-    fetchData().then(() => {
-      setIsLoaded(true);
-      setLoading(false);
-    })
-    .catch((error) => {
-      console.error('Error fetching data:', error);
-      setLoading(false);
-    });
+    fetchData()
+      .then(() => {
+        setIsLoaded(true);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+        setLoading(false);
+      });
   }, []); // Fetch data when the component mounts
 
   const renderCell = React.useCallback(
@@ -186,20 +271,21 @@ export default function PanelCuestionario() {
               className="capitalize"
               color={statusColorMap[survey.estatus]}
               size="sm"
-              variant="flat"
+              variant="solid"
             >
               {cellValue}
             </Chip>
           );
-        case 'created_at':
+        case "created_at":
           const originalDate = new Date(cellValue);
-          const day = originalDate.getDate().toString().padStart(2, '0');
-          const month = (originalDate.getMonth() + 1).toString().padStart(2, '0'); // Months are zero-based, so we add 1.
+          const day = originalDate.getDate().toString().padStart(2, "0");
+          const month = (originalDate.getMonth() + 1)
+            .toString()
+            .padStart(2, "0"); // Months are zero-based, so we add 1.
           const year = originalDate.getFullYear();
-        
+
           const formattedDate = `${day}-${month}-${year}`;
-          console.log(formattedDate);
-        
+
           return (
             <div>
               <p className="text-bold text-sm">{formattedDate}</p>
@@ -209,12 +295,12 @@ export default function PanelCuestionario() {
           return (
             <div className="relative flex items-center gap-2">
               <Tooltip content="Detalles">
-              <Link
+                <Link
                   href={`/cuestionario/${survey.survey_id}/view`}
                   className="text-lg text-default-400 cursor-pointer active:opacity-50"
                 >
                   <EyeIcon />
-                  </Link>
+                </Link>
               </Tooltip>
               <Tooltip content="Editar cuestionario">
                 <Link
@@ -261,18 +347,54 @@ export default function PanelCuestionario() {
                   autoFocus
                   label="Nombre de la encuesta"
                   placeholder="Ingresa el nombre"
+                  name="title"
                   variant="bordered"
-                  onChange={(e) => setNombreEncuesta(e.target.value)}
+                  onChange={handleInputChange}
                 />
                 <Input
                   label="Descripcion"
                   placeholder="Ingresa una descripcion"
                   variant="bordered"
-                  onChange={(e) => setDescripcion(e.target.value)}
+                  name="description"
+                  onChange={handleInputChange}
                 />
+                <Popover>
+                  <PopoverTrigger>
+                    <Input
+                      label="Selecciona el periodo limite de la encuesta"
+                      name="dates"
+                      value={
+                        date?.from
+                          ? date.to
+                            ? `${format(date.from, "LLL dd, y", {
+                                locale: es,
+                              })} - ${format(date.to, "LLL dd, y", {
+                                locale: es,
+                              })}`
+                            : format(date.from, "LLL dd, y", {
+                                locale: es,
+                              })
+                          : "Selecciona un rango de fechas"
+                      }
+                      startContent={<CalendarIcon className="mr-2 h-4 w-4" />}
+                      id="date"
+                    />
+                  </PopoverTrigger>
+                  <PopoverContent className="w-auto p-0">
+                    <Calendar
+                      initialFocus
+                      mode="range"
+                      defaultMonth={date?.from}
+                      selected={date}
+                      onSelect={setDate}
+                      numberOfMonths={2}
+                    />
+                  </PopoverContent>
+                </Popover>
                 <Select
                   label="Estatus de la encuesta"
-                  onChange={(e) => setEstatusEncuesta(e.target.value)}
+                  name="estatus"
+                  onChange={handleInputChange}
                 >
                   {selectorEstatus.map((estatus) => (
                     <SelectItem key={estatus.value} value={estatus.value}>
