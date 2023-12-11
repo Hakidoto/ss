@@ -1,9 +1,9 @@
 import { useState, useEffect, useRef } from "react";
 import { useSession } from 'next-auth/react';
 import style from "./style/CardU.module.css";
-import {Card, CardHeader, CardBody, CardFooter, Divider ,Image, Skeleton, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Checkbox, Input, Link} from '@nextui-org/react';
+import {Card, CardHeader, CardBody, CardFooter, Divider , Skeleton, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Checkbox, Input, Link} from '@nextui-org/react';
 import { toast } from "react-toastify";
-import userPick from "../../resources/2/profilePick/prueba.png"
+import Image from "next/image"
 
 export default function CardU({user}) {
   const { data: session, status } = useSession();
@@ -19,14 +19,13 @@ export default function CardU({user}) {
     username: '',
     password: ''
   });
+  const [imagePath, setImagePath] = useState("https://avatars.githubusercontent.com/u/86160567?s=200&v=4");
   const fileInputRef = useRef(null);
   const [selectedFile, setSelectedFile] = useState(null);
 
   useEffect(() => {
-    if (session && session.user) {
-      setUsrData(user)
-    }
-  }, [session]);
+    setUsrData(user)
+  }, [user]);
 
   const handleUsernameChange = (e) => {
     const inputValue = e.target.value;
@@ -128,38 +127,81 @@ export default function CardU({user}) {
     console.log(selectedFile)
   }, [selectedFile])
 
+  const handleEditSave = async () => {
+    try {
+      const formData = new FormData();
+      formData.append('file', selectedFile);
+      formData.append('id',user.id)
+
+      const response = await fetch(`/api/usuario/profilePick/${user.id}`, {
+        method: 'PUT',
+        /*headers: {
+          'Content-Type': 'application/json',
+        },*/
+        body: formData,
+      });
+
+      if (response.ok) {
+        window.location.reload()
+        onClose();
+      } else {
+        console.log("Hubo un error al conectar con el api")
+      }
+    } catch (error) {
+      console.log("Hubo un error al conectar con el api: ", error)
+    }
+  }
   
+
+  useEffect(() => {
+    const loadImage = async () => {
+      try {
+        if (session && usrData && usrData.img) {
+          // Utiliza import() para cargar la imagen de forma asíncrona
+          const dynamicImage = await import(`../../resources/${usrData.id}/profilePick/${usrData.img}`);
+          setImagePath(dynamicImage.default);
+        }
+      } catch (error) {
+        // Manejar el error, por ejemplo, imprimir un mensaje en la consola
+        console.error(`Error cargando la imagen: ${error.message}`);
+      }
+    };
   
+    loadImage();
+  }, [session, usrData]);
+
   
+  console.log(imagePath)
   return (
     <Card className={`${style.cardF}`}>
       <CardHeader className="flex gap-3 justify-end">
-        <Image
-          className={style.imgUsr}
-          onClick={onOpenEdit}
-          alt="nextui logo"
-          height={40}
-          radius="sm"
-          src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
-          width={40}
-        />
+        <div className={style.avatarContainer}>
+          <Image
+            onClick={onOpenChangeEdit}
+            className={style.imgUsr}
+            src={imagePath}
+            alt="Avatar"
+            width={50}
+            height={50}
+          />
+        </div>
         <div className="flex flex-col w-full">
           <p className="text-right min-w-full ">{session ? session.user.username : <Skeleton className='rounded-lg'>.</Skeleton>}</p>
           <p className="text-small text-default-500 min-w-full text-right">{session ? session.user.email : <Skeleton className='rounded-lg'>.</Skeleton>}</p>
         </div>
       </CardHeader>
       <Divider/>
-      <CardBody className=" text-center">
-        <div className="container  w-full h-full">
+      <CardBody>
+        <div className=" w-full h-full">
           <div className="container text-left w-full h-1/6">
             <p>Resumen del trabajador:</p>
           </div>
-          <div className="container w-full h-5/6 text-left">
-            <p><span className=" font-bold">Nombre:</span> {user? user.nombre : "Cargando resumen.."}</p>
-            <p><span className=" font-bold">Telefono:</span> {user? user.celular: "Cargando resumen.."}</p>
-            <p><span className=" font-bold">Puesto:</span> {user? user.puesto : "Cargando resumen.."}</p>
-            <p><span className=" font-bold">Horario:</span> {user? user.horario : "Cargando resumen"}</p>
-            <p><span className=" font-bold">Estado:</span> {user? user.estado : "Cargando resumen"}</p>
+          <div className="w-full h-5/6 text-left pt-5">
+            <p><span className="font-bold">Nombre:</span> {user? user.nombre : "Cargando resumen.."}</p>
+            <p><span className="font-bold">Telefono:</span> {user? user.celular: "Cargando resumen.."}</p>
+            <p><span className="font-bold">Puesto:</span> {user? user.puesto : "Cargando resumen.."}</p>
+            <p><span className="font-bold">Horario:</span> {user? user.horario : "Cargando resumen"}</p>
+            <p><span className="font-bold">Estado:</span> {user? user.estado : "Cargando resumen"}</p>
           </div>
         </div>
       </CardBody>
@@ -225,14 +267,15 @@ export default function CardU({user}) {
         <ModalContent>
           {(onClose) => (
             <>
-              <ModalHeader className="flex flex-col gap-1">Editar un curso</ModalHeader>
+              <ModalHeader className="flex flex-col gap-1">Reemplazar foto de perfil</ModalHeader>
               <ModalBody>
                 <div className="container  w-full h-100  justify-center flex ">
                   <Image
+                    className={style.rounded}
                     alt="nextui logo"
                     height={200}
                     radius="sm"
-                    src="https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
+                    src={imagePath}
                     width={200}
                   />
                 </div>
@@ -242,13 +285,13 @@ export default function CardU({user}) {
                   style={{ display: 'none' }}
                   onChange={handleFileChange}
                 />
-                <Button color='secondary' onClick={ handleButtonClick}>Vemos</Button>
+                <Button color='secondary' onClick={ handleButtonClick}>Seleccionar foto del usuario </Button>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="ghost" onPress={onClose}>
                   Cancelar
                 </Button>
-                <Button color="success" variant="ghost" onPress={onClose} >
+                <Button color="success" variant="ghost" onPress={onClose} onClick={handleEditSave} >
                   Guardar
                 </Button>
               </ModalFooter>

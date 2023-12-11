@@ -5,7 +5,7 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagina
 import { EditIcon } from '@/app/components/icons/EditIcon';
 import { DeleteIcon } from '@/app/components/icons/DeleteIcon';
 
-const WorkExperience = ({ userExp, loading, fetchData, userId, userRfc }) => {
+const WorkExperience = ({user, userExp, loading, fetchData, userId, userRfc }) => {
 
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const itemsPerPage = 5;
@@ -357,7 +357,7 @@ const WorkExperience = ({ userExp, loading, fetchData, userId, userRfc }) => {
         </div>
         <hr />
         <div className='w-1/4'>
-          <CardU />
+          <CardU user = {user}/>
         </div>
         <Modal
           motionProps={{

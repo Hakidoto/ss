@@ -19,7 +19,7 @@ import { useSession } from "next-auth/react";
 
 export default function Page() {
   const { data: session, status } = useSession();
-  //const [userId, setUserId] = useState();
+  const [userId, setUserId] = useState();
   const [user, setUser] = useState(null);
   const [userRfc, setUserRfc] = useState("");
   const [userExp, setUserExp] = useState([]);
@@ -91,13 +91,14 @@ export default function Page() {
     },
   ];
 
-  useEffect(() => {
-    fetchData();
-  }, []);
+
 
   useEffect(() => {
-    console.log(user);
-  }, [userRfc]);
+    if (session && session.user) {
+      fetchData();
+      setUserId(session.user.id)
+    }
+  }, [session]);
 
   const renderTabContent = (item) => {
     switch (item.id) {
@@ -108,7 +109,7 @@ export default function Page() {
       case "employmentStatus":
         return <StatusData user = {user} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable}/>;
       case "workExperience":
-        return <WorkExperience userExp={userExp} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading} userRfc = {userRfc}/>;
+        return <WorkExperience user = {user} userExp={userExp} isEditable = {isEditable} userId = {userId} fetchData= {fetchData} setIsEditable={setIsEditable} loading = {loading} userRfc = {userRfc}/>;
       default:
         return null;
     }
