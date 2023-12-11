@@ -1,7 +1,14 @@
 "use client";
 
 import React, { useState } from "react";
-import { Card, CardHeader, CardBody, Input, Button } from "@nextui-org/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Input,
+  Button,
+  Divider,
+} from "@nextui-org/react";
 
 import { useRouter } from "next/navigation";
 import Link from "next/link";
@@ -68,10 +75,9 @@ export default function SignUp() {
           estado: "",
           antiguedad: "",
         });
-        toast.success('Usuario creado correctamente')
-
+        toast.success("Usuario creado correctamente");
       } else {
-        toast.error('Revise los campos llenados')
+        toast.error("Revise los campos llenados");
       }
     } catch (error) {
       console.error("Error:", error);
@@ -79,30 +85,50 @@ export default function SignUp() {
   };
 
   const fields = [
-    { name: "RFC", label: "RFC", type: "text" },
-    { name: "nombre", label: "Nombre", type: "text" },
-    { name: "username", label: "Nombre de usuario", type: "text" },
-    { name: "password", label: "Contraseña", type: "password" },
-    { name: "edad", label: "Edad", type: "text" },
-    { name: "direccion", label: "Dirección", type: "text" },
-    { name: "celular", label: "Celular", type: "text" },
-    { name: "telefono", label: "Teléfono", type: "text" },
-    { name: "correo", label: "Correo electrónico", type: "email" },
-    { name: "redSocial", label: "Red social", type: "text" },
-    { name: "tipoEmpleado", label: "Tipo de empleado", type: "text" },
-    { name: "contrato", label: "Contrato", type: "text" },
-    { name: "horario", label: "Horario", type: "text" },
-    { name: "estado", label: "Estado", type: "text" },
-    { name: "antiguedad", label: "Antigüedad", type: "text" },
+    { name: "RFC", label: "RFC", type: "text", description: "" },
+    { name: "nombre", label: "Nombre", type: "text", description: "" },
+    {
+      name: "username",
+      label: "Nombre de usuario",
+      type: "text",
+      description: "",
+    },
+    {
+      name: "password",
+      label: "Contraseña",
+      type: "password",
+      description: "",
+    },
+    { name: "edad", label: "Edad", type: "text", description: "" },
+    { name: "direccion", label: "Dirección", type: "text", description: "" },
+    { name: "celular", label: "Celular", type: "text", description: "" },
+    { name: "telefono", label: "Teléfono", type: "text", description: "" },
+    {
+      name: "correo",
+      label: "Correo electrónico",
+      type: "email",
+      description: "",
+    },
+    { name: "redSocial", label: "Red social", type: "text", description: "" },
+    {
+      name: "tipoEmpleado",
+      label: "Tipo de empleado",
+      type: "text",
+      description: "",
+    },
+    { name: "contrato", label: "Contrato", type: "text", description: "" },
+    { name: "horario", label: "Horario", type: "text", description: "" },
+    { name: "estado", label: "Estado", type: "text", description: "" },
+    { name: "antiguedad", label: "Antigüedad", type: "text", description: "" },
   ];
 
   return (
     <div className="flex items-center justify-center">
       <Card className="w-[100%]">
-        <CardHeader className="flex items-center justify-center">
+        <CardHeader className="flex items-center justify-center mt-2">
           <h2>Registro de nuevos usuarios</h2>
-     
         </CardHeader>
+        <Divider />
 
         <CardBody className="overflow-hidden">
           <form onSubmit={onSubmit} className="grid grid-cols-2 gap-2">
@@ -110,6 +136,8 @@ export default function SignUp() {
               <div key={index}>
                 <Input
                   isRequired
+                  description={field.description}
+                  autoComplete="off"
                   name={field.name}
                   label={field.label}
                   placeholder={`Ingresa tu ${field.label.toLowerCase()}`}
