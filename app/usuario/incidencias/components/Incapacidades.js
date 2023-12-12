@@ -3,7 +3,7 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagina
 import style from '../../components/style/statusData.module.css'
 import CardU from '../../components/CardU';
 
-const Incapacidades = ({incapacidades, loading}) => {
+const Incapacidades = ({user, incapacidades, loading}) => {
     const itemsPerPage = 5;
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(incapacidades.length / itemsPerPage);
@@ -124,7 +124,7 @@ const Incapacidades = ({incapacidades, loading}) => {
                 </div>
                 <hr />
                 <div className='w-1/2'>
-                    <CardU />
+                    <CardU user = {user}/>
                 </div>
             </div>
         </div>

@@ -5,7 +5,7 @@ import CardU from '../../components/CardU';
 import { EditIcon } from '@/app/components/icons/EditIcon';
 import { DeleteIcon } from '@/app/components/icons/DeleteIcon';
 
-const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
+const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
     const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
@@ -341,7 +341,7 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
                 </div>
                 <hr />
                 <div className='w-1/2'>
-                    <CardU />
+                    <CardU user = {user}/>
                 </div>
                 <Modal 
                   isOpen={isOpenAdd}

@@ -9,12 +9,24 @@
 }
 
 .avatarContainer {
-    width: 50px;
-    height: 50px;
-    overflow: hidden;
-    border-radius: 50%;
-    border: 2px solid #940099; /* Puedes personalizar el color del borde según tus preferencias */
-  }
+  width: 50px;
+  height: 50px;
+  overflow: hidden;
+  border-radius: 50%;
+  border: 2px solid #940099;
+  transition: width 0.3s, height 0.3s, opacity 0.3s; /* Transición para width, height y opacity */
+}
+
+.avatarContainer:hover {
+  width: 45px; /* Tamaño más pequeño */
+  height: 45px; /* Tamaño más pequeño */
+  opacity: 0.5; /* Opacidad reducida */
+}
+
+.avatarContainer:hover {
+  cursor: pointer;
+}
+
   
   .imgUsr {
     width: 100%;

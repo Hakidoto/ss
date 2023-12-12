@@ -116,11 +116,11 @@ export default function Page() {
   const renderTabContent = (item) => {
     switch (item.id) {
       case "cursos":
-        return <Cursos cursos = {cursos} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
+        return <Cursos user = {user} cursos = {cursos} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
       case "certificaciones":
-        return <Certificaciones certificacion = {certificaciones} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
+        return <Certificaciones user = {user} certificacion = {certificaciones} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
       case "lenguas":
-        return <Lenguas lenguas = {lenguas} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;    
+        return <Lenguas user = {user} lenguas = {lenguas} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;    
       default:
         return null;
     }

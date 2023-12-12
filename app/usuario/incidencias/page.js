@@ -105,11 +105,11 @@ export default function Page() {
   const renderTabContent = (item) => {
     switch (item.id) {
       case "faltas":
-        return <Faltas faltas = {faltas} loading = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/> ;
+        return <Faltas user = {user} faltas = {faltas} loading = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/> ;
       case "incapacidades":
-          return <Incapacidades incapacidades = {incapacidades} loading = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/> ;
+          return <Incapacidades user = {user} incapacidades = {incapacidades} loading = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/> ;
       case "procAdministrativos":
-        return <Procesos procedimientos = {procedimientos} loading = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/> ;
+        return <Procesos user = {user} procedimientos = {procedimientos} loading = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/> ;
       default:
         return null;
     }

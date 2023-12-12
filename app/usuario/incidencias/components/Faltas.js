@@ -3,7 +3,7 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagina
 import style from '../../components/style/statusData.module.css'
 import CardU from '../../components/CardU';
 
-const Faltas = ({faltas, loading, fetchData, rfcUsuario}) => {
+const Faltas = ({user, faltas, loading, fetchData, rfcUsuario}) => {
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
     const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
@@ -91,7 +91,7 @@ const Faltas = ({faltas, loading, fetchData, rfcUsuario}) => {
                 </div>
                 <hr />
                 <div className='w-1/2'>
-                    <CardU />
+                    <CardU user = {user} />
                 </div>
             </div>
         </div>
