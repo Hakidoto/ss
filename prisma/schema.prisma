@@ -20,7 +20,7 @@ model answers {
   question_id Int
   answer_text String    @db.Text
   questions   questions @relation(fields: [question_id], references: [question_id], onDelete: Cascade, onUpdate: NoAction, map: "answers_ibfk_1")
-  surveys     surveys   @relation(fields: [survey_id], references: [survey_id], onDelete: Cascade, onUpdate: NoAction, map: "answers_survey_id_fk")
+  surveys     surveys   @relation(fields: [survey_id], references: [survey_id], onDelete: NoAction, onUpdate: NoAction, map: "answers_survey_id_fk")
 
   @@id([answer_id, question_id, survey_id])
   @@index([question_id], map: "question_id")
@@ -60,8 +60,6 @@ model surveys {
   description      String?            @db.Text
   created_at       DateTime?          @default(now()) @db.Timestamp(0)
   estatus          String             @db.VarChar(25)
-  start_date       DateTime?          @db.Date
-  end_date         DateTime?          @db.Date
   answers          answers[]
   questions        questions[]
   survey_responses survey_responses[]
@@ -84,6 +82,9 @@ model usrs {
   estado                        String?                         @db.VarChar(50)
   antiguedad                    String?                         @db.VarChar(50)
   password                      String                          @db.VarChar(100)
+  puesto                        String?                         @db.VarChar(255)
+  nivelAcceso                   String?                         @db.VarChar(255)
+  img                           String?                         @db.VarChar(255)
   certificaciones               certificaciones[]
   cursos                        cursos[]
   experiencialaboral            experiencialaboral[]
@@ -169,7 +170,7 @@ model survey_responses {
   answer             Json?
   response_timestamp DateTime? @default(now()) @db.Timestamp(0)
   usrs               usrs?     @relation(fields: [user_id], references: [id], onDelete: NoAction, onUpdate: NoAction, map: "survey_responses_ibfk_1")
-  surveys            surveys?  @relation(fields: [survey_id], references: [survey_id], onDelete: Cascade, onUpdate: NoAction, map: "survey_responses_ibfk_2")
+  surveys            surveys?  @relation(fields: [survey_id], references: [survey_id], onDelete: NoAction, onUpdate: NoAction, map: "survey_responses_ibfk_2")
 
   @@index([survey_id], map: "survey_id")
   @@index([user_id], map: "user_id")

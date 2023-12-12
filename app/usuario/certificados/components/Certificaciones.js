@@ -5,7 +5,7 @@ import CardU from '../../components/CardU';
 import { EditIcon } from '@/app/components/icons/EditIcon';
 import { DeleteIcon } from '@/app/components/icons/DeleteIcon';
 
-const Certificaciones = ({certificacion , isLoaded, fetchData, rfcUsuario}) => {
+const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario}) => {
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
     const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
@@ -28,6 +28,65 @@ const Certificaciones = ({certificacion , isLoaded, fetchData, rfcUsuario}) => {
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(certificacion.length / itemsPerPage);
     
+    const DownloadComponent = async (row) => {
+      const id = row.id;
+    
+      try {
+        const response = await fetch(`/api/usuario/file/${id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tipoCert: 'certificado',
+          }),
+        });
+    
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `certificadoCertificacion_${id}.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+        } else {
+          alert("Ocurrio un error al bajar el archivo del servidor")
+        }
+      } catch (error) {
+        // Manejar errores de red u otros errores de cliente
+        console.error('Error en la aplicación cliente:', error);
+      }
+    };
+    const DeleteFileEdit = async () => {
+      try{
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('RFC',rfcUsuario)
+        formData.append('nombreCertificado',editingData.nombreCertificado)
+        formData.append('tipoCertificado',editingData.tipoCertificado)
+        formData.append('tipoCert', 'certificadoDel')
+        const response = await fetch(`/api/usuario/curriculo/certificaciones/${editingData.id}`, {
+          method: 'PUT',
+          /*headers: {
+            'Content-Type': 'application/json',
+          },*/
+          body: formData,
+        });
+  
+        if (response.ok) {
+          renderTableRows();
+          fetchData();
+          setCurrentPage(currentPage)
+          onClose();
+        } else {
+          console.log("Hubo un error al conectar con el api")
+        }
+      }catch(error){
+
+      }
+    }
+
     const renderTableRows = () => {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
@@ -36,7 +95,15 @@ const Certificaciones = ({certificacion , isLoaded, fetchData, rfcUsuario}) => {
                 <TableCell>{row.id}</TableCell>
                 <TableCell>{row.nombreCertificado}</TableCell>
                 <TableCell>{row.tipoCertificado}</TableCell>
-                <TableCell>Pendiente cambiar por icono</TableCell>
+                <TableCell>{(row.certificado)?(
+                  <a className={style.customLink} onClick={()=> DownloadComponent(row)} download>
+                    Ver certificado
+                  </a>
+
+                ) : (
+                "Subir certificado"
+                )}
+                </TableCell>
                 <TableCell>
                   <div>
                     <Button onPress={onOpenEdit} className='mx-1 my-1' color='secondary' variant='flat' onClick={() => handleEditClick(row)}>
@@ -132,12 +199,18 @@ const Certificaciones = ({certificacion , isLoaded, fetchData, rfcUsuario}) => {
     };
     const handleEditSave = async () => {
       try {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('RFC',rfcUsuario)
+        formData.append('nombreCertificado',editingData.nombreCertificado)
+        formData.append('tipoCertificado',editingData.tipoCertificado)
+        formData.append('tipoCert', 'certificado')
         const response = await fetch(`/api/usuario/curriculo/certificaciones/${editingData.id}`, {
           method: 'PUT',
-          headers: {
+          /*headers: {
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(editingData),
+          }*/
+          body: formData,
         });
   
         if (response.ok) {
@@ -253,7 +326,7 @@ const Certificaciones = ({certificacion , isLoaded, fetchData, rfcUsuario}) => {
                 </div>
                 <hr />
                 <div className='w-1/3'>
-                    <CardU />
+                    <CardU user = {user}/>
                 </div>
                 <Modal 
                   isOpen={isOpenAdd}
@@ -327,7 +400,15 @@ const Certificaciones = ({certificacion , isLoaded, fetchData, rfcUsuario}) => {
                             variant="bordered"
                             color='success'
                           />
-                          <Button color='secondary'>Subir certificado</Button>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            style={{ display: 'none' }}
+                            onChange={handleFileChange}
+                          />
+                          <Button color='secondary' onClick={editingData.certificado ? DeleteFileEdit : handleButtonClick}>
+                            {editingData.certificado || selectedFile ? "Eliminar certificado" : "Subir certificado"}
+                          </Button>
                         </ModalBody>
                         <ModalFooter>
                           <Button color="danger" variant="ghost" onPress={onClose}>
@@ -367,7 +448,6 @@ const Certificaciones = ({certificacion , isLoaded, fetchData, rfcUsuario}) => {
                             variant="bordered"
                             color='success'
                           />
-                          <Button color='secondary'>Subir certificado</Button>
                         </ModalBody>
                         <ModalFooter>
                           <Button color="primary" variant="ghost" onPress={onClose}>

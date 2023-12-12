@@ -5,10 +5,11 @@ import CardU from '../../components/CardU';
 import { EditIcon } from '@/app/components/icons/EditIcon';
 import { DeleteIcon } from '@/app/components/icons/DeleteIcon';
 
-const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
+const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
     const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
+    const [selectedFile, setSelectedFile] = useState(null);
     const [editingData, setEditingData] = useState({
       id: null,
       nombreLengua: '',
@@ -27,6 +28,66 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
     const totalPages = Math.ceil(lenguas.length / itemsPerPage);
     const fileInputRef = useRef(null);
 
+    const DownloadComponent = async (row) => {
+      const id = row.id;
+    
+      try {
+        const response = await fetch(`/api/usuario/file/${id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tipoCert: 'lengua',
+          }),
+        });
+    
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `certificadoLengua_${id}.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+        } else {
+          alert("Ocurrio un error al bajar el archivo del servidor")
+        }
+      } catch (error) {
+        // Manejar errores de red u otros errores de cliente
+        console.error('Error en la aplicación cliente:', error);
+      }
+    };
+
+    const DeleteFileEdit = async () => {
+      try{
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('RFC',rfcUsuario)
+        formData.append('lengua',editingData.lengua)
+        formData.append('nivel',editingData.nivel)
+        formData.append('tipoCert', 'lenguaDel')
+        const response = await fetch(`/api/usuario/curriculo/lenguas/${editingData.id}`, {
+          method: 'PUT',
+          /*headers: {
+            'Content-Type': 'application/json',
+          },*/
+          body: formData,
+        });
+  
+        if (response.ok) {
+          renderTableRows();
+          fetchData();
+          setCurrentPage(currentPage)
+          onClose();
+        } else {
+          console.log("Hubo un error al conectar con el api")
+        }
+      }catch(error){
+
+      }
+    }
+
     const renderTableRows = () => {
         const startIndex = (currentPage - 1) * itemsPerPage;
         const endIndex = startIndex + itemsPerPage;
@@ -35,7 +96,15 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
                 <TableCell>{row.id}</TableCell>
                 <TableCell>{row.lengua}</TableCell>
                 <TableCell>{row.nivel}</TableCell>
-                <TableCell>Pendiente subir certificado</TableCell>
+                <TableCell>{(row.certificado)?(
+                  <a className={style.customLink} onClick={()=> DownloadComponent(row)} download>
+                    Ver certificado
+                  </a>
+
+                ) : (
+                "Subir certificado"
+                )}
+                </TableCell>
                 <TableCell>
                   <div>
                     <Button onPress={onOpenEdit} className='mx-1 my-1' color='secondary' variant='flat' onClick={() => handleEditClick(row)}>
@@ -91,22 +160,39 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
       setData((prevData) => ({
         ...prevData,
         RFC: rfcUsuario,
-        certificado: selectedFile,
+        //certificado: selectedFile,
       }));
+      setSelectedFile(selectedFile);
+    };
+    const handleFileChangeEdit = (e) => {
+      // Acceder al archivo seleccionado
+      const selectedFile = e.target.files[0];
+      setData((prevData) => ({
+        ...prevData,
+        RFC: rfcUsuario,
+        //certificado: selectedFile,
+        tipoCert: 'lengua'
+      }));
+      setSelectedFile(selectedFile);
     };
     const handleSave = async () => {
       try {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('RFC',rfcUsuario)
+        formData.append('lengua',data.lengua)
+        formData.append('nivel',data.nivel)
+        console.log(formData)
         const response = await fetch('/api/usuario/curriculo/lenguas', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(data),
+          body: formData,
         });
+    
         if (response.ok) {
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
+          setSelectedFile(null)
           onClose();
         } else {
           console.log("Hubo un error al conectar con el api")
@@ -126,12 +212,18 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
     };
     const handleEditSave = async () => {
       try {
+        const formData = new FormData();
+        formData.append('file', selectedFile);
+        formData.append('RFC',rfcUsuario)
+        formData.append('lengua',editingData.lengua)
+        formData.append('nivel',editingData.nivel)
+        formData.append('tipoCert', 'lengua')
         const response = await fetch(`/api/usuario/curriculo/lenguas/${editingData.id}`, {
           method: 'PUT',
-          headers: {
+          /*headers: {
             'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(editingData),
+          },*/
+          body: formData,
         });
   
         if (response.ok) {
@@ -179,8 +271,9 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
     }
 
     useEffect(() => {
-      console.log(data)
-    }, [data])
+      console.log(editingData)
+      console.log(selectedFile)
+    }, [selectedFile])
     
 
     return (
@@ -248,7 +341,7 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
                 </div>
                 <hr />
                 <div className='w-1/2'>
-                    <CardU />
+                    <CardU user = {user}/>
                 </div>
                 <Modal 
                   isOpen={isOpenAdd}
@@ -281,7 +374,13 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
                             style={{ display: 'none' }}
                             onChange={handleFileChange}
                           />
-                          <Button color='secondary' onClick={handleButtonClick}>Subir certificado</Button>
+                          <Button color='secondary' onClick={handleButtonClick}>
+                            {
+                              selectedFile
+                              ? "Certificado cargado"
+                              : "Subir certificado"
+                            }
+                          </Button>
                         </ModalBody>
                         <ModalFooter>
                           <Button color="danger" variant="ghost" onPress={onClose}>
@@ -322,7 +421,19 @@ const Lenguas = ({lenguas , isLoaded, fetchData, rfcUsuario}) => {
                             variant="bordered"
                             color='success'
                           />
-                          <Button color='secondary'>Subir certificado</Button>
+                          <input
+                            ref={fileInputRef}
+                            type="file"
+                            style={{ display: 'none' }}
+                            onChange={handleFileChangeEdit}
+                          />
+                          <Button color='secondary' onClick={editingData.certificado ?  DeleteFileEdit : handleButtonClick}>
+                          {
+                            editingData.certificado || selectedFile
+                            ? "Eliminar certificado"
+                            : "Subir certificado"
+                          }
+                          </Button>
                         </ModalBody>
                         <ModalFooter>
                           <Button color="danger" variant="ghost" onPress={onClose}>

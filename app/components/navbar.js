@@ -26,10 +26,12 @@ import { useTheme } from "next-themes";
 import { SunIcon } from "./icons/SunIcon";
 import { MoonIcon } from "./icons/MoonIcon";
 import style from "./styles/navbar.module.css";
-
+import Image from "next/image"
 import { signOut, useSession } from "next-auth/react";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 export default function NavbarTRC() {
+  const [imagePath, setImagePath] = useState("https://avatars.githubusercontent.com/u/86160567?s=200&v=4");
+  const [userData, setUserData] = useState({});
   const router = useRouter();
   const { data: session, status } = useSession();
   const { theme, setTheme } = useTheme();
@@ -42,11 +44,53 @@ export default function NavbarTRC() {
     { nombre: "Administracion", link: "/admi/panelusuarios" },
   ];
 
+  useEffect(() => {
+    if (session && session.user) {
+      fetchData();
+    }
+  }, [session]);
+
+  async function fetchData() {
+    try {
+      const UsuarioId = session.user.id; // Reemplaza con el ID del usuario que deseas obtener
+      const response = await fetch(`/api/usuario/${UsuarioId}`);
+  
+      if (response.ok) {
+        const user = await response.json();
+        setUserData(user);
+        //console.log(user)
+      } else {
+        console.error('Error al obtener datos de la API');
+      }
+    } catch (error) {
+      console.error('Error al conectarse a la API', error);
+    }
+  }
+
   const signout = () =>
     signOut({
       redirect: true,
       callbackUrl: `${window.location.origin}/login`,
     });
+
+  //const imagePath = session && userData.img ?  require(`../resources/${session.user.id}/profilePick/${userData.img}`) : "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
+
+  useEffect(() => {
+    const loadImage = async () => {
+      try {
+        if (session && userData && userData.img) {
+          // Utiliza import() para cargar la imagen de forma asíncrona
+          const dynamicImage = await import(`../resources/${session.user.id}/profilePick/${userData.img}`);
+          setImagePath(dynamicImage.default);
+        }
+      } catch (error) {
+        // Manejar el error, por ejemplo, imprimir un mensaje en la consola
+        console.error(`Error cargando la imagen: ${error.message}`);
+      }
+    };
+  
+    loadImage();
+  }, [session, userData]);
 
   return (
     <Navbar
@@ -99,35 +143,23 @@ export default function NavbarTRC() {
       </NavbarContent>
 
       <NavbarContent as="div" className="items-center" justify="end">
-        <Input
-          classNames={{
-            base: "max-w-full sm:max-w-[10rem] h-10",
-            mainWrapper: "h-full",
-            input: "text-small",
-            inputWrapper:
-              "h-full font-normal text-default-500 bg-default-400/20 dark:bg-default-500/20",
-          }}
-          placeholder="Escribe para buscar..."
-          size="sm"
-          type="search"
-        />
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
-            <Avatar
-              isBordered
-              as="button"
-              className="transition-transform"
-              color="secondary"
-              name="Jason Hughes"
-              size="sm"
-              src="https://i.pravatar.cc/150?u=a042581f4e29026704d"
+          <div className={style.avatarContainer}>
+            <Image
+              className={style.imgUsr}
+              src={imagePath}
+              alt="Avatar"
+              width={50}
+              height={50}
             />
+          </div>
           </DropdownTrigger>
           <DropdownMenu closeOnSelect={false} aria-label="Profile Actions" variant="flat">
             <DropdownItem key="profile" className="h-14 gap-2">
               {session ? ( // Check if a session exists
                 <>
-                  <p className="font-semibold">{session.user.username} </p>
+                  <p className="font-semibold">Sesion de {session.user.username} </p>
                   <p className="font-semibold">{session.user.email}</p>
                 </>
               ) : (
@@ -206,7 +238,6 @@ export default function NavbarTRC() {
             <DropdownItem
               as={Button}
               onClick={signout}
-              variant="destructive"
               color="danger"
             >
               Cerrar sesion
