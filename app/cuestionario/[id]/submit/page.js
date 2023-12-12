@@ -1,6 +1,12 @@
 "use client";
 
-import { Card, CardHeader, CardBody, Button } from "@nextui-org/react";
+import {
+  Card,
+  CardHeader,
+  CardBody,
+  Button,
+  Textarea,
+} from "@nextui-org/react";
 import React, { cache, use } from "react";
 import { useEffect, useState } from "react";
 import { usePathname } from "next/navigation";
@@ -12,7 +18,9 @@ import { useToast } from "@/components/ui/use-toast";
 import { ToastAction } from "@/components/ui/toast";
 import NextLink from "next/link";
 
-
+const getSurvey = cache((id) =>
+  fetch(`/api/cuestionario/${id}`).then((res) => res.json())
+);
 
 const getQuestions = (id) => {
   // Ensure you return the promise from fetch
@@ -52,22 +60,24 @@ export default function Page() {
   const [questionData, setQuestionData] = useState([]);
   const [answerData, setAnswerData] = useState([]);
   const [userAnswers, setUserAnswers] = useState({});
+  const [survey, setSurvey] = useState({});
   const { data: session, status } = useSession();
-  const {toast} = useToast();
+  const { toast } = useToast();
 
   const pathname = usePathname();
   const parts = pathname.split("/");
   const id = parseInt(parts[2], 10); // Che metodo sucio para sacar el link ajsjas
-  
 
   const fetchData = async () => {
     try {
       // Assuming getSurveys returns an array of questions objects
       const questions = await getQuestions(id);
       const answers = await getAnswers();
+      const currentSurvey = await getSurvey(id);
 
       setAnswerData(answers);
       setQuestionData(questions);
+      setSurvey(currentSurvey);
     } catch (error) {
       // Handle error if needed
       console.error("Error fetching data:", error);
@@ -83,11 +93,11 @@ export default function Page() {
 
   const saveUserAnswerData = async () => {
     let allRequestsSuccessful = true;
-    const usuario_id= session.user.id;
+    const usuario_id = session.user.id;
 
     const userAnswersWithSurveyId = {
       userAnswers: userAnswers, // Add a new property named userAnswers
-      survey_id: id,             // Add the new property survey_id with the value of id
+      survey_id: id, // Add the new property survey_id with the value of id
     };
 
     try {
@@ -157,7 +167,6 @@ export default function Page() {
     }
   };
 
-
   useEffect(() => {
     fetchData();
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -166,8 +175,23 @@ export default function Page() {
   return (
     <>
       <Card className="mx-auto my-auto flex-1 min-h-[80vh]">
-        <CardHeader className="flex items-center justify-center">
-          <h2 className="text-md">Encuesta</h2>
+        <CardHeader className="flex flex-col items-center justify-center">
+          <h2 className=" text-2xl ">{survey.title}</h2>
+          <Card
+            isBlurred
+            className="border-none bg-background/60 dark:bg-default-100/50 w-5/6 mt-5"
+          >
+            <CardHeader className=" lex  justify-between">
+              <Textarea
+                isReadOnly
+                variant="bordered"
+                labelPlacement="outside"
+                defaultValue={survey.description}
+                label="Acerca de la encuesta"
+                className="ml-3 mr-3"
+              ></Textarea>
+            </CardHeader>
+          </Card>
         </CardHeader>
         <CardBody>
           {questionData.map((question, index) => {

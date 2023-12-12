@@ -68,7 +68,7 @@ export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers
   const renderAnswerInput = () => {
     if (selectedType === "checkbox") {
       return (
-        <div className="ml-3">
+        <div className="ml-3 mr-3">
           <CheckboxGroup
             label={`Selecciona una respuesta`}
             className="mb-3"
@@ -86,7 +86,7 @@ export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers
     } else if (selectedType === "multiple_choice") {
       // Code for rendering Radio input
       return (
-        <div className="ml-3">
+        <div className="ml-3 mr-3">
           <RadioGroup
             label={`Selecciona una respuesta`}
             className="mb-3"
@@ -103,7 +103,7 @@ export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers
       );
     } else if (selectedType === "open_text") {
       return (
-        <div className="ml-3">
+        <div className="ml-3 mr-3">
           <Textarea
             label={`Respuesta abierta`}
             onValueChange={handleValueChange}
@@ -124,7 +124,7 @@ export default function CardRespUsuario({ pregunta, respuesta, getAllUserAnswers
           className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
         >
           <CardHeader className=" flex items-center justify-between">
-            <div className=" ml-3 w-full">
+            <div className=" ml-3 mr-3 w-full">
               <Input
                 isReadOnly
                 className="w-full"

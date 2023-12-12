@@ -87,14 +87,35 @@ export default function CardDatosPregunta({
 
   const answerCounts = {};
 
-  filteredArray.forEach((response) => {
+  extractedNumbers.forEach((response) => {
     const answer = response.answer;
 
-    // If the answer is not yet in the answerCounts object, initialize it to 1, otherwise increment the count.
-    answerCounts[answer] = (answerCounts[answer] || 0) + 1;
+    if (response.question_type !== "open_text") {
+      if (Array.isArray(answer)) {
+        // If the answer is an array, loop through the values and sum them to the corresponding answerCounts.
+        answer.forEach((value) => {
+          answerCounts[value] = (answerCounts[value] || 0) + 1;
+        });
+      } else if (typeof answer === "number") {
+        // If the answer is not an array and is a number, increment the count for that answer.
+        answerCounts[answer] = (answerCounts[answer] || 0) + 1;
+      }
+    }
   });
+  console.log(answerCounts);
+  const checkboxData = [];
 
-  console.log("Answer counts:", answerCounts);
+  // Assuming answerCounts is the object containing answer counts
+  for (const [id, value] of Object.entries(answerCounts)) {
+    const numericId = parseInt(id, 10); // Convert id to a number
+    checkboxData.push({
+      id: `Respuesta ${numericId+1}`,
+      label: `Respuesta ${numericId+1}`,
+      value: value,
+    });
+  }
+
+  console.log(checkboxData);
 
   const data = [
     {
@@ -152,20 +173,20 @@ export default function CardDatosPregunta({
   const renderAnswerInput = () => {
     if (pregunta.question_type === "checkbox") {
       return (
-        <div className="ml-3 flex">
-          <div className=" w-1/4">
-            <PieChartSurveys data={data} />
+        <div className="ml-3 mr-3 flex h-60">
+          <div className=" w-2/4">
+            <PieChartSurveys data={checkboxData} />
           </div>
-          <div className=" w-3/4">
+          <div className=" w-2/4">
             <CheckboxGroup
               isDisabled
-              label={`Selecciona una respuesta`}
+              label={`Cantidad de veces seleccionados por los usuarios`}
               className="mb-3"
               value={selectedAnswers}
             >
               {answerData.map((answer, index) => (
                 <Checkbox key={answer.answer_id} value={answer.answer_id}>
-                  {answer.answer_text}
+                  {answer.answer_text} - {answerCounts[answer.answer_id] || 0} veces
                 </Checkbox>
               ))}
             </CheckboxGroup>
@@ -175,20 +196,20 @@ export default function CardDatosPregunta({
     } else if (pregunta.question_type === "multiple_choice") {
       // Code for rendering Radio input
       return (
-        <div className="ml-3 flex">
-          <div className=" w-1/4">
-            <PieChartSurveys data={data} />
+        <div className="ml-3 mr-3 flex h-60">
+          <div className=" w-2/4">
+            <PieChartSurveys data={checkboxData} />
           </div>
-          <div className=" w-3/4">
+          <div className=" w-2/4">
             <RadioGroup
               isDisabled
-              label={`Selecciona una respuesta`}
+              label={`Cantidad de veces seleccionados por los usuarios`}
               className="mb-3"
               value={selectedAnswers}
             >
               {answerData.map((answer, index) => (
                 <Radio key={answer.answer_id} value={answer.answer_id}>
-                  {answer.answer_text}
+                  {answer.answer_text} - {answerCounts[answer.answer_id] || 0} veces
                 </Radio>
               ))}
             </RadioGroup>
@@ -197,14 +218,16 @@ export default function CardDatosPregunta({
       );
     } else if (pregunta.question_type === "open_text") {
       return (
-        <div className="ml-3 flex">
+        <div className="ml-3 mr-3 flex">
           <ListboxWrapper>
             <Listbox
               classNames={{
                 base: "max-h-[200px]",
                 list: " overflow-scroll",
               }}
-              items={Object.values(allUserAnswerData).flat().filter(item => item.question_type === "open_text")}
+              items={Object.values(allUserAnswerData)
+                .flat()
+                .filter((item) => item.question_type === "open_text")}
               aria-label="Dynamic Actions"
             >
               {(item) => (
@@ -244,7 +267,7 @@ export default function CardDatosPregunta({
           className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
         >
           <CardHeader className=" flex items-center justify-between">
-            <div className=" ml-3 w-full">
+            <div className=" ml-3 mr-3 w-full">
               <Input
                 isReadOnly
                 className="w-full"

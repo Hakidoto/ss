@@ -83,7 +83,7 @@ model usrs {
   horario                       String?                         @db.VarChar(50)
   estado                        String?                         @db.VarChar(50)
   antiguedad                    String?                         @db.VarChar(50)
-  password                      String?                         @db.VarChar(20)
+  password                      String                          @db.VarChar(100)
   puesto                        String?                         @db.VarChar(255)
   nivelAcceso                   String?                         @db.VarChar(255)
   img                           Bytes?

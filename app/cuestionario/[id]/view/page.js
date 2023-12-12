@@ -65,12 +65,18 @@ const getAnswers = () => {
   });
 };
 
+const getSurvey = cache((id) =>
+  fetch(`/api/cuestionario/${id}`).then((res) => res.json())
+);
+
 export default function Page() {
   const [questionData, setQuestionData] = useState([]);
   const [answerData, setAnswerData] = useState([]);
   const [userAnswers, setUserAnswers] = useState([]);
   const [userAnswerData, setUserAnswerData] = useState([]);
   const [userData, setUserData] = useState([]);
+  const [survey, setSurvey] = useState({});
+
 
   const { data: session, status } = useSession();
 
@@ -92,10 +98,12 @@ export default function Page() {
       const userAnswer = await getUserAnswer(id);
       const answer = await getAnswers();
       const users = await getAllUsers();
+      const currentSurvey = await getSurvey(id);
       setQuestionData(data);
       setUserAnswers(userAnswer);
       setAnswerData(answer);
       setUserData(users);
+      setSurvey(currentSurvey);
     } catch (error) {
       // Handle error for getUserAnswer
       console.error("Error fetching data:", error);
@@ -115,8 +123,9 @@ export default function Page() {
   return (
     <>
       <Card className="mx-auto my-auto flex-1 min-h-[80vh]">
-        <CardHeader className="flex items-center justify-center">
-          <h2 className="text-md">Encuesta</h2>
+        <CardHeader className="flex flex-col items-center justify-center space-y-2">
+          <h2 className=" text-2xl space-y-1 ">Resultados de encuesta</h2>
+          <h2 className=" text-md space-y-1">{survey.title}</h2>
         </CardHeader>
         <CardBody>
           {questionData.map((question, index) => {
