@@ -160,6 +160,7 @@ export default function CardU({user}) {
           // Utiliza import() para cargar la imagen de forma asíncrona
           const dynamicImage = await import(`../../resources/${usrData.id}/profilePick/${usrData.img}`);
           setImagePath(dynamicImage.default);
+          setEditingData(usrData)
         }
       } catch (error) {
         // Manejar el error, por ejemplo, imprimir un mensaje en la consola
@@ -186,8 +187,8 @@ export default function CardU({user}) {
           />
         </div>
         <div className="flex flex-col w-full">
-          <p className="text-right min-w-full ">{session ? session.user.username : <Skeleton className='rounded-lg'>.</Skeleton>}</p>
-          <p className="text-small text-default-500 min-w-full text-right">{session ? session.user.email : <Skeleton className='rounded-lg'>.</Skeleton>}</p>
+          <p className="text-right min-w-full ">{user? user.username : <Skeleton className='rounded-lg'>.</Skeleton>}</p>
+          <p className="text-small text-default-500 min-w-full text-right">{user? user.correo : <Skeleton className='rounded-lg'>.</Skeleton>}</p>
         </div>
       </CardHeader>
       <Divider/>
