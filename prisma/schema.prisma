@@ -3,9 +3,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = env("DATABASE_URL")
-  shadowDatabaseUrl = env("SHADOW_DATABASE_URL")
+  provider          = "mysql"
+  url               = env("DATABASE_URL")
 }
 
 model user {
@@ -60,6 +59,8 @@ model surveys {
   title            String             @db.VarChar(255)
   description      String?            @db.Text
   created_at       DateTime?          @default(now()) @db.Timestamp(0)
+  start_date       DateTime?          @db.Date
+  end_date         DateTime?          @db.Date
   estatus          String             @db.VarChar(25)
   answers          answers[]
   questions        questions[]
@@ -83,9 +84,9 @@ model usrs {
   estado                        String?                         @db.VarChar(50)
   antiguedad                    String?                         @db.VarChar(50)
   password                      String                          @db.VarChar(100)
-  puesto                        String?                         @db.VarChar(255)
-  nivelAcceso                   String?                         @db.VarChar(255)
   img                           String?                         @db.VarChar(255)
+  nivelAcceso                   String?                         @db.VarChar(255)
+  puesto                        String?                         @db.VarChar(255)
   certificaciones               certificaciones[]
   cursos                        cursos[]
   experiencialaboral            experiencialaboral[]
