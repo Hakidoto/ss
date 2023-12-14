@@ -13,9 +13,11 @@ import {
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "react-toastify";
+import { useToast } from "@/components/ui/use-toast";
 
 export default function SignUp() {
   const router = useRouter();
+  const {toast} = useToast();
   const [formData, setFormData] = useState({
     RFC: "",
     nombre: "",
@@ -75,9 +77,16 @@ export default function SignUp() {
           estado: "",
           antiguedad: "",
         });
-        toast.success("Usuario creado correctamente");
+        toast({
+          title: "Usuario creado exitosamente",
+          description: "El usuario ha sido guardado",
+        });
       } else {
-        toast.error("Revise los campos llenados");
+        toast({
+          variant: "destructive",
+          title: "Error al crear usuario",
+          description: "Revise los campos llenados",
+        });
       }
     } catch (error) {
       console.error("Error:", error);
