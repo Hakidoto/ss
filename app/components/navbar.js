@@ -18,6 +18,8 @@ import {
   DropdownItem,
   Switch,
   DropdownSection,
+  Autocomplete,
+  AutocompleteItem,
 } from "@nextui-org/react";
 import NextLink from "next/link";
 import { usePathname } from "next/navigation";
@@ -28,13 +30,18 @@ import { MoonIcon } from "./icons/MoonIcon";
 import style from "./styles/navbar.module.css";
 import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
-import { useEffect, useState } from "react";
+import { cache, useEffect, useState } from "react";
 import { LuComputer } from "react-icons/lu";
+import { SearchIcon } from "./icons/SearchIcon";
+
+const getUsers = cache(() => fetch("/api/usuario").then((res) => res.json()));
+
 export default function NavbarTRC() {
   const [imagePath, setImagePath] = useState(
     "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
   );
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [userList, setUserList] = useState([]);
 
   const [userData, setUserData] = useState({});
   const router = useRouter();
@@ -59,6 +66,8 @@ export default function NavbarTRC() {
       const UsuarioId = session.user.id; // Reemplaza con el ID del usuario que deseas obtener
       const response = await fetch(`/api/usuario/${UsuarioId}`);
 
+      const users = await getUsers();
+      setUserList(users);
       if (response.ok) {
         const user = await response.json();
         setUserData(user);
@@ -160,11 +169,7 @@ export default function NavbarTRC() {
           return (
             <NavbarMenuItem key={`${item}-${index}`}>
               <Link
-                color={
-                  isActive
-                    ? "danger"
-                    : "foreground"
-                }
+                color={isActive ? "danger" : "foreground"}
                 className="w-full"
                 href={item.link}
                 size="lg"
@@ -177,6 +182,85 @@ export default function NavbarTRC() {
       </NavbarMenu>
 
       <NavbarContent as="div" className="items-center" justify="end">
+        <Autocomplete
+          classNames={{
+            base: "max-w-xs",
+            listboxWrapper: "max-h-[320px]",
+            selectorButton: "text-default-500",
+          }}
+          defaultItems={userList}
+          inputProps={{
+            classNames: {
+              input: "ml-1",
+              inputWrapper: "h-[48px]",
+            },
+          }}
+          listboxProps={{
+            hideSelectedIcon: true,
+            itemClasses: {
+              base: [
+                "rounded-medium",
+                "text-default-500",
+                "transition-opacity",
+                "data-[hover=true]:text-foreground",
+                "dark:data-[hover=true]:bg-default-50",
+                "data-[pressed=true]:opacity-70",
+                "data-[hover=true]:bg-default-200",
+                "data-[selectable=true]:focus:bg-default-100",
+                "data-[focus-visible=true]:ring-default-500",
+              ],
+            },
+          }}
+          aria-label="Select an employee"
+          placeholder="Buscar perfil"
+          popoverProps={{
+            offset: 10,
+            classNames: {
+              base: "rounded-large",
+              content: "p-1 border-small border-default-100 bg-background",
+            },
+          }}
+          startContent={
+            <SearchIcon
+              className="text-default-400"
+              strokeWidth={2.5}
+              size={20}
+            />
+          }
+          radius="full"
+          variant="bordered"
+        >
+          {(item) => (
+            <AutocompleteItem key={item.id} textValue={item.nombre}>
+              <div className="flex justify-between items-center">
+                <div className="flex gap-2 items-center">
+                  <Avatar
+                    alt={item.nombre}
+                    className="flex-shrink-0"
+                    size="sm"
+                    src={imagePath}
+                  />
+                  <div className="flex flex-col">
+                    <span className="text-small">{item.nombre}</span>
+                    <span className="text-tiny text-default-400">
+                      {item.puesto}
+                    </span>
+                  </div>
+                </div>
+                <Button
+                  className="border-small mr-0.5 font-medium shadow-small"
+                  radius="full"
+                  size="sm"
+                  variant="bordered"
+                  as={NextLink}
+                  href={`/usuario/${item.id}`}
+                >
+                  Ir al perfil
+                </Button>
+              </div>
+            </AutocompleteItem>
+          )}
+        </Autocomplete>
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
             <div className={style.avatarContainer}>
