@@ -13,7 +13,6 @@ ALTER TABLE `answers` DROP FOREIGN KEY `answers_survey_id_fk`;
 ALTER TABLE `survey_responses` DROP FOREIGN KEY `survey_responses_ibfk_2`;
 
 
-
 -- AddForeignKey
 ALTER TABLE `answers` ADD CONSTRAINT `answers_survey_id_fk` FOREIGN KEY (`survey_id`) REFERENCES `surveys`(`survey_id`) ON DELETE NO ACTION ON UPDATE NO ACTION;
 

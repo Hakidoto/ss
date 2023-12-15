@@ -9,6 +9,8 @@ import Cursos from './components/Cursos';
 import Certificaciones from './components/Certificaciones';
 import Lenguas from './components/Lenguas';
 import { useSession } from 'next-auth/react';
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 export default function Page() {
   const { data: session, status } = useSession();
@@ -19,6 +21,7 @@ export default function Page() {
   const [lenguas, setLenguas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [rfcUsuario, setRfcUsuario] = useState("");
+  const {toast} = useToast();
   let tabs = [
     {
       id: "cursos",

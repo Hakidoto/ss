@@ -4,12 +4,15 @@ import style from '../../components/style/statusData.module.css'
 import CardU from '../../components/CardU';
 import { EditIcon } from '@/app/components/icons/EditIcon';
 import { DeleteIcon } from '@/app/components/icons/DeleteIcon';
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario}) => {
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
     const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
     const [selectedFile, setSelectedFile] = useState(null);
+    const {toast} = useToast();
     const [editingData, setEditingData] = useState({
       id: null,
       nombreCertificado: '',
@@ -30,7 +33,7 @@ const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario
     
     const DownloadComponent = async (row) => {
       const id = row.id;
-    
+      const idUser = user.id
       try {
         const response = await fetch(`/api/usuario/file/${id}`, {
           method: 'POST',
@@ -39,6 +42,7 @@ const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario
           },
           body: JSON.stringify({
             tipoCert: 'certificado',
+            idUser
           }),
         });
     
@@ -50,8 +54,15 @@ const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario
           link.download = `certificadoCertificacion_${id}.pdf`;
           link.click();
           window.URL.revokeObjectURL(url);
+          toast({
+            title: "Guardado completado",
+            description: "El archivo se ha descargado exitosamente",
+          });
         } else {
-          alert("Ocurrio un error al bajar el archivo del servidor")
+          toast({
+            title: "Error",
+            description: "Ah ocurrido un error al bajar el archivo",
+          });
         }
       } catch (error) {
         // Manejar errores de red u otros errores de cliente
@@ -78,6 +89,10 @@ const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
+          toast({
+            title: "Certificado actualizado",
+            description: "El certificado se ha eliminado exitosamente",
+          });
           onClose();
         } else {
           console.log("Hubo un error al conectar con el api")
@@ -162,6 +177,10 @@ const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario
         //certificado: selectedFile,
       }));
       setSelectedFile(selectedFile);
+      toast({
+        title: "Archivo cargado",
+        description: "El archivo se ha cargado en memoria",
+      });
     };
     const handleSave = async () => {
       try {
@@ -180,6 +199,11 @@ const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
+          toast({
+            title: "Guardado completado",
+            description: "La certificacion se ha registrado exitosamente",
+          });
+          setSelectedFile(null)
           onClose();
         } else {
           console.log("Hubo un error al conectar con el api")
@@ -217,6 +241,11 @@ const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
+          toast({
+            title: "Guardado completado",
+            description: "Los cambios se han guardado exitosamente",
+          });
+          setSelectedFile(null)
           onClose();
         } else {
           console.log("Hubo un error al conectar con el api")
@@ -247,7 +276,10 @@ const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
-          alert("Registro eliminado")
+          toast({
+            title: "Eliminado completado",
+            description: "La certificacion se ha eliminado exitosamente",
+          });
         } else {
           console.log("Hubo un error al conectar con el api")
         }
@@ -359,7 +391,7 @@ const Certificaciones = ({ user, certificacion , isLoaded, fetchData, rfcUsuario
                             style={{ display: 'none' }}
                             onChange={handleFileChange}
                           />
-                          <Button color='secondary' onClick={handleButtonClick}>Subir certificado</Button>
+                          <Button color='secondary' onClick={handleButtonClick}>{selectedFile ? "Archivo cargado" : "Seleccionar archivo"}</Button>
                         </ModalBody>
                         <ModalFooter>
                           <Button color="danger" variant="ghost" onPress={onClose}>

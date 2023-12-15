@@ -4,12 +4,15 @@ import style from '../../components/style/statusData.module.css'
 import CardU from '../../components/CardU';
 import { EditIcon } from '@/app/components/icons/EditIcon';
 import { DeleteIcon } from '@/app/components/icons/DeleteIcon';
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
     const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
     const [selectedFile, setSelectedFile] = useState(null);
+    const {toast} = useToast();
     const [editingData, setEditingData] = useState({
       id: null,
       nombreLengua: '',
@@ -30,7 +33,7 @@ const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
 
     const DownloadComponent = async (row) => {
       const id = row.id;
-    
+      const idUser = user.id
       try {
         const response = await fetch(`/api/usuario/file/${id}`, {
           method: 'POST',
@@ -39,6 +42,7 @@ const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
           },
           body: JSON.stringify({
             tipoCert: 'lengua',
+            idUser
           }),
         });
     
@@ -50,8 +54,15 @@ const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
           link.download = `certificadoLengua_${id}.pdf`;
           link.click();
           window.URL.revokeObjectURL(url);
+          toast({
+            title: "Archivo descargado",
+            description: "El archivo se ha descargado exitosamente",
+          });
         } else {
-          alert("Ocurrio un error al bajar el archivo del servidor")
+          toast({
+            title: "Error",
+            description: "Ocurrio un error al bajar el archivod el servidor",
+          });
         }
       } catch (error) {
         // Manejar errores de red u otros errores de cliente
@@ -79,9 +90,16 @@ const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
+          toast({
+            title: "Lengua actualizada",
+            description: "El archivo se ha eliminado exitosamente del servidor",
+          });
           onClose();
         } else {
-          console.log("Hubo un error al conectar con el api")
+          toast({
+            title: "Error",
+            description: "Ocurrio un error al eliminar el certificado",
+          });
         }
       }catch(error){
 
@@ -163,6 +181,10 @@ const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
         //certificado: selectedFile,
       }));
       setSelectedFile(selectedFile);
+      toast({
+        title: "Archivo cargado",
+        description: "El archivo se ha cargado exitosamente en memoria",
+      });
     };
     const handleFileChangeEdit = (e) => {
       // Acceder al archivo seleccionado
@@ -193,6 +215,10 @@ const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
           fetchData();
           setCurrentPage(currentPage)
           setSelectedFile(null)
+          toast({
+            title: "Guardado completado",
+            description: "Lengua registrada exitosamente",
+          });
           onClose();
         } else {
           console.log("Hubo un error al conectar con el api")
@@ -230,6 +256,10 @@ const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
+          toast({
+            title: "Guardado completado",
+            description: "Cambios guardados exitosamente",
+          });
           onClose();
         } else {
           console.log("Hubo un error al conectar con el api")
@@ -261,7 +291,10 @@ const Lenguas = ({user, lenguas , isLoaded, fetchData, rfcUsuario}) => {
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
-          alert("Registro eliminado")
+          toast({
+            title: "Eliminado completado",
+            description: "El archivo se ha eliminado exitosamente",
+          });
         } else {
           console.log("Hubo un error al conectar con el api")
         }
