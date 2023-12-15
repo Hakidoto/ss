@@ -19,8 +19,10 @@ import { Pagination } from "@nextui-org/react";
 import { useRouter } from "next/navigation";
 import { SearchIcon } from "@/app/components/icons/SearchIcon";
 import { PlusIcon } from "@/app/components/icons/PlusIcon";
+import { useToast } from "@/components/ui/use-toast";
 
 export const PanelUsuario = () => {
+  const {toast} = useToast();
   const [users, setUsers] = useState([]);
   const [filterValue, setFilterValue] = useState("");
   const [editPasswordId, setEditPasswordId] = useState(null);
@@ -97,7 +99,11 @@ export const PanelUsuario = () => {
   const handleSavePassword = async (userId) => {
     try {
       if (!newPassword.trim()) {
-        toast.error("La contraseña no puede estar vacía");
+        toast({
+          variant: "destructive",
+          title: "Error al guardar",
+          description: "La contraseña no puede estar vacia",
+        });
         return;
       }
 
@@ -111,7 +117,9 @@ export const PanelUsuario = () => {
 
       if (res.ok) {
         setEditPasswordId(null);
-        toast.success("Contraseña actualizada con éxito");
+        toast({
+          title: "Contraseña actualizada correctamente",
+        });
       } else {
         console.error("Error updating password:", res.statusText);
       }
@@ -159,7 +167,7 @@ export const PanelUsuario = () => {
         <TableHeader>
           <TableColumn align="center">ID</TableColumn>
           <TableColumn>USUARIO</TableColumn>
-          <TableColumn>CORREO</TableColumn>
+          <TableColumn>RFC</TableColumn>
           <TableColumn style={{ width: "200px" }}>CONTRASEÑA</TableColumn>
           <TableColumn style={{ width: "250px" }}>ACCIONES</TableColumn>
         </TableHeader>
@@ -168,7 +176,7 @@ export const PanelUsuario = () => {
             <TableRow key={user.id}>
               <TableCell>{user.id}</TableCell>
               <TableCell>{user.username}</TableCell>
-              <TableCell>{user.correo}</TableCell>
+              <TableCell>{user.RFC}</TableCell>
               <TableCell style={{ verticalAlign: "middle" }}>
                 {editPasswordId === user.id ? (
                   <Input

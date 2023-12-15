@@ -9,6 +9,7 @@ import {
   CardBody,
   CardHeader,
 } from "@nextui-org/react";
+import { useToast } from "@/components/ui/use-toast";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
@@ -17,6 +18,7 @@ import { LockIcon } from "../components/icons/LockIcon";
 
 export default function App() {
   const router = useRouter();
+  const {toast} = useToast();
 
   const handleSignIn = async (e) => {
     e.preventDefault();
@@ -31,12 +33,18 @@ export default function App() {
 
     if (response?.error) {
       // Manejo de errores
-      toast.error("Credenciales incorrectas");
+      toast({
+        variant: "destructive",
+        title: "Credenciales incorrectas",
+        description: "Ha ocurrido un error al iniciar sesion",
+      });
       console.error("Error al iniciar sesión:", response.error);
     } else if (response?.url) {
       // Redirigir a la página deseada después del inicio de sesión
       router.push("/");
-      toast.success("Inicio de sesion exitoso");
+      toast({
+        title: "Inicio de sesion exitoso",
+      });
     }
   };
 

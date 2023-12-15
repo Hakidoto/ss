@@ -30,13 +30,12 @@ export async function POST(req) {
       where: { RFC: RFC },
     });
     if (existingRFC) {
-     
       return NextResponse.json(
         {
           user: null,
           message: "Ya existe un usuario con este RFC",
         },
-        { status: 409 },  
+        { status: 409 }
       );
     }
     // Verificar si existe un usuario con el mismo username
@@ -58,20 +57,20 @@ export async function POST(req) {
     const newUser = await prisma.usrs.create({
       data: {
         RFC,
-        nombre,
         username,
         password: hashedPassword,
-        edad,
-        direccion,
-        celular,
-        telefono,
-        correo,
-        redSocial,
-        tipoEmpleado,
-        contrato,
-        horario,
-        estado,
-        antiguedad,
+        // nombre,
+        // edad,
+        // direccion,
+        // celular,
+        // telefono,
+        // correo,
+        // redSocial,
+        // tipoEmpleado,
+        // contrato,
+        // horario,
+        // estado,
+        // antiguedad,
       },
     });
 
