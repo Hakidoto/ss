@@ -243,8 +243,8 @@ export default function CuestionarioDisponible() {
                 )}
               </TableHeader>
               <TableBody
-                emptyContent={"No rows to display."}
-                items={surveysData}
+                emptyContent={"No hay encuestas disponibles."}
+                items={surveysData.filter((item) => item.estatus === "activo")}
               >
                 {(survey) => (
                   <TableRow key={survey.survey_id}>
