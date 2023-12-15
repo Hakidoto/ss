@@ -8,15 +8,20 @@ import style from "../components/style/CardU.module.css"
 import Cursos from './components/Cursos';
 import Certificaciones from './components/Certificaciones';
 import Lenguas from './components/Lenguas';
+import { useSession } from 'next-auth/react';
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 export default function Page() {
-  const [userId, setUserId] = useState(2);
+  const { data: session, status } = useSession();
+  const [userId, setUserId] = useState();
   const [user, setUser] = useState(null);
   const [cursos, setCursos] = useState([]);
   const [certificaciones, setCertificaciones] = useState([]);
   const [lenguas, setLenguas] = useState([]);
   const [loading, setLoading] = useState(true);
   const [rfcUsuario, setRfcUsuario] = useState("");
+  const {toast} = useToast();
   let tabs = [
     {
       id: "cursos",
@@ -35,7 +40,7 @@ export default function Page() {
   async function fetchData() {
     setLoading(true);
     try {
-      const UsuarioId = userId; // Reemplaza con el ID del usuario que deseas obtener
+      const UsuarioId = session.user.id; // Reemplaza con el ID del usuario que deseas obtener
       const response = await fetch(`/api/usuario/${UsuarioId}`);
   
       if (response.ok) {
@@ -105,19 +110,20 @@ export default function Page() {
   }
 
   useEffect(() => {
-    fetchData()
-    //fetchUserCertificaciones()
-    //fetchUserLenguas()
-  }, [])
+    if (session && session.user) {
+      fetchData();
+      setUserId(session.user.id)
+    }
+  }, [session]);
   
   const renderTabContent = (item) => {
     switch (item.id) {
       case "cursos":
-        return <Cursos cursos = {cursos} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
+        return <Cursos user = {user} cursos = {cursos} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
       case "certificaciones":
-        return <Certificaciones certificacion = {certificaciones} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
+        return <Certificaciones user = {user} certificacion = {certificaciones} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;
       case "lenguas":
-        return <Lenguas lenguas = {lenguas} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;    
+        return <Lenguas user = {user} lenguas = {lenguas} isLoaded = {loading} fetchData={fetchData} rfcUsuario = {rfcUsuario}/>;    
       default:
         return null;
     }

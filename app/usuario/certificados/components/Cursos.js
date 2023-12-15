@@ -4,12 +4,15 @@ import style from '../../components/style/statusData.module.css'
 import CardU from '../../components/CardU';
 import { EditIcon } from '@/app/components/icons/EditIcon';
 import { DeleteIcon } from '@/app/components/icons/DeleteIcon';
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
-const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
+const Cursos = ({user ,cursos , isLoaded, fetchData, rfcUsuario}) => {
     const { isOpen: isOpenAdd, onOpen: onOpenAdd, onOpenChange: onOpenChangeAdd } = useDisclosure();
     const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
     const { isOpen: isOpenDelete, onOpen: onOpenDelete, onOpenChange: onOpenChangeDelete } = useDisclosure();
     const [selectedFile, setSelectedFile] = useState(null);
+    const {toast} = useToast();
     //const { isOpen: isOpenModal2, onOpen: onOpenModal2, onOpenChange: onOpenChangeModal2 } = useDisclosure();
     const [editingData, setEditingData] = useState({
       id: null,
@@ -31,28 +34,46 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
     const fileInputRef = useRef(null);
 
     const DownloadComponent = async (row) => {
-
       const id = row.id;
-      
-      const response = await fetch(`/api/usuario/file/${id}`,{
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json', // Asegúrate de enviar el tipo de contenido correcto
-        },
-        body: JSON.stringify({
-          tipoCert: 'curso'
-        }),
-      });
-      
-      console.log(response)
-      const blob = await response.blob();
-      const url = window.URL.createObjectURL(blob);
-      const link = document.createElement('a');
-      link.href = url;
-      link.download = `certificadoCurso_${id}.pdf`;
-      link.click();
-      window.URL.revokeObjectURL(url);
-    }
+      const idUser = user.id
+      try {
+        const response = await fetch(`/api/usuario/file/${id}`, {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify({
+            tipoCert: 'curso',
+            idUser
+          }),
+        });
+    
+        if (response.ok) {
+          const blob = await response.blob();
+          const url = window.URL.createObjectURL(blob);
+          const link = document.createElement('a');
+          link.href = url;
+          link.download = `certificadoCurso_${id}.pdf`;
+          link.click();
+          window.URL.revokeObjectURL(url);
+          toast({
+            title: "Guardado completado",
+            description: "El archivo se ha descargado exitosamente",
+          });
+        } else {
+          toast({
+            title: "Error",
+            description: "Ocurrio un error al bajar el archivo",
+          });
+        }
+      } catch (error) {
+        // Manejar errores de red u otros errores de cliente
+        toast({
+          title: "Guardado completado",
+          description: `Error en la aplicación cliente: ${error}`,
+        });
+      }
+    };
 
     const renderTableRows = () => {
       const startIndex = (currentPage - 1) * itemsPerPage;
@@ -69,7 +90,8 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
           
           ) : (
           "Subir certificado"
-          )}</TableCell>
+          )}
+          </TableCell>
           <TableCell>
             <div>
               <Button onPress={onOpenEdit} className='mx-1 my-1' color='secondary' variant='flat' onClick={() => handleEditClick(row)}>
@@ -133,6 +155,10 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
+          toast({
+            title: "Guardado completado",
+            description: "El curso se ha registrado correctamente",
+          });
           onClose();
         } else {
           console.log("Hubo un error al conectar con el api")
@@ -170,6 +196,11 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
+          toast({
+            title: "Curso actualzado",
+            description: "El certificado se ha subido exitosamente",
+          });
+          setSelectedFile(null)
           onClose();
         } else {
           console.log("Hubo un error al conectar con el api")
@@ -198,6 +229,10 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
+          toast({
+            title: "Eliminado completado",
+            description: "El certificado se ha eliminado exitosamente del servidor",
+          });
           onClose();
         } else {
           console.log("Hubo un error al conectar con el api")
@@ -228,7 +263,10 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
           renderTableRows();
           fetchData();
           setCurrentPage(currentPage)
-          alert("Registro eliminado")
+          toast({
+            title: "Eliminado completado",
+            description: "El curso se ha eliminado correctamente",
+          });
         } else {
           console.log("Hubo un error al conectar con el api")
         }
@@ -335,7 +373,7 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
           </div>
           <hr />
           <div className='w-1/3'>
-              <CardU />
+              <CardU user = {user}/>
           </div>
           <Modal 
             isOpen={isOpenAdd}
@@ -368,7 +406,7 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
                       style={{ display: 'none' }}
                       onChange={handleFileChange}
                     />
-                    <Button color='secondary' onClick={handleButtonClick}>Subir certificado</Button>
+                    <Button color='secondary' onClick={handleButtonClick}>{selectedFile ? "Archivo cargado" : "Seleccionar archivo"}</Button>
                   </ModalBody>
                   <ModalFooter>
                     <Button color="danger" variant="ghost" onPress={onClose}>
@@ -415,7 +453,13 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
                       style={{ display: 'none' }}
                       onChange={handleFileChangeEdit}
                     />
-                    <Button color='secondary' onClick={editingData.certificado ?  DeleteFileEdit : handleButtonClick}>{editingData.certificado ? "Eliminar certificado" : "Subir certificado"}</Button>
+                    <Button color='secondary' onClick={editingData.certificado ?  DeleteFileEdit : handleButtonClick}>
+                    {
+                      editingData.certificado || selectedFile
+                      ? "Eliminar certificado"
+                      : "Subir certificado"
+                    }
+                    </Button>
                   </ModalBody>
                   <ModalFooter>
                     <Button color="danger" variant="ghost" onPress={onClose}>
@@ -455,7 +499,6 @@ const Cursos = ({cursos , isLoaded, fetchData, rfcUsuario}) => {
                       variant="bordered"
                       color='success'
                     />
-                    <Button color='secondary'>{}Subir certificado</Button>
                   </ModalBody>
                   <ModalFooter>
                     <Button color="primary" variant="ghost" onPress={onClose}>

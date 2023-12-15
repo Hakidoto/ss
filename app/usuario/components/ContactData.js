@@ -3,6 +3,8 @@ import style from './style/contactData.module.css';
 import CardU from './CardU';
 import { Skeleton, Button } from '@nextui-org/react';
 import { useTheme } from 'next-themes';
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const ContactData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
   const [celular, setCelular] = useState(user ? user.celular : '');
@@ -10,6 +12,7 @@ const ContactData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
   const [correo, setCorreo] = useState(user ? user.correo : '');
   const [redSocial, setRedSocial] = useState(user ? user.redSocial : '');
   const theme = useTheme();
+  const {toast} = useToast();
 
   useEffect(() => {
     if(user){
@@ -58,7 +61,10 @@ const ContactData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
         // Actualización exitosa, puedes manejar el resultado aquí
         fetchData();
         setIsEditable(false)
-        alert("Registros actualizado")
+        toast({
+          title: "Guardado completado",
+          description: "Los cambios se han guardado exitosamente",
+        });
       } else {
         // Maneja errores, por ejemplo, muestra un mensaje de error
         console.log(response.error)
@@ -86,7 +92,15 @@ const ContactData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
               />
             ) : (
               <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
-                {user ? user.celular : <Skeleton className='rounded-lg'>.</Skeleton>}
+                {user ? (
+                  user.celular ? (
+                    user.celular
+                  ) : (
+                    <span className="text-red-500">Sin registro</span>
+                  )
+                ) : (
+                  <Skeleton className='rounded-lg'>.</Skeleton>
+                )}
               </p>
             )}
           </div>
@@ -102,7 +116,15 @@ const ContactData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
               />
             ) : (
               <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
-                {user ? user.telefono : <Skeleton className='rounded-lg'>.</Skeleton>}
+                {user ? (
+                  user.telefono ? (
+                    user.telefono
+                  ) : (
+                    <span className="text-red-500">Sin registro</span>
+                  )
+                ) : (
+                  <Skeleton className='rounded-lg'>.</Skeleton>
+                )}
               </p>
             )}
           </div>
@@ -118,7 +140,15 @@ const ContactData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
               />
             ) : (
               <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
-                {user ? user.correo : <Skeleton className='rounded-lg'>.</Skeleton>}
+                {user ? (
+                  user.correo ? (
+                    user.correo
+                  ) : (
+                    <span className="text-red-500">Sin registro</span>
+                  )
+                ) : (
+                  <Skeleton className='rounded-lg'>.</Skeleton>
+                )}
               </p>
             )}
           </div>
@@ -134,7 +164,15 @@ const ContactData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
               />
             ) : (
               <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
-                {user ? user.redSocial : <Skeleton className='rounded-lg'>.</Skeleton>}
+                {user ? (
+                  user.redSocial ? (
+                    user.redSocial
+                  ) : (
+                    <span className="text-red-500">Sin registro</span>
+                  )
+                ) : (
+                  <Skeleton className='rounded-lg'>.</Skeleton>
+                )}
               </p>
             )}
           </div>
@@ -146,7 +184,7 @@ const ContactData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
         </div>
         <hr/>
         <div className='w-1/2'>
-          <CardU />
+          <CardU user = {user}/>
         </div>
       </div>
     </div>

@@ -3,7 +3,7 @@ import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagina
 import style from '../../components/style/statusData.module.css'
 import CardU from '../../components/CardU';
 
-const Procesos = ({procedimientos, loading}) => {
+const Procesos = ({procedimientos, loading, user}) => {
     const itemsPerPage = 5;
     const [currentPage, setCurrentPage] = useState(1);
     const totalPages = Math.ceil(procedimientos.length / itemsPerPage);
@@ -84,7 +84,7 @@ const Procesos = ({procedimientos, loading}) => {
                 </div>
                 <hr />
                 <div className='w-1/2'>
-                    <CardU />
+                    <CardU user = {user}/>
                 </div>
             </div>
         </div>
