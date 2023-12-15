@@ -72,6 +72,8 @@ export default function CuestionarioDisponible() {
   const { isOpen, onOpen, onOpenChange } = useDisclosure();
   const [loading, setLoading] = useState(true);
   const [statusEncuestaMap, setStatusEncuestaMap] = useState({});
+  const currentDate = new Date();
+
 
 
   const columns = [
@@ -244,7 +246,11 @@ export default function CuestionarioDisponible() {
               </TableHeader>
               <TableBody
                 emptyContent={"No hay encuestas disponibles."}
-                items={surveysData.filter((item) => item.estatus === "activo")}
+                items={surveysData.filter((item) => (
+                  item.estatus === "activo"  &&
+                  new Date(item.start_date) < currentDate &&
+                  new Date(item.end_date) > currentDate
+                ))}
               >
                 {(survey) => (
                   <TableRow key={survey.survey_id}>

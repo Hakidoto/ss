@@ -176,26 +176,27 @@ export default function Page() {
     <>
       <Card className="mx-auto my-auto flex-1 min-h-[80vh]">
         <CardHeader className="flex flex-col items-center justify-center">
-          <h2 className=" text-2xl ">{survey.title}</h2>
+          <h2 className="text-2xl">{survey.title}</h2>
           <Card
             isBlurred
             className="border-none bg-background/60 dark:bg-default-100/50 w-5/6 mt-5"
           >
-            <CardHeader className=" lex  justify-between">
+            <CardHeader className="flex justify-between">
               <Textarea
                 isReadOnly
                 variant="bordered"
                 labelPlacement="outside"
-                defaultValue={survey.description}
+                defaultValue={survey ? survey.description : "Cargando..."}
                 label="Acerca de la encuesta"
                 className="ml-3 mr-3"
               ></Textarea>
             </CardHeader>
           </Card>
         </CardHeader>
-        <CardBody>
-          {questionData.map((question, index) => {
-            return (
+
+        {questionData.length > 0 ? (
+          <CardBody>
+            {questionData.map((question, index) => (
               <CardRespUsuario
                 key={question.question_id}
                 index={index}
@@ -206,23 +207,48 @@ export default function Page() {
                 }
                 setRespuesta={setAnswerData}
               />
-            );
-          })}
+            ))}
 
-          <div className="flex justify-around">
-            <div className="w-1/5"></div>
-            <div className="w-1/5">
-              <Button
-                className="w-full"
-                color="success"
-                endContent={<LuSave />}
-                onClick={saveUserAnswerData}
-              >
-                Guardar respuestas
-              </Button>
+            <div className="flex justify-around">
+              <div className="w-1/5"></div>
+              <div className="w-1/5">
+                <Button
+                  className="w-full"
+                  color="success"
+                  endContent={<LuSave />}
+                  onClick={saveUserAnswerData}
+                >
+                  Guardar respuestas
+                </Button>
+              </div>
             </div>
-          </div>
-        </CardBody>
+          </CardBody>
+        ) : (
+          <CardBody>
+            <div className="flex items-center justify-center mb-5">
+              <Card
+                isBlurred
+                className="border-none bg-background/60 dark:bg-default-100/50 w-5/6"
+              >
+                <CardHeader className=" items-center justify-center text-center">
+                  No hay preguntas asignadas a esta encuesta...
+                </CardHeader>
+                <CardBody>
+                  <Button
+                    color="primary"
+                    variant="solid"
+                    radius="md"
+                    size="sm"
+                    as={NextLink}
+                    href={`/cuestionario/`}
+                  >
+                    Regresar al menu
+                  </Button>
+                </CardBody>
+              </Card>
+            </div>
+          </CardBody>
+        )}
       </Card>
     </>
   );
