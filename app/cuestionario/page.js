@@ -7,7 +7,7 @@ import CuestionarioDisponible from "./cuestionarioDisponible";
 
 export default function Page() {
   return (
-    <Tabs color="danger" className="grid w-full grid-cols-1" >
+    <Tabs defaultSelectedKey={'creacion'} color="danger" className="grid w-full grid-cols-1" >
       <Tab key="Responder" title="Cuestionarios disponibles">
         <Card className="mx-auto my-auto flex-1 min-h-[80vh]">
           <CardHeader className="flex items-center justify-center">

@@ -18,6 +18,8 @@ export function Providers({ children }) {
   const pathname = usePathname();
   const pathParts = pathname.split("/");
   const pathLink = "/" + pathParts[1];
+  const excludedPaths = ["/login"];
+
 
   useEffect(() => {
     // Update the theme whenever it changes
@@ -32,7 +34,7 @@ export function Providers({ children }) {
         enableSystem
       >
         <SessionProvider>
-          {pathLink != "/login" && <NavbarTRC />}
+        {!excludedPaths.includes(pathLink) && <NavbarTRC />}
 
           {children}
         </SessionProvider>  

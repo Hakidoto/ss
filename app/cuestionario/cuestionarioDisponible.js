@@ -79,7 +79,7 @@ export default function CuestionarioDisponible() {
   const columns = [
     { name: "TITULO", uid: "title" },
     { name: "DESCRIPCION", uid: "description" },
-    { name: "FECHA", uid: "created_at" },
+    { name: "FECHA LIMITE", uid: "end_date" },
     { name: "ESTATUS", uid: "estatus" },
     { name: "ACCIONES", uid: "actions" },
   ];
@@ -194,7 +194,7 @@ export default function CuestionarioDisponible() {
             {statusText}
           </Chip>
         );
-      case "created_at":
+      case "end_date":
         const originalDate = new Date(cellValue);
         const day = originalDate.getDate().toString().padStart(2, "0");
         const month = (originalDate.getMonth() + 1).toString().padStart(2, "0"); // Months are zero-based, so we add 1.

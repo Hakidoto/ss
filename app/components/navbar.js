@@ -26,11 +26,16 @@ import { useTheme } from "next-themes";
 import { SunIcon } from "./icons/SunIcon";
 import { MoonIcon } from "./icons/MoonIcon";
 import style from "./styles/navbar.module.css";
-import Image from "next/image"
+import Image from "next/image";
 import { signOut, useSession } from "next-auth/react";
 import { useEffect, useState } from "react";
+import { LuComputer } from "react-icons/lu";
 export default function NavbarTRC() {
-  const [imagePath, setImagePath] = useState("https://avatars.githubusercontent.com/u/86160567?s=200&v=4");
+  const [imagePath, setImagePath] = useState(
+    "https://avatars.githubusercontent.com/u/86160567?s=200&v=4"
+  );
+  const [isMenuOpen, setIsMenuOpen] = useState(false);
+
   const [userData, setUserData] = useState({});
   const router = useRouter();
   const { data: session, status } = useSession();
@@ -40,7 +45,6 @@ export default function NavbarTRC() {
   const menuItems = [
     { nombre: "Inicio", link: "/" },
     { nombre: "Cuestionarios", link: "/cuestionario" },
-    { nombre: "Manuales", link: "/manuales" },
     { nombre: "Administracion", link: "/admi/panelusuarios" },
   ];
 
@@ -54,16 +58,16 @@ export default function NavbarTRC() {
     try {
       const UsuarioId = session.user.id; // Reemplaza con el ID del usuario que deseas obtener
       const response = await fetch(`/api/usuario/${UsuarioId}`);
-  
+
       if (response.ok) {
         const user = await response.json();
         setUserData(user);
         //console.log(user)
       } else {
-        console.error('Error al obtener datos de la API');
+        console.error("Error al obtener datos de la API");
       }
     } catch (error) {
-      console.error('Error al conectarse a la API', error);
+      console.error("Error al conectarse a la API", error);
     }
   }
 
@@ -80,7 +84,9 @@ export default function NavbarTRC() {
       try {
         if (session && userData && userData.img) {
           // Utiliza import() para cargar la imagen de forma asíncrona
-          const dynamicImage = await import(`../resources/${session.user.id}/profilePick/${userData.img}`);
+          const dynamicImage = await import(
+            `../resources/${session.user.id}/profilePick/${userData.img}`
+          );
           setImagePath(dynamicImage.default);
         }
       } catch (error) {
@@ -88,7 +94,7 @@ export default function NavbarTRC() {
         console.error(`Error cargando la imagen: ${error.message}`);
       }
     };
-  
+
     loadImage();
   }, [session, userData]);
 
@@ -114,10 +120,14 @@ export default function NavbarTRC() {
       isBordered
     >
       <NavbarContent justify="start">
+        <NavbarMenuToggle
+          aria-label={isMenuOpen ? "Close menu" : "Open menu"}
+          className="sm:hidden"
+        />
         <NavbarBrand className="mr-4">
-          <p className="hidden sm:block font-bold text-inherit">ACME</p>
+          <p className="font-bold text-inherit">TRC</p>
         </NavbarBrand>
-        <NavbarContent className="hidden sm:flex gap-3">
+        <NavbarContent className="hidden sm:flex gap-4" justify="center">
           {menuItems.map((item, index) => {
             const pathParts = pathname.split("/");
             const pathLink = "/" + pathParts[1];
@@ -141,25 +151,55 @@ export default function NavbarTRC() {
           })}
         </NavbarContent>
       </NavbarContent>
+      <NavbarMenu>
+        {menuItems.map((item, index) => {
+          const pathParts = pathname.split("/");
+          const pathLink = "/" + pathParts[1];
+          const isActive =
+            pathLink === item.link || (item.link === "/" && pathname === "/");
+          return (
+            <NavbarMenuItem key={`${item}-${index}`}>
+              <Link
+                color={
+                  isActive
+                    ? "danger"
+                    : "foreground"
+                }
+                className="w-full"
+                href={item.link}
+                size="lg"
+              >
+                {item.nombre}
+              </Link>
+            </NavbarMenuItem>
+          );
+        })}
+      </NavbarMenu>
 
       <NavbarContent as="div" className="items-center" justify="end">
         <Dropdown placement="bottom-end">
           <DropdownTrigger>
-          <div className={style.avatarContainer}>
-            <Image
-              className={style.imgUsr}
-              src={imagePath}
-              alt="Avatar"
-              width={50}
-              height={50}
-            />
-          </div>
+            <div className={style.avatarContainer}>
+              <Image
+                className={style.imgUsr}
+                src={imagePath}
+                alt="Avatar"
+                width={50}
+                height={50}
+              />
+            </div>
           </DropdownTrigger>
-          <DropdownMenu closeOnSelect={false} aria-label="Profile Actions" variant="flat">
+          <DropdownMenu
+            closeOnSelect={false}
+            aria-label="Profile Actions"
+            variant="flat"
+          >
             <DropdownItem key="profile" className="h-14 gap-2">
               {session ? ( // Check if a session exists
                 <>
-                  <p className="font-semibold">Sesion de {session.user.username} </p>
+                  <p className="font-semibold">
+                    Sesion de {session.user.username}{" "}
+                  </p>
                   <p className="font-semibold">{session.user.email}</p>
                 </>
               ) : (
@@ -194,12 +234,34 @@ export default function NavbarTRC() {
               >
                 Incidencias
               </DropdownItem>
+              <DropdownItem
+                key="user_certifications"
+                as={NextLink}
+                color="secondary"
+                href="#"
+              >
+                Manuales
+              </DropdownItem>
             </DropdownSection>
             <DropdownSection title="Sistema" />
-            <DropdownItem startContent={theme == 'dark' ?<MoonIcon/>: <SunIcon/>} className="flex items-center" key="theme_switch">
+            <DropdownItem
+              startContent={
+                theme == "dark" ? (
+                  <MoonIcon />
+                ) : theme == "light" ? (
+                  <SunIcon />
+                ) : (
+                  <LuComputer />
+                )
+              }
+              className="flex items-center"
+              key="theme_switch"
+            >
               <Dropdown>
                 <DropdownTrigger>
-                  <span className="w-full" variant="bordered">Cambiar tema</span>
+                  <span className="w-full" variant="bordered">
+                    Cambiar tema
+                  </span>
                 </DropdownTrigger>
                 <DropdownMenu
                   variant="faded"
@@ -222,7 +284,7 @@ export default function NavbarTRC() {
                   <DropdownItem
                     key="system"
                     onClick={() => setTheme("system")}
-                    startContent={<MoonIcon />}
+                    startContent={<LuComputer />}
                   >
                     Sistema
                   </DropdownItem>
@@ -235,11 +297,7 @@ export default function NavbarTRC() {
             <DropdownItem key="help_and_feedback" color="secondary">
               Ayuda & Comentarios
             </DropdownItem>
-            <DropdownItem
-              as={Button}
-              onClick={signout}
-              color="danger"
-            >
+            <DropdownItem as={Button} onClick={signout} color="danger">
               Cerrar sesion
             </DropdownItem>
           </DropdownMenu>
