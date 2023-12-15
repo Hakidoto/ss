@@ -4,6 +4,8 @@ import style from "./style/CardU.module.css";
 import {Card, CardHeader, CardBody, CardFooter, Divider , Skeleton, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Checkbox, Input, Link} from '@nextui-org/react';
 import { toast } from "react-toastify";
 import Image from "next/image"
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 export default function CardU({user}) {
   const { data: session, status } = useSession();
@@ -12,6 +14,7 @@ export default function CardU({user}) {
   const { isOpen: isOpenEdit, onOpen: onOpenEdit, onOpenChange: onOpenChangeEdit } = useDisclosure();
   const [correctPass, setCorrectPass] = useState(false);
   const [pass, setPass] = useState("");
+  const {toast} = useToast();
   const [editUsrName, setEditUsrName] = useState(false)
   const [editingData, setEditingData] = useState({
     id: null,
@@ -67,7 +70,10 @@ export default function CardU({user}) {
   
       if (isChangingPassword) {
         if (editingData.password !== pass) {
-          toast.error("Las contraseñas deben coincidir");
+          toast({
+            title: "Error",
+            description: "Las contraseñas deben coincidir",
+          });
           return;
         }
       }
@@ -78,7 +84,10 @@ export default function CardU({user}) {
       });
   
       if (response.ok) {
-        toast.success("Credenciales actualizadas.");
+        toast({
+          title: "Guardado completado",
+          description: "Las credenciales se han actualizado exitosamente",
+        });
         setPass("");
         setCorrectPass(false);
         onClose();
@@ -99,6 +108,10 @@ export default function CardU({user}) {
     // Acceder al archivo seleccionado
     const selectedFile = e.target.files[0];
     setSelectedFile(selectedFile);
+    toast({
+      title: "Archivo cargado",
+      description: "El archivo esta en memoria",
+    });
   };
 
   useEffect(() => {
@@ -142,6 +155,10 @@ export default function CardU({user}) {
       });
 
       if (response.ok) {
+        toast({
+          title: "Guardado",
+          description: "Foto de perfil guardada exitosaamente",
+        });
         window.location.reload()
         onClose();
       } else {
@@ -151,6 +168,16 @@ export default function CardU({user}) {
       console.log("Hubo un error al conectar con el api: ", error)
     }
   }
+
+  const handleEditClick = () => {
+    setEditingData((prevData) => ({
+      ...prevData,
+      username: user? user.username : "Sin cargar",
+      nombre: user? user.nombre : "Sin cargar",
+      id: user? user.id : "Sin cargar",
+      password: user? user.password : "Sin cargar",
+    }))
+  };
   
 
   useEffect(() => {
@@ -171,8 +198,6 @@ export default function CardU({user}) {
     loadImage();
   }, [session, usrData]);
 
-  
-  console.log(imagePath)
   return (
     <Card className={`${style.cardF}`}>
       <CardHeader className="flex gap-3 justify-end">
@@ -198,17 +223,52 @@ export default function CardU({user}) {
             <p>Resumen del trabajador:</p>
           </div>
           <div className="w-full h-5/6 text-left pt-5">
-            <p><span className="font-bold">Nombre:</span> {user? user.nombre : "Cargando resumen.."}</p>
-            <p><span className="font-bold">Telefono:</span> {user? user.celular: "Cargando resumen.."}</p>
-            <p><span className="font-bold">Puesto:</span> {user? user.puesto : "Cargando resumen.."}</p>
-            <p><span className="font-bold">Horario:</span> {user? user.horario : "Cargando resumen"}</p>
-            <p><span className="font-bold">Estado:</span> {user? user.estado : "Cargando resumen"}</p>
+            <p>
+              <span className="font-bold">Nombre:</span>{" "}
+              {user && user.nombre ? (
+                user.nombre
+              ) : (
+                <span className="italic text-red-500">Sin registros..</span>
+              )}
+            </p>
+            <p>
+              <span className="font-bold">Telefono:</span>{" "}
+              {user && user.telefono ? (
+                user.telefono
+              ) : (
+                <span className="italic text-red-500">Sin registros..</span>
+              )}
+            </p>
+            <p>
+              <span className="font-bold">Puesto:</span>{" "}
+              {user && user.puesto ? (
+                user.puesto
+              ) : (
+                <span className="italic text-red-500">Sin registros..</span>
+              )}
+            </p>
+            <p>
+              <span className="font-bold">Horario:</span>{" "}
+              {user && user.horario ? (
+                user.horario
+              ) : (
+                <span className="italic text-red-500">Sin registros..</span>
+              )}
+            </p>
+            <p>
+              <span className="font-bold">Estado:</span>{" "}
+              {user && user.estado ? (
+                user.estado
+              ) : (
+                <span className="italic text-red-500">Sin registros..</span>
+              )}
+            </p>
           </div>
         </div>
       </CardBody>
       <Divider/>
       <CardFooter>
-        <Button color="primary" variant="flat" className="" onClick={onOpenAdd}>
+        <Button color="primary" variant="flat" className="" onPress={onOpenAdd} onClick={handleEditClick}>
           Cambiar nombre de usuario o contraseña
         </Button>
       </CardFooter>
@@ -286,7 +346,7 @@ export default function CardU({user}) {
                   style={{ display: 'none' }}
                   onChange={handleFileChange}
                 />
-                <Button color='secondary' onClick={ handleButtonClick}>Seleccionar foto del usuario </Button>
+                <Button color='secondary' onClick={ handleButtonClick}>{selectedFile ? "Foto cargada": "Seleccionar foto del usuario"} </Button>
               </ModalBody>
               <ModalFooter>
                 <Button color="danger" variant="ghost" onPress={onClose}>

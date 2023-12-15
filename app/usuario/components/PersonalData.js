@@ -3,6 +3,9 @@ import style from './style/personalData.module.css';
 import CardU from './CardU';
 import { Button, Skeleton } from '@nextui-org/react';
 import { useTheme } from 'next-themes';
+import { toast } from "react-toastify";
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
   const [nombre, setNombre] = useState(user ? user.nombre : '');
@@ -10,6 +13,7 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
   const [Direccion, setDireccion] = useState(user ? user.direccion : '');
   const [edad, setEdad] = useState(user ? user.edad : '');
   const theme = useTheme();
+  const {toast} = useToast();
 
   const handleNombreChange = (e) => {
     const inputValue = e.target.value;
@@ -27,6 +31,11 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
     const inputValue = e.target.value;
     setEdad(inputValue);
   };
+
+  useEffect(() => {
+    console.log(edad)
+  }, [edad])
+  
   
   useEffect(() => {
     if(user){
@@ -59,7 +68,10 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
         // Actualización exitosa, puedes manejar el resultado aquí
         fetchData();
         setIsEditable(false)
-        alert("Registros actualizado")
+        toast({
+          title: "Guardado completado",
+          description: "Los cambios se han guardado exitosamente",
+        });
       } else {
         // Maneja errores, por ejemplo, muestra un mensaje de error
         console.log(response.error)
@@ -86,7 +98,15 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
               />
             ) : (
               <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
-                {user ? user.nombre : <Skeleton className='rounded-lg'>.</Skeleton>}
+                {user ? (
+                  user.nombre ? (
+                    user.nombre
+                  ) : (
+                    <span className="text-red-500">Sin registro</span>
+                  )
+                ) : (
+                  <Skeleton className='rounded-lg'>.</Skeleton>
+                )}
               </p>
             )}
           </div>
@@ -101,8 +121,16 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
                 className={theme.resolvedTheme == 'dark' ? `rounded-sm pl-3 mb-3 ${style.labelF}` : `rounded-sm border pl-3 mb-3 ${style.labelF}`}
               />
             ) : (
-              <p className={`rounded-md mb-3 pl-3 ${style.labelF}`}>
-                {user ? user.RFC : (<Skeleton className='rounded-lg'>.</Skeleton>)}
+              <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
+                {user ? (
+                  user.RFC ? (
+                    user.RFC
+                  ) : (
+                    <span className="text-red-500">Sin registro</span>
+                  )
+                ) : (
+                  <Skeleton className='rounded-lg'>.</Skeleton>
+                )}
               </p>
             )}
           </div>
@@ -118,8 +146,16 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
                 className={theme.resolvedTheme == 'dark' ? `rounded-sm pl-3 mb-3 ${style.labelF}` : `rounded-sm border pl-3 mb-3 ${style.labelF}`}
               />
             ) : (
-              <p className={`rounded-md mb-3 pl-3 ${style.labelF}`}>
-                {user ? user.direccion : (<Skeleton className='rounded-lg'>.</Skeleton>)}
+              <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
+                {user ? (
+                  user.direccion ? (
+                    user.direccion
+                  ) : (
+                    <span className="text-red-500">Sin registro</span>
+                  )
+                ) : (
+                  <Skeleton className='rounded-lg'>.</Skeleton>
+                )}
               </p>
             )}
           </div>
@@ -134,8 +170,16 @@ const PersonalData = ({user, isEditable, userId, fetchData, setIsEditable}) => {
                 className={theme.resolvedTheme == 'dark' ? `rounded-sm pl-3 mb-3 ${style.labelF}` : `rounded-sm border pl-3 mb-3 ${style.labelF}`}
               />
             ) : (
-              <p className={`rounded-md mb-3 pl-3 ${style.labelF}`}>
-                {user ? user.edad : (<Skeleton className='rounded-lg'>.</Skeleton>)}
+              <p className={`rounded-md pl-3 mb-3 ${style.labelF}`}>
+                {user ? (
+                  user.edad ? (
+                    user.edad
+                  ) : (
+                    <span className="text-red-500">Sin registro</span>
+                  )
+                ) : (
+                  <Skeleton className='rounded-lg'>.</Skeleton>
+                )}
               </p>
             )}
           </div>

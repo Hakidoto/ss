@@ -4,6 +4,8 @@ import CardU from './CardU';
 import { Table, TableHeader, TableColumn, TableBody, TableRow, TableCell, Pagination, Spacer, Skeleton, Button, Modal, ModalContent, ModalHeader, ModalBody, ModalFooter, useDisclosure, Checkbox, Input, Link } from '@nextui-org/react';
 import { EditIcon } from '@/app/components/icons/EditIcon';
 import { DeleteIcon } from '@/app/components/icons/DeleteIcon';
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 
 const WorkExperience = ({user, userExp, loading, fetchData, userId, userRfc }) => {
 
@@ -12,6 +14,7 @@ const WorkExperience = ({user, userExp, loading, fetchData, userId, userRfc }) =
   const [currentPage, setCurrentPage] = useState(1);
   const totalPages = Math.ceil(userExp.length / itemsPerPage);
   const [data, setData] = useState({});
+  const {toast} = useToast();
   const [editingData, setEditingData] = useState({
     id: null,
     RFC: '',
@@ -212,7 +215,11 @@ const WorkExperience = ({user, userExp, loading, fetchData, userId, userRfc }) =
       if (response.ok) {
         renderTableRows();
         fetchData();
-        setCurrentPage(page)
+        //setCurrentPage(page)
+        toast({
+          title: "Guardado completado",
+          description: "El registros se a añadido con exito",
+        });
         onClose();
       } else {
         console.log("Hubo un error al conectar con el api")
@@ -238,6 +245,10 @@ const WorkExperience = ({user, userExp, loading, fetchData, userId, userRfc }) =
         //const responseData = await response.json();
         renderTableRows();
         fetchData();
+        toast({
+          title: "Guardado completado",
+          description: "Los cambios se han guardado exitosamente",
+        });
         onClose();
       } else {
         console.log("Hubo un error al conectar con el api")
@@ -262,7 +273,10 @@ const WorkExperience = ({user, userExp, loading, fetchData, userId, userRfc }) =
         renderTableRows();
         fetchData();
         setIsOpenDelete(false)
-        alert("Registro eliminado")
+        toast({
+          title: "Eliminado completado",
+          description: "El registro se ha eliminado exitosamente",
+        });
       } else {
         console.log("Hubo un error al conectar con el api")
       }

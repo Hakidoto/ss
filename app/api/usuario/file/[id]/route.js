@@ -2,6 +2,7 @@ import { NextResponse } from "next/server";
 
 import { readFile } from 'fs/promises';
 import path from 'path';
+import { stringify } from "querystring";
 
 export async function POST(req, {params}) {
     try{
@@ -9,6 +10,7 @@ export async function POST(req, {params}) {
         const id = params.id;
         const body = await req.json();
         const data = { ...body };
+        const idUser = data.idUser
         console.log(id)
         console.log(body)
 
@@ -22,8 +24,8 @@ export async function POST(req, {params}) {
             var nombreArchivo = cert.certificado
 
             try{
-                const buffer = await readFile(path.join(path.join(process.cwd() ,'\\app\\resources',id,'cursos', nombreArchivo)));
-                console.log(path.join(path.join(process.cwd() ,'\\app\\resources\\2\\cursos', nombreArchivo)))
+                const buffer = await readFile(path.join(path.join(process.cwd() ,'\\app\\resources', idUser.toString(),'cursos', nombreArchivo)));
+                console.log(path.join(path.join(process.cwd() ,'\\app\\resources', idUser.toString(),'cursos', nombreArchivo)))
                 const headers = new Headers();
                 headers.append('Content-Disposition', `attachment; filename="${nombreArchivo}"`);
                 headers.append('Content-Type', 'application/pdf'); // Cambiado a 'application/pdf' para indicar que es un archivo PDF
@@ -48,8 +50,8 @@ export async function POST(req, {params}) {
             var nombreArchivo = cert.certificado
 
             try{
-                const buffer = await readFile(path.join(path.join(process.cwd() ,'\\app\\resources',id,'certificaciones', nombreArchivo)));
-                console.log(path.join(path.join(process.cwd() ,'\\app\\resources\\2\\certificaciones', nombreArchivo)))
+                const buffer = await readFile(path.join(path.join(process.cwd() ,'\\app\\resources', idUser.toString(),'certificaciones', nombreArchivo)));
+                console.log(path.join(path.join(process.cwd() ,'\\app\\resources', idUser.toString(),'certificaciones', nombreArchivo)))
                 const headers = new Headers();
                 headers.append('Content-Disposition', `attachment; filename="${nombreArchivo}"`);
                 headers.append('Content-Type', 'application/pdf'); // Cambiado a 'application/pdf' para indicar que es un archivo PDF
@@ -73,8 +75,8 @@ export async function POST(req, {params}) {
             var nombreArchivo = cert.certificado
 
             try{
-                const buffer = await readFile(path.join(path.join(process.cwd() ,'\\app\\resources',id,'lenguas', nombreArchivo)));
-                console.log(path.join(path.join(process.cwd() ,'\\app\\resources',id,'lenguas', nombreArchivo)))
+                const buffer = await readFile(path.join(path.join(process.cwd() ,'\\app\\resources', idUser.toString(),'lenguas', nombreArchivo)));
+                console.log(path.join(path.join(process.cwd() ,'\\app\\resources', idUser.toString(),'lenguas', nombreArchivo)))
                 const headers = new Headers();
                 headers.append('Content-Disposition', `attachment; filename="${nombreArchivo}"`);
                 headers.append('Content-Type', 'application/pdf'); // Cambiado a 'application/pdf' para indicar que es un archivo PDF
@@ -98,8 +100,8 @@ export async function POST(req, {params}) {
             var nombreArchivo = cert.justificante
 
             try{
-                const buffer = await readFile(path.join(path.join(process.cwd() ,'\\app\\resources',id,'incapacidades', nombreArchivo)));
-                console.log(path.join(path.join(process.cwd() ,'\\app\\resources\\2\\incapacidades', nombreArchivo)))
+                const buffer = await readFile(path.join(path.join(process.cwd() ,'\\app\\resources', idUser.toString(),'incapacidades', nombreArchivo)));
+                console.log(path.join(path.join(process.cwd() ,'\\app\\resources', idUser.toString(),'incapacidades', nombreArchivo)))
                 const headers = new Headers();
                 headers.append('Content-Disposition', `attachment; filename="${nombreArchivo}"`);
                 headers.append('Content-Type', 'application/pdf'); // Cambiado a 'application/pdf' para indicar que es un archivo PDF

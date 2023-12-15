@@ -10,7 +10,7 @@ const Incapacidades = ({user, incapacidades, loading}) => {
 
     const DownloadComponent = async (row) => {
       const id = row.id;
-    
+      const idUser = user.id
       try {
         const response = await fetch(`/api/usuario/file/${id}`, {
           method: 'POST',
@@ -19,6 +19,7 @@ const Incapacidades = ({user, incapacidades, loading}) => {
           },
           body: JSON.stringify({
             tipoCert: 'incapacidad',
+            idUser
           }),
         });
     

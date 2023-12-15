@@ -96,7 +96,6 @@ export async function PUT(req, { params }) {
         RFC: rfcUsr,
         nombreCertificado: nombreCertificadoUsr,
         tipoCertificado: tipoCertificadoUsr,
-        certificado: null
       }
 
       console.log(body)

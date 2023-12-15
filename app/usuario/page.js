@@ -16,7 +16,8 @@ import ContactData from "./components/ContactData";
 import StatusData from "./components/StatusData";
 import WorkExperience from "./components/WorkExperience";
 import { useSession } from "next-auth/react";
-
+import { useToast } from "@/components/ui/use-toast";
+import { ToastAction } from "@/components/ui/toast";
 export default function Page() {
   const { data: session, status } = useSession();
   const [userId, setUserId] = useState();
@@ -25,7 +26,8 @@ export default function Page() {
   const [userExp, setUserExp] = useState([]);
   const [loading, setLoading] = useState(true);
   const [isEditable, setIsEditable] = useState(false);
-
+  const {toast} = useToast();
+  
   async function fetchData() {
     setLoading(true);
     if (session) {
