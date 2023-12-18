@@ -33,7 +33,6 @@ import { selectorEstatus } from "@/app/components/example/data";
 import NextLink from "next/link";
 import { ToastAction } from "@/components/ui/toast";
 
-
 const getQuestions = (id) => {
   // Ensure you return the promise from fetch
   return fetch(`/api/cuestionario/pregunta/${id}`, {
@@ -90,17 +89,14 @@ const getSurvey = cache((id) =>
 );
 
 export default function Page() {
-  const [date, setDate] = useState({
-    from: new Date(),
-    to: addDays(new Date(), 20),
-  });
+  const [date, setDate] = useState();
   const [questionData, setQuestionData] = useState([]);
   const [lastQuestion, setLastQuestion] = useState([]);
   const [answerData, setAnswerData] = useState([]);
   const [newQuestionAdded, setNewQuestionAdded] = useState(false); // Flag to track new question
   const [questionAnswers, setQuestionAnswers] = useState({});
   const [surveyData, setSurveyData] = useState({});
-  const {toast} = useToast();
+  const { toast } = useToast();
 
   const pathname = usePathname();
   const parts = pathname.split("/");
@@ -118,6 +114,10 @@ export default function Page() {
       setQuestionData(questions);
       setLastQuestion(latestQuestion);
       setSurveyData(survey);
+      setDate({
+        from: new Date(survey.start_date),
+        to: new Date(survey.end_date),
+      });
     } catch (error) {
       // Handle error if needed
       console.error("Error fetching data:", error);
@@ -477,6 +477,11 @@ export default function Page() {
                             </SelectItem>
                           ))}
                         </Select>
+                      </div>
+                      <div className="space-y-1">
+                        <Button color="success">
+                          Guardar cambios
+                        </Button>
                       </div>
                     </div>
                   </CardBody>

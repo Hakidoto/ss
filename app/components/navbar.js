@@ -51,7 +51,7 @@ export default function NavbarTRC() {
   const pathname = usePathname();
   const menuItems = [
     { nombre: "Inicio", link: "/" },
-    { nombre: "Cuestionarios", link: "/cuestionario" },
+    { nombre: "Encuestas", link: "/cuestionario" },
     { nombre: "Administracion", link: "/admi/panelusuarios" },
   ];
 

@@ -294,7 +294,7 @@ export default function PanelCuestionario() {
         case "actions":
           return (
             <div className="relative flex items-center gap-2">
-              <Tooltip content="Detalles">
+              <Tooltip content="Ver resultados">
                 <Link
                   href={`/cuestionario/${survey.survey_id}/view`}
                   className="text-lg text-default-400 cursor-pointer active:opacity-50"
@@ -302,7 +302,7 @@ export default function PanelCuestionario() {
                   <EyeIcon />
                 </Link>
               </Tooltip>
-              <Tooltip content="Editar cuestionario">
+              <Tooltip content="Editar encuesta">
                 <Link
                   href={`/cuestionario/${survey.survey_id}/edit`}
                   className="text-lg text-default-400 cursor-pointer active:opacity-50"
@@ -310,7 +310,7 @@ export default function PanelCuestionario() {
                   <EditIcon />
                 </Link>
               </Tooltip>
-              <Tooltip color="danger" content="Eliminar cuestionario">
+              <Tooltip color="danger" content="Eliminar encuesta">
                 <span
                   onClick={() => handleDeleteClick(survey.survey_id)}
                   className="text-lg text-danger cursor-pointer active:opacity-50"

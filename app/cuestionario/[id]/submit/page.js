@@ -186,7 +186,7 @@ export default function Page() {
                 isReadOnly
                 variant="bordered"
                 labelPlacement="outside"
-                defaultValue={survey ? survey.description : "Cargando..."}
+                value={survey?.description}
                 label="Acerca de la encuesta"
                 className="ml-3 mr-3"
               ></Textarea>
